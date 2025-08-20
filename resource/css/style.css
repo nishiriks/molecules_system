@@ -144,12 +144,8 @@ body{
 
 /* sign-up */
 
-.signup-page .bg-img{
-    height: 500px;
-    width: 100%;
-    border-top-right-radius: 20px ;
-    border-bottom-right-radius: 20px;
-    object-fit: cover;
+.signup-page .log-button{
+    margin-top: 10px;
 }
 .icon-i{
     position: absolute;
