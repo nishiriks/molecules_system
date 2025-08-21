@@ -37,16 +37,22 @@ section.home{
     padding: 0 !important;
 }
 .home-card{
-    /* border: 2px solid #161542; */
     margin-top: 5%;
+    -webkit-box-shadow: -3px 2px 2px 0px rgba(110,110,110,0.57); 
+    box-shadow: -3px 2px 2px 0px rgba(110,110,110,0.57);
+    background-color: #F0F8FF;
 }
 .card-text{
     color: #F55197;
     font-weight: bold;
 }
-.card-title{
-    color: linear-gradient(225.24deg, #7FF5FF 0.41%, #FF6BFC 100%);
+.gradient-text{
+    background-image: linear-gradient(45deg, #FF6BFC, #7FF5FF);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
+
 i{
     font-size: 3rem;
 }
