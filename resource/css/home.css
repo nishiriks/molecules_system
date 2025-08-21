@@ -29,6 +29,12 @@ nav{
     height: auto;
 }
 
-main{
+section.home{
     height: 100%;
+}
+.home-text{
+    color: #F55197;
+}
+.row>*{
+    padding: 0 !important;
 }
