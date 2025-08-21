@@ -1,6 +1,4 @@
 *{ 
-    margin: 0;
-    padding: 0;
     box-sizing: border-box;
 }
 
@@ -35,6 +33,20 @@ section.home{
 .home-text{
     color: #F55197;
 }
-.row>*{
+.row-no-gutters>*{
     padding: 0 !important;
+}
+.home-card{
+    border: 2px solid #161542;
+}
+i{
+    font-size: 3rem;
+}
+footer{
+    background-color: #161542;
+    height: 10vh;
+    margin-top: 3%;
+}
+footer,p,.fa-copyright{
+    font-size: 0.7rem;
 }
