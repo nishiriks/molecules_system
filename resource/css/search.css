@@ -1,9 +1,21 @@
 *{ 
     box-sizing: border-box;
+    font-family: "Montserrat", sans-serif;
 }
 html{
 	text-rendering: optimizeLegibility;
 	scroll-behavior: smooth;
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{
+	width: 5px;
+}
+::-webkit-scrollbar-track{
+	background-color: #020c1b;
+}
+::-webkit-scrollbar-thumb{
+	background-color: #3F3F3B;
 }
 
 nav{
@@ -54,16 +66,17 @@ nav{
     color: #F55197;
     font-weight: bold;
     margin-top: 15px;
-    width: 90%;
+    width: 14vw;
     height: 40px;
     border-radius: 5px;
     border: 1px solid #E3E3E3;
     box-shadow: -3px 2px 2px 0px rgba(110,110,110,0.57);
     display: grid;
-    grid-template-columns: auto 1fr; 
-    align-items: center;            
-    gap: 0.75em;                    
-    padding: 0 15px;  
+    grid-template-columns: 30px 1fr;           
+    gap: 0.4em;                    
+    /* padding: 0 15px;   */ 
+    align-items: center;
+    letter-spacing: 1px;
     transition: border-color 0.4s ease-in-out, color 0.4s ease-in-out;
 }
 
@@ -80,6 +93,7 @@ nav{
 
 .buttons>button>i{
     font-size: 1.5rem;
+    justify-self: center;
     background-image: linear-gradient(20deg, #FF6BFC, #7FF5FF);
     -webkit-background-clip: text;
     background-clip: text;
@@ -98,9 +112,41 @@ nav{
     color: #F55197;
     font-weight: bold;
     margin-top: 15px;
-    width: 90%;
+    width: 14vw;
     height: 40px;
     border-radius: 5px;
     border: 1px solid #E3E3E3;
     box-shadow: -3px 2px 2px 0px rgba(110,110,110,0.57);
+}
+
+.card {
+    width: 15vw;
+    height: 18rem;
+    background-color: #F0F8FF; 
+    border-radius: 12px;      
+    border: 1px solid #E3E3E3;   
+    box-shadow: -4px 4px 4px 0px rgba(110,110,110,0.57);
+    overflow: hidden;         
+}
+
+.card-text {
+    color: #F55197;      
+    font-weight: bold;    
+    font-size: 1rem;
+    line-height: 1.4; 
+}
+
+.card-img-top {
+    height: 13rem;
+    border-radius: 12px 12px 0 0; 
+}
+
+
+footer{
+    background-color: #161542;
+    height: 10vh;
+    margin-top: 3%;
+}
+footer,p,.fa-copyright{
+    font-size: 0.7rem;
 }
