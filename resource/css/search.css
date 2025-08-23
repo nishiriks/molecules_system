@@ -1,0 +1,106 @@
+*{ 
+    box-sizing: border-box;
+}
+html{
+	text-rendering: optimizeLegibility;
+	scroll-behavior: smooth;
+}
+
+nav{
+    background-color: #161542;
+    padding: 0 !important;
+}
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255, 255, 255, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E");
+}
+.offcanvas-body, .offcanvas-header{
+    background-color: #161542;
+    color: white;
+}
+/* .nav-link{
+    color: white;
+} */
+
+.ceu-logo{
+    width: 250px;
+    height: auto;
+}
+
+.search-btn{
+    height: 25px;
+    background-color: #F0F8FF;
+    border-radius: 5px;
+    border-color: #E3E3E3;
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+}
+.search-btn>i{
+    font-size: 0.8rem;
+    background-image: linear-gradient(20deg, #FF6BFC, #7FF5FF);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.input-search{
+    width: 180px;
+    height: 25px;
+    border-radius: 5px;
+    border-color: #E3E3E3;
+}
+
+.buttons>button{
+    background-color: #F0F8FF;
+    color: #F55197;
+    font-weight: bold;
+    margin-top: 15px;
+    width: 90%;
+    height: 40px;
+    border-radius: 5px;
+    border: 1px solid #E3E3E3;
+    box-shadow: -3px 2px 2px 0px rgba(110,110,110,0.57);
+    display: grid;
+    grid-template-columns: auto 1fr; 
+    align-items: center;            
+    gap: 0.75em;                    
+    padding: 0 15px;  
+    transition: border-color 0.4s ease-in-out, color 0.4s ease-in-out;
+}
+
+.buttons>button:hover{
+    border-color: transparent;
+    color: white;
+    background-image: linear-gradient(45deg, #8D5CCB, #6FA9FF), /* Inner background */
+                      linear-gradient(45deg, #8D5CCB, #6FA9FF);  /* Outer border gradient */
+
+    background-origin: border-box;
+    background-clip: content-box, border-box;
+ 
+}
+
+.buttons>button>i{
+    font-size: 1.5rem;
+    background-image: linear-gradient(20deg, #FF6BFC, #7FF5FF);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transition: 0.5s ease-in-out;
+}
+.buttons>button:hover i {
+    background-image: none;
+    -webkit-background-clip: initial;
+    background-clip: initial;
+    -webkit-text-fill-color: currentColor;
+    transition: 0.5s ease-in-out;
+}
+.other-btn>button{
+    background-color: #F0F8FF;
+    color: #F55197;
+    font-weight: bold;
+    margin-top: 15px;
+    width: 90%;
+    height: 40px;
+    border-radius: 5px;
+    border: 1px solid #E3E3E3;
+    box-shadow: -3px 2px 2px 0px rgba(110,110,110,0.57);
+}
