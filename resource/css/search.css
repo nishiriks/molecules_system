@@ -73,10 +73,9 @@ nav{
     box-shadow: -3px 2px 2px 0px rgba(110,110,110,0.57);
     display: grid;
     grid-template-columns: 30px 1fr;           
-    gap: 0.4em;                    
+    /* gap: 0.1em;                     */
     /* padding: 0 15px;   */ 
     align-items: center;
-    letter-spacing: 1px;
     transition: border-color 0.4s ease-in-out, color 0.4s ease-in-out;
 }
 
