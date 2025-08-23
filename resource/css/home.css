@@ -53,13 +53,13 @@ section.home{
     font-weight: bold;
 }
 .gradient-text{
-    background-image: linear-gradient(45deg, #FF6BFC, #7FF5FF);
+    background-image: linear-gradient(20deg, #FF6BFC, #7FF5FF);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 .gradient-text:hover{
-    background-image: linear-gradient(45deg, #7FF5FF, #FF6BFC);
+    background-image: linear-gradient(20deg, #7FF5FF, #FF6BFC);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
