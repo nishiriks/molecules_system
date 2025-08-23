@@ -41,6 +41,12 @@ section.home{
     -webkit-box-shadow: -3px 2px 2px 0px rgba(110,110,110,0.57); 
     box-shadow: -3px 2px 2px 0px rgba(110,110,110,0.57);
     background-color: #F0F8FF;
+    transition: 0.5s;
+}
+.home-card:hover{
+    cursor: pointer;
+    transform: scale(1.05);
+    transition: 0.5s;
 }
 .card-text{
     color: #F55197;
@@ -48,6 +54,12 @@ section.home{
 }
 .gradient-text{
     background-image: linear-gradient(45deg, #FF6BFC, #7FF5FF);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.gradient-text:hover{
+    background-image: linear-gradient(45deg, #7FF5FF, #FF6BFC);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
