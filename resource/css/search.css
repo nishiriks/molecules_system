@@ -331,24 +331,13 @@ padding: 20px;
 
 
 /* footer */
-footer {
-  background-color: #161542;
-  color: white;
+footer{
+    background-color: #161542;
+    height: 10vh;
+    margin-top: 3%;
 }
-
-footer strong {
-  font-weight: 600;
-}
-
-footer a {
-  color: #ffffff;
-  text-decoration: none;
-  word-break: break-word; 
-}
-
-footer small {
-  font-size: 0.85rem;
-  line-height: 1.6;
+footer,p,.fa-copyright{
+    font-size: 0.7rem;
 }
 
 /* end footer */
