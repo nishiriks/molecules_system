@@ -342,6 +342,12 @@ footer,p,.fa-copyright{
 
 /* end footer */
 
+/* for footer */
+.container-fluid {
+  padding-bottom: 120px; /* so cards don’t get covered */
+}
+
+
 
 
 
