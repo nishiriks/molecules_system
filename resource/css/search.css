@@ -1,0 +1,391 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+html{
+	text-rendering: optimizeLegibility;
+	scroll-behavior: smooth;
+}
+body{
+    height: 100%;
+    font-family: 'Montserrat';
+}
+
+.ceu-logo{
+    width: 250px;
+    height: auto;
+}
+.offcanvas-body, .offcanvas-header{
+    background-color: #161542;
+    color: white;
+}
+.navbar{
+    background: var(--CEU-Dark-Blue, #161542);
+
+}
+.custom-toggler {
+    border: none;
+}
+
+.custom-toggler:focus,
+.custom-toggler:active,
+.custom-toggler:focus-visible {
+  border: none;
+  box-shadow: none;
+  outline: none;
+}
+.custom-toggler .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='white' stroke-width='3.5' stroke-linecap='round' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+
+/* make the offcanvas smaller */
+#offcanvasNavbar {
+  width: 210px;   
+  height: 500px;
+  text-transform: uppercase;
+  border-radius: 20px ; 
+  overflow: hidden;
+  font-size: 90%;
+  padding-top: 0px;
+  letter-spacing: 1px;
+  /* transition: 0.3s; */
+  font-size: 18px;
+  margin-right: 20px;
+}
+
+.offcanvas-title{
+  font-weight: bold;
+  color: var(--primary-color);
+  /* text-transform: uppercase; */
+  letter-spacing: 1px;
+}
+
+#offcanvasNavbar .offcanvas-body, 
+#offcanvasNavbar .offcanvas-header {
+  background-color: #161542;
+  color: white;
+}
+
+.nav-item:hover {
+  border-bottom: 2px solid #F55197;
+}
+
+.navbar-nav .nav-item .nav-link.active,
+.navbar-nav .nav-item .nav-link.show {
+  font-weight: bold;
+}
+
+/* 1st nav end */
+
+
+/* 2nd nav */
+
+
+:root {
+  --body-color: #FFF;
+  --sidebar-color:  #E4E9F7;
+  --primary-color: #F55197;
+  --primary-color-light: #F6F5FF;
+  --toggle-color: #DDD;
+  --text-color: #707876;
+
+
+  --tran-02: all 0.2s ease;
+  --tran-03: all 0.3s ease;
+  --tran-04: all 0.4s ease;
+  --tran-05: all 0.5s ease;
+}
+
+body{
+  height: 100vh;
+  background: var(--body-color);
+}
+
+
+/* needs to be adjust in cp view */
+/* main and the main prob */
+.sidebar{ 
+  position: absolute;
+  width: 280px;
+  top: 100px;
+  height: 156%;
+  background: var(--sidebar-color) ;
+  border-right:#DDD 1px solid;
+}
+
+.sidebar.close{
+  width: 100px;
+}
+.sidebar.close .text{
+  opacity: 0;
+}
+
+.sidebar header{
+  position: relative;
+}
+.sidebar header .toggle{
+  position: absolute;
+  top: 10%;
+  transform: translateY(100%);
+  /* top: 50%; */
+  right: -11px;
+  height: 25px;
+  width: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 15px;
+  background: var(--primary-color);
+  justify-content: center;
+  color: var(--body-color);
+}
+.sidebar header .toggle:hover{
+  background: #fc2783;
+  color: var(--body-color);
+  transition: var(--tran-04);
+  box-shadow: 0 5px 6px rgba(0, 0, 0, 0.15);
+}
+
+.sidebar li{
+  height: 40px;
+  /* background: red; */
+  margin: 20px 15px;
+  list-style: none;
+  display: flex;
+  align-items: center;
+}
+
+.menu-bar ul {
+  padding-left: 0;
+  margin-left: 0;    
+}
+
+.menu-bar ul {
+  margin-top: 80px;
+}
+
+
+.sidebar li .icon{
+  min-width: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  background: linear-gradient(135deg, #FF6BFC 0%, #7FF5FF 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.sidebar .text{
+  text-transform: uppercase;
+  font-weight: bold;
+  transition: var(--tran-03);
+  color: var(--primary-color);
+}
+
+.sidebar li .icon,
+.sidebar li .text{
+  transition: var(--tran-02);
+}
+
+.sidebar .search-box{
+  background:var(--primary-color-light);
+  border-radius:15px;
+}
+
+.search-box input{
+  width: 170%;
+  height: 40%;
+  outline: none;
+  border:none;
+  background:var(--primary-color-light);
+}
+
+.sidebar li a{
+  height: 100%;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  font-size: 20px;
+}
+
+
+.sidebar .nav-links:hover{
+  background: linear-gradient(135deg, #FF6BFC 0%, #7FF5FF 100%);
+  border-radius: 10px;
+}
+
+.sidebar .nav-links a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  padding: 10px;
+}
+
+/* The button's normal state */
+.sidebar .chemicals-btn {
+  background-color: #f0f8ff;
+  border-radius: 20px; 
+  padding: 10px 0px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: 0.3s ease;
+  text-decoration: none;
+}
+
+.sidebar .chemicals-btn:hover {
+  background: linear-gradient(135deg, #FF6BFC 0%, #7FF5FF 100%);
+  border-radius: 20px; 
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
+}
+
+.sidebar .chemicals-btn:hover .icon,
+.sidebar .chemicals-btn:hover .nav-text {
+  color: #ffffff !important;
+}
+
+.sidebar .bottom-content:hover .icon {
+  filter: brightness(0) invert(1); /
+}
+.sidebar .bottom-content:hover .icon,
+.sidebar .bottom-content:hover .nav-text {
+  color: #ffffff !important;
+}
+
+.sidebar .chemicals-btn:hover .icon {
+  filter: brightness(0) invert(1); /
+}
+
+
+.sidebar .menu-bar{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* end 2nd sidebar */
+
+
+/* card */
+
+.card {
+  height: 18rem;
+  background-color: #F0F8FF; 
+  border-radius: 12px;      
+  border: 1px solid #E3E3E3;   
+  box-shadow: -4px 4px 4px 0px rgba(110,110,110,0.57);
+  transition: all 0.3s ease-in-out; 
+  cursor: pointer; 
+}
+
+.card:hover {
+  transform: translateY(-8px) scale(1.03); 
+  box-shadow: 0px 8px 16px rgba(22, 21, 66, 0.4); 
+  border: #F55197 2px solid;
+  /* border-color: #F55197;  */
+}
+
+.card-img-top {
+  height: 13rem;
+  width: 100%;       
+  object-fit: cover;
+  border-radius: 12px 12px 0 0;
+  transition: transform 0.4s ease-in-out;
+}
+
+.card.active {
+  transform: translateY(-8px) scale(1.05);
+  box-shadow: 0px 8px 18px rgba(22, 21, 66, 0.5);
+  border-color: #F55197;
+}
+
+
+.content { 
+margin-left: 280px; 
+padding: 20px; 
+} 
+
+.sidebar.close ~ .content {
+  margin-left: 120px; 
+}
+
+.card-text{
+  color: #F55197;
+  font-weight: bold;
+  transition: color 0.3s ease-in-out;
+}
+.card:hover .card-text {
+  font-weight: bolder;
+}
+
+.stock-text{
+  color: #161542;
+  font-weight: bold;
+}
+
+
+/* footer */
+footer{
+    background-color: #161542;
+    height: 10vh;
+    margin-top: 3%;
+}
+footer,p,.fa-copyright{
+    font-size: 0.7rem;
+}
+
+/* end footer */
+
+/* for footer */
+.container-fluid {
+  padding-bottom: 120px; /* so cards don’t get covered */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@media (max-width: 568px) {
+.sidebar{ 
+  position: fixed;
+  width: 280px;
+  top: 100px;
+  height: 600%;
+  background: var(--sidebar-color) ;
+}
+
+}
+@media (max-width: 768px) {
+.sidebar{ 
+  position: absolute;
+  width: 280px;
+  top: 100px;
+  height: 600%;
+  background: var(--sidebar-color) ;
+}
+
+}
+
