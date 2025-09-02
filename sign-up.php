@@ -82,7 +82,7 @@
                                     <input type="password" class="form-control" placeholder="Confirm password">
                                 </div> -->
                                 <button class="log-button btn btn-primary w-100 mb-2">Create Account</button>
-                                <i class=" icon-i fa-solid fa-arrow-right"></i>
+                                <a href="login.php"><i class=" icon-i fa-solid fa-arrow-right"></i></a>
                             </form>
                         </div>
                     </div>

@@ -1,3 +1,6 @@
+<?php require_once './resource/php/init.php';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -32,15 +35,15 @@
                             <img src="resource/img/molecules-logo.png" class="logo-img mb-3">
                             <h2 class="greetings fw-bold mb-1">Welcome Back!</h2>
                             <p class="text-email mb-4 d-flex flex-column align-items-center">Login with Email</p>
-                            <form>
+                            <form method="post">
                                 <div class="mb-3 text-start input-wrapper">
                                     <label class="label-text">Email:</label>
-                                    <input type="email" class="form-control d-flex flex-column align-items-center" placeholder="Enter email">
+                                    <input type="email" class="form-control d-flex flex-column align-items-center" placeholder="Enter email" name="user_email">
                                 </div>
                                 
                                 <div class="mb-3 text-start input-wrapper">
                                     <label class="label-text">Password:</label>
-                                    <input type="password" class="form-control" placeholder="Enter password">
+                                    <input type="password" class="form-control" placeholder="Enter password" name="user_password">
                                 </div>
                                 
                                 <div class="d-flex justify-content-between mb-3 input-wrapper">
@@ -50,9 +53,9 @@
                                     </div>
                                     <a href="#" class="label-t">Forgot your password?</a>
                                 </div>
-                                
-                                <button class="log-button btn btn-primary w-100 mb-2">Log In</button>
-                                <p class="log-footer">Don’t Have an Account? <a href="#" class="sign-footer">Sign up here</a></p>
+                                <?php logUserMsg()?>
+                                <button name="log-button" type="submit" class="log-button btn btn-primary w-100 mb-2">Log In</button>
+                                <p class="log-footer">Don’t Have an Account? <a href="sign-up.php" class="sign-footer">Sign up here</a></p>
                             </form>
                         </div>
 
