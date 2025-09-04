@@ -648,6 +648,19 @@ footer,p,.fa-copyright{
 /* css of admin page */
 
 
+#offcanvasNavbar {
+  width: 210px;
+  height: 350px;
+
+}
+.offcanvas-body, .offcanvas-header {
+  background-color: #161542;
+  color: white;
+}
+
+.admin-page .navbar-nav {
+  display: flex; 
+}
 
 
 
@@ -683,6 +696,12 @@ footer,p,.fa-copyright{
   top: 100px;
   height: 600%;
   background: var(--sidebar-color) ;
+}
+
+@media (min-width: 992px) {
+  .admin-page .offcanvas {
+    display: none;
+  }
 }
 
 }
