@@ -1,4 +1,13 @@
 <?php require_once './resource/php/init.php';
+require_once './resource/php/class/Auth.php';
+$auth = new Auth();
+$error = null;
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $email = $_POST['user_email']; 
+    $pass  = $_POST['user_password'];
+    $error = $auth->login($email, $pass);
+}
 ?>
 
 <!DOCTYPE html>
@@ -35,7 +44,7 @@
                             <img src="resource/img/molecules-logo.png" class="logo-img mb-3">
                             <h2 class="greetings fw-bold mb-1">Welcome Back!</h2>
                             <p class="text-email mb-4 d-flex flex-column align-items-center">Login with Email</p>
-                            <?php logUserMsg()?>
+                            <?php //logUserMsg()?>
                             <form method="post">
                                 <div class="mb-3 text-start input-wrapper">
                                     <label class="label-text">Email:</label>
