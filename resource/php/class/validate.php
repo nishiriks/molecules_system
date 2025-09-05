@@ -2,6 +2,17 @@
 include 'insertUser.php';
 
 class validate extends config {
+	private function showAlert($message, $type = 'danger') {
+    echo "
+    <div class='alert alert-{$type} alert-dismissible fade show my-2 p-2' role='alert'>
+        <div class='d-flex align-items-center justify-content-between'> 
+            <div>{$message}</div>
+            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+        </div>
+    </div>
+    ";
+}
+
     public function viewer($a) {
 		$con = $this->con();
 		$sql = $a;
@@ -31,12 +42,7 @@ class validate extends config {
 				return true;
 			}
 		} else {
-			echo '
-			<div class="alert alert-danger alert-dismissible fade show my-3" role="alert">
-				Email has already been used
-				<button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="close"></button>	
-			</div>
-			';
+			$this->showAlert("Email has already been used");
 			return false;
 		}
 	}
@@ -65,50 +71,20 @@ class validate extends config {
 						}
 						
 					} elseif (!$a) {
-						echo '
-						<div class="alert alert-danger alert-dismissible fade show my-3" role="alert">
-							Invalid password
-							<button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="close"></button>	
-						</div>
-						';
+						$this->showAlert("Invalid Password");
 					} else {
-						echo '
-						<div class="alert alert-danger alert-dismissible fade show my-3" role="alert">
-							Invalid email
-							<button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="close"></button>	
-						</div>
-						';
+						$this->showAlert("Invalid Email");
 					}
 				}
 			} else {
-				echo '
-				<div class="alert alert-danger alert-dismissible fade show my-3" role="alert">
-					Invalid email or password
-					<button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="close"></button>	
-				</div>
-				';
+				$this->showAlert("Invalid Email or Password");
 			}
 		} elseif (empty($email)) {
-			echo '
-			<div class="alert alert-danger alert-dismissible fade show my-3" role="alert">
-				Please enter your email
-				<button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="close"></button>	
-			</div>
-			';
+			$this->showAlert("Please enter your email");
 		} elseif (empty($upass)) {
-			echo '
-			<div class="alert alert-danger alert-dismissible fade show my-3" role="alert">
-				Please enter your password
-				<button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="close"></button>	
-			</div>
-			';
+			$this->showAlert("Please enter your pasword");
 		} else {
-			echo '
-			<div class="alert alert-danger alert-dismissible fade show my-3" role="alert">
-				Invalid information
-				<button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="close"></button>	
-			</div>
-			';
+			$this->showAlert("Invalid information");
 		}
 	}
 }

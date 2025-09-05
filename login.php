@@ -35,6 +35,7 @@
                             <img src="resource/img/molecules-logo.png" class="logo-img mb-3">
                             <h2 class="greetings fw-bold mb-1">Welcome Back!</h2>
                             <p class="text-email mb-4 d-flex flex-column align-items-center">Login with Email</p>
+                            <?php logUserMsg()?>
                             <form method="post">
                                 <div class="mb-3 text-start input-wrapper">
                                     <label class="label-text">Email:</label>
@@ -53,7 +54,6 @@
                                     </div>
                                     <a href="#" class="label-t">Forgot your password?</a>
                                 </div>
-                                <?php logUserMsg()?>
                                 <button name="log-button" type="submit" class="log-button btn btn-primary w-100 mb-2">Log In</button>
                                 <p class="log-footer">Don’t Have an Account? <a href="sign-up.php" class="sign-footer">Sign up here</a></p>
                             </form>
@@ -64,5 +64,7 @@
             </div>
         </div>
     </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 </body>
 </html>
