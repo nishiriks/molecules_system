@@ -1,12 +1,29 @@
 <?php require_once './resource/php/init.php';
 require_once './resource/php/class/Auth.php';
 $auth = new Auth();
-$error = null;
+
+$errors = $_SESSION['login_errors'] ?? [];
+unset($_SESSION['login_errors']);
+
+$success_message = $_SESSION['success_message'] ?? '';
+unset($_SESSION['success_message']);
+
+if (isset($_GET['registered']) && $_GET['registered'] == 'success') {
+    $success_message = "Registration successful! Please log in.";
+}
+
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = $_POST['user_email']; 
-    $pass  = $_POST['user_password'];
-    $error = $auth->login($email, $pass);
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+
+    $login_errors = $auth->login($email, $password); 
+
+    if (!empty($login_errors)) {
+        $_SESSION['login_errors'] = $login_errors;
+        header('Location: login.php');
+        exit();
+    }
 }
 ?>
 
@@ -45,6 +62,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <h2 class="greetings fw-bold mb-1">Welcome Back!</h2>
                             <p class="text-email mb-4 d-flex flex-column align-items-center">Login with Email</p>
                             <?php //logUserMsg()?>
+                             <?php
+                                if (!empty($errors)) {
+                                    foreach ($errors as $error) {
+                                        $auth->showAlert($error);
+                                    }
+                                }
+                            ?>
                             <form method="post">
                                 <div class="mb-3 text-start input-wrapper">
                                     <label class="label-text">Email:</label>

@@ -3,9 +3,6 @@ require_once './resource/php/class/Auth.php';
 $auth = new Auth();
 $errors = [];
 
-$auth = new Auth();
-$errors = [];
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $fname = $_POST['first_name'];
     $lname = $_POST['last_name'];

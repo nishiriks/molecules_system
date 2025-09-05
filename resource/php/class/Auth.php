@@ -69,28 +69,36 @@ class Auth extends config {
     }
 
     public function login($email, $password) {
-        if (empty($email) || empty($password)) {
-            return "Please enter both email and password.";
+        $errors = []; 
+
+        if (empty(trim($email))) { 
+            $errors[] = "Please enter your email.";
+        }
+        if (empty(trim($password))) { 
+            $errors[] = "Please enter your password.";
         }
 
-        $user_data = $this->query("SELECT * FROM tbl_users WHERE email = ?", [$email]);
+        if (empty($errors)) {
+            $user_data = $this->query("SELECT * FROM tbl_users WHERE email = ?", [$email]);
 
-        if ($user_data && password_verify($password, $user_data[0]['password'])) {
-            $user = $user_data[0];
-            session_start();
-            $_SESSION['user_email'] = $user['email'];
-            $_SESSION['first_name'] = $user['first_name'];
-            $_SESSION['account_type'] = $user['account_type'];
+            if ($user_data && password_verify($password, $user_data[0]['password'])) {
+                $user = $user_data[0];
+                $_SESSION['user_email'] = $user['email'];
+                $_SESSION['first_name'] = $user['first_name'];
+                $_SESSION['account_type'] = $user['account_type'];
 
-            if ($user['account_type'] == 'Admin') {
-                header('Location: admin/products.php'); 
+                if ($user['account_type'] == 'Admin') {
+                    header('Location: admin/products.php');
+                } else {
+                    header('Location: index.php');
+                }
+                exit();
             } else {
-                header('Location: index.php'); 
+                $errors[] = "Invalid email or password.";
             }
-            exit();
-        } else {
-            return "Invalid email or password.";
         }
+        
+        return $errors; 
     }
 }
 ?>
