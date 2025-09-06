@@ -540,7 +540,7 @@ footer,p,.fa-copyright{
 }
 #equipment-popup .equipment-title,
 #equipment-popup .reservation-title {
-  font-size: 2rem;
+  font-size: 1.7rem;
   font-weight: bold;
   color: #F55197;
   margin: 0;
@@ -548,10 +548,10 @@ footer,p,.fa-copyright{
 
 
 #equipment-popup .equip-title { 
-    color: #161542; 
-    font-weight:bolder;
-    font-size: 1.7rem;
-    margin: 0; 
+  color: #161542; 
+  font-weight:bolder;
+  font-size: 1.5rem;
+  margin: 0; 
 }
 
 #equipment-popup .stock-info {
@@ -628,12 +628,12 @@ footer,p,.fa-copyright{
 .chem-title { 
   color: #161542; 
   font-weight: bold;
-  font-size: 2.5rem;
+  font-size: 1.7rem;
   margin: 0; 
 }
 
 #chemical-popup .stock-info {
-  font-size: 1.5rem; 
+  font-size: 1.3rem; 
   font-weight: bold;
   color: #161542;
   margin-left: 0; 
@@ -661,6 +661,78 @@ footer,p,.fa-copyright{
 .admin-page .navbar-nav {
   display: flex; 
 }
+
+.edit-popup {
+  display: none; 
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.4); /* Dark overlay */
+  padding-top: 50px;
+}
+
+.edit-popup-content {
+  background-color: #E3E3E3;
+  margin: 5% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 400px;
+  border-radius: 10px;
+  position: relative;
+  text-align: center;
+}
+
+.edit-popup-content h4 {
+  color: #161542;
+  margin-bottom: 20px;
+}
+
+.edit-popup-content label {
+  display: block;
+  margin-bottom: 5px;
+  color: #161542;
+  font-weight: bold;
+  text-align: left;
+}
+
+.edit-popup-content input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.save-btn {
+  background-color: #F55197;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.stock-input-group {
+  display: flex;
+  gap: 10px;
+}
+.stock-input-group input,
+.stock-input-group select {
+  flex-grow: 1; 
+}
+
+.button-container {
+  /* text-align: center; */
+  width: 100%; 
+  /* margin-top: 20px;/ */
+}
+
 
 
 
