@@ -160,12 +160,12 @@ main {
   background-color: #F0F8FF;
   /* width: 100px; */
   color: #F55197;
-  border: 1px solid #d1d1d1;
+  border: none;
   padding: 8px 20px;
-  border-radius: 25px;
+  border-radius: 20px;
   cursor: pointer;
   font-weight: bold;
-  /* box-shadow: -4px 4px 4px 0px #00000040; */
+  box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.2); 
   transition: background-color 0.3s, color 0.3s;
   white-space: nowrap; 
 }
@@ -312,6 +312,8 @@ footer,p,.fa-copyright{
 .finalize-request-btn:hover {
   background-color: #c9447d;
 }
+
+
 
 .product-popup {
   display: none;
