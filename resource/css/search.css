@@ -8,24 +8,26 @@ html{
 	scroll-behavior: smooth;
 }
 body{
-    height: 100%;
-    font-family: 'Montserrat';
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  font-family: 'Montserrat';
 }
 
 .ceu-logo{
-    width: 250px;
-    height: auto;
+  width: 250px;
+  height: auto;
 }
 .offcanvas-body, .offcanvas-header{
-    background-color: #161542;
-    color: white;
+  background-color: #161542;
+  color: white;
 }
 .navbar{
-    background: var(--CEU-Dark-Blue, #161542);
+  background: var(--CEU-Dark-Blue, #161542);
 
 }
 .custom-toggler {
-    border: none;
+  border: none;
 }
 
 .custom-toggler:focus,
@@ -413,27 +415,25 @@ padding: 20px;
 }
 
 
+
 /* footer */
+.container{
+  padding-bottom: 50px;
+}
+
+main {
+  flex-grow: 1;
+}
+footer {
+  background-color: #161542;
+}
 
 footer,p,.fa-copyright{
-    font-size: 0.7rem;
-}
-.content {
-  flex: 1; /* This will make the content grow to fill available space */
-}
+ font-size: 0.7rem;
 
-footer {
-  margin-top: auto;
-  background-color: #161542;
-  height: auto; 
 }
 
 /* end footer */
-
-/* for footer */
-.container-fluid {
-  /* padding-bottom: 120px; */
-}
 
 /* General Pop-up Styles */
 .product-popup {
