@@ -1,6 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-
-    // --- Sidebar Toggle Logic (remains unchanged) ---
     const body = document.querySelector("body");
     const sidebar = body.querySelector(".sidebar");
     const toggle = body.querySelector(".toggle");
@@ -11,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- General View and Edit Pop-up Logic (remains unchanged) ---
+    // --- General View and Edit Pop-up Logic ---
     const viewButtons = document.querySelectorAll('.btn-view');
     const equipmentPopup = document.getElementById('equipment-popup');
     const chemicalPopup = document.getElementById('chemical-popup');
@@ -31,34 +29,39 @@ document.addEventListener('DOMContentLoaded', () => {
     const editChemicalStockInput = document.getElementById('edit-chemical-stock');
     const editChemicalStockUnitSelect = document.getElementById('edit-chemical-stock-unit');
     
-    let activeTitleElement = null;
-    let activeStockElement = null;
+    // CHANGE: These will now hold references to the main card's elements
+    let activeCardTitleElement = null;
+    let activeCardStockElement = null;
     let activeProductType = null;
 
     viewButtons.forEach(button => {
         button.addEventListener('click', () => {
+            const card = button.closest('.card'); // Get the parent card of the clicked button
+            
+            // Get data directly from the elements within the card
             const productType = button.getAttribute('data-type');
-            const productName = button.getAttribute('data-name');
-            const productStock = button.getAttribute('data-stock');
-            const productImage = button.getAttribute('data-image');
+            const productName = card.querySelector('.card-body .card-text:first-of-type').textContent;
+            const productStock = card.querySelector('.stock-text').textContent.replace('Stock: ', '');
+            const productImage = card.querySelector('.card-img-top').src;
             
-            popups.forEach(p => p.classList.remove('show'));
-            
+            // CHANGE: Store references to the actual card's elements
+            activeCardTitleElement = card.querySelector('.card-body .card-text:first-of-type');
+            activeCardStockElement = card.querySelector('.stock-text');
             activeProductType = productType;
 
+            // Hide all other popups
+            popups.forEach(p => p.classList.remove('show'));
+
+            // Populate and show the correct pop-up
             if (productType === 'equipment') {
                 equipmentPopup.querySelector('.equipment-title').textContent = productName;
                 equipmentPopup.querySelector('.stock-info').textContent = 'Stock: ' + productStock;
                 equipmentPopup.querySelector('.popup-image').src = productImage;
-                activeTitleElement = equipmentPopup.querySelector('.equipment-title');
-                activeStockElement = equipmentPopup.querySelector('.stock-info');
                 equipmentPopup.classList.add('show');
             } else if (productType === 'chemical') {
                 chemicalPopup.querySelector('.chemical-title').textContent = productName;
                 chemicalPopup.querySelector('.stock-info').textContent = 'Stock: ' + productStock;
                 chemicalPopup.querySelector('.popup-image').src = productImage;
-                activeTitleElement = chemicalPopup.querySelector('.chemical-title');
-                activeStockElement = chemicalPopup.querySelector('.stock-info');
                 chemicalPopup.classList.add('show');
             }
         });
@@ -67,8 +70,9 @@ document.addEventListener('DOMContentLoaded', () => {
     closeBtns.forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.target.closest('.product-popup').classList.remove('show');
-            activeTitleElement = null;
-            activeStockElement = null;
+            // Clear the stored references when the popup closes
+            activeCardTitleElement = null;
+            activeCardStockElement = null;
             activeProductType = null;
         });
     });
@@ -77,8 +81,9 @@ document.addEventListener('DOMContentLoaded', () => {
         popup.addEventListener('click', (event) => {
             if (event.target === popup) {
                 popup.classList.remove('show');
-                activeTitleElement = null;
-                activeStockElement = null;
+                // Clear the stored references when the popup closes
+                activeCardTitleElement = null;
+                activeCardStockElement = null;
                 activeProductType = null;
             }
         });
@@ -86,9 +91,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     editButtons.forEach(editButton => {
         editButton.addEventListener('click', () => {
-            if (activeTitleElement && activeStockElement) {
-                const currentTitle = activeTitleElement.textContent;
-                const fullStock = activeStockElement.textContent.replace('Stock: ', '');
+            if (activeCardTitleElement && activeCardStockElement) {
+                const currentTitle = activeCardTitleElement.textContent;
+                const fullStock = activeCardStockElement.textContent.replace('Stock: ', '');
+                
                 const allEditPopups = document.querySelectorAll('.edit-popup');
                 allEditPopups.forEach(p => p.style.display = 'none');
                 
@@ -122,15 +128,22 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
-// for equipment and chemical pop-up
+
+    // --- Form Submission Logic ---
     editEquipmentForm.addEventListener('submit', (event) => {
         event.preventDefault();
         const newTitle = editEquipmentTitleInput.value;
         const newStock = editEquipmentStockInput.value;
-        if (activeTitleElement) activeTitleElement.textContent = newTitle;
-        if (activeStockElement) activeStockElement.textContent = `Stock: ${newStock}`;
+        
+        // Use the stored card element references to update the main card
+        if (activeCardTitleElement) {
+            activeCardTitleElement.textContent = newTitle;
+        }
+        if (activeCardStockElement) {
+            activeCardStockElement.textContent = `Stock: ${newStock}`;
+        }
+        
         editEquipmentPopup.style.display = 'none';
-        console.log(`Saved Equipment: Title: ${newTitle}, Stock: ${newStock}`);
     });
 
     editChemicalForm.addEventListener('submit', (event) => {
@@ -138,15 +151,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const newTitle = editChemicalTitleInput.value;
         const newStock = editChemicalStockInput.value;
         const newUnit = editChemicalStockUnitSelect.value;
-        if (activeTitleElement) activeTitleElement.textContent = newTitle;
-        if (activeStockElement) {
+        
+        // Use the stored card element references to update the main card
+        if (activeCardTitleElement) {
+            activeCardTitleElement.textContent = newTitle;
+        }
+        if (activeCardStockElement) {
             if (newUnit === "" || newUnit === null) {
-                activeStockElement.textContent = `Stock: ${newStock}`;
+                activeCardStockElement.textContent = `Stock: ${newStock}`;
             } else {
-                activeStockElement.textContent = `Stock: ${newStock} ${newUnit}`;
+                activeCardStockElement.textContent = `Stock: ${newStock} ${newUnit}`;
             }
         }
+        
         editChemicalPopup.style.display = 'none';
-        console.log(`Saved Chemical: Title: ${newTitle}, Stock: ${newStock}, Unit: ${newUnit}`);
     });
 });
