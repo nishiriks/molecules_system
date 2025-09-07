@@ -388,16 +388,75 @@ footer,p,.fa-copyright{
 
 
 
+@media (max-width: 768px) {
+.request-card {
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 15px;
+}
+
+.request-details-container {
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.request-text {
+  order: 2;
+  margin-top: 10px;
+}
+
+.request-timestamp {
+  order: 1; 
+  width: 100%;
+  text-align: left;
+}
+
+.view-button-container {
+  width: 100%;
+  margin-left: 0;
+  justify-content: flex-end; 
+}
+
+.view-button {
+  width: 100%; 
+  padding: 10px;
+}
+
+/* Adjustments for the Cart Page  */
+.cart-card-item {
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 15px;
+}
+
+.item-details-left {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.item-details-right {
+  width: 100%;
+  align-items: flex-start;
+  flex-direction: column;
+  margin-left: 0;
+}
+
+.item-actions {
+  margin-top: 10px;
+  width: 100%;
+  justify-content: center;
+}
+}
+
 @media (max-width: 480px) {
-  .item-details-right {
-    flex-direction: column; 
-    align-items: center;
-    gap: 10px;
-  }
-  .item-actions {
-    width: 100%;
-    font-size: 1rem;
-    white-space: nowrap; 
+.requests-heading {
+  font-size: 2rem;
+}
+.view-button {
+  font-size: 0.9rem;
+  padding: 8px 15px;
 }
 }
 
