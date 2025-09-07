@@ -97,21 +97,25 @@ body{
   --tran-05: all 0.5s ease;
 }
 
-body{
-  height: 100vh;
-  background: var(--body-color);
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 
-/* needs to be adjust in cp view */
+/* needs to be adjusted in cp view */
 /* main and the main prob */
 .sidebar{ 
-  position: absolute;
-  width: 280px;
-  top: 100px;
-  height: 156%;
-  background: var(--sidebar-color) ;
-  border-right:#DDD 1px solid;
+  position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%; /* Change to 100% to fill the entire height of the viewport */
+    width: 280px;
+    background: var(--sidebar-color);
+    border-right: #DDD 1px solid;
+    transition: all 0.4s ease; /* Add transition for smooth animation */
+    z-index: 999
 }
 
 .sidebar.close{
@@ -410,20 +414,25 @@ padding: 20px;
 
 
 /* footer */
-footer{
-    background-color: #161542;
-    height: 10vh;
-    margin-top: 3%;
-}
+
 footer,p,.fa-copyright{
     font-size: 0.7rem;
+}
+.content {
+  flex: 1; /* This will make the content grow to fill available space */
+}
+
+footer {
+  margin-top: auto;
+  background-color: #161542;
+  height: auto; 
 }
 
 /* end footer */
 
 /* for footer */
 .container-fluid {
-  padding-bottom: 120px; /* so cards don’t get covered */
+  /* padding-bottom: 120px; */
 }
 
 /* General Pop-up Styles */
@@ -740,41 +749,13 @@ footer,p,.fa-copyright{
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-@media (max-width: 568px) {
-.sidebar{ 
-  position: fixed;
-  width: 280px;
-  top: 100px;
-  height: 600%;
-  background: var(--sidebar-color) ;
-}
-
-}
-@media (max-width: 768px) {
-.sidebar{ 
-  position: absolute;
-  width: 280px;
-  top: 100px;
-  height: 600%;
-  background: var(--sidebar-color) ;
-}
-
 @media (min-width: 992px) {
   .admin-page .offcanvas {
     display: none;
   }
+  
 }
 
-}
+
+
 
