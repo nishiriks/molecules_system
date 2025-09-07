@@ -404,28 +404,26 @@
 </div>
 
 <div id="edit-chemical-popup" class="edit-popup">
-    <div class="edit-popup-content">
-        <button class="close-btn edit-close-btn">&times;</button>
-        <h4>Edit Chemical Details</h4>
-        <form id="edit-chemical-form">
-            <label for="edit-chemical-title">Chemical Name:</label>
-            <input type="text" id="edit-chemical-title" name="edit-chemical-title">
-            
-            <label for="edit-chemical-stock">Stock:</label>
-            <div class="stock-input-group">
-                <input type="number" id="edit-chemical-stock" name="edit-chemical-stock">
-                <select id="edit-chemical-stock-unit" name="edit-chemical-stock-unit">
-                    <option value="" selected disabled>Select Unit</option> 
-                    <option value="ml">ml</option>
-                    <option value="l">l</option>
-                </select>
-            </div>
-            
-            <div class="button-container">
-                <button type="submit" class="save-btn">Save Changes</button>
-            </div>
-        </form>
-    </div>
+  <div class="edit-popup-content">
+    <button class="close-btn edit-close-btn">&times;</button>
+    <h4>Edit Chemical Details</h4>
+    <form id="edit-chemical-form">
+      <label for="edit-chemical-title">Chemical Name:</label>
+      <input type="text" id="edit-chemical-title" name="edit-chemical-title">
+      <label for="edit-chemical-stock">Stock:</label>
+      <div class="stock-input-group">
+        <input type="number" id="edit-chemical-stock" name="edit-chemical-stock">
+         <select id="edit-chemical-stock-unit" name="edit-chemical-stock-unit">
+          <option value="" selected disabled>Select Unit</option> 
+          <option value="ml">ml</option>
+          <option value="l">l</option>
+        </select>
+      </div>
+      <div class="button-container">
+        <button type="submit" class="save-btn">Save Changes</button>
+       </div>
+      </form>
+    </div>
 </div>
 </body>
 </html>
