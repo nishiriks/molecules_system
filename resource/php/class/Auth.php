@@ -88,7 +88,7 @@ class Auth extends config {
                 $_SESSION['account_type'] = $user['account_type'];
 
                 if ($user['account_type'] == 'Admin') {
-                    header('Location: admin/products.php');
+                    header('Location: admin/home-admin.php');
                 } else {
                     header('Location: index.php');
                 }

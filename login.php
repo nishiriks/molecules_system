@@ -14,8 +14,8 @@ if (isset($_GET['registered']) && $_GET['registered'] == 'success') {
 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = $_POST['email'];
-    $password = $_POST['password'];
+    $email = $_POST['user_email'];
+    $password = $_POST['user_password'];
 
     $login_errors = $auth->login($email, $password); 
 
