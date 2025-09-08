@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search</title>
+    <title>Search for Users</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css"  href="resource/css/search.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,8 +19,9 @@
 
 </head>
 <body>
-<!-- Collapsible Content -->
- <nav class="navbar">
+
+ <!-- 1st nav -->
+ <!-- <nav class="navbar">
   <a class="navbar-brand" href="#">
     <img class="ceu-logo img-fluid" src="./resource/img/ceu-molecules.png"/>
   </a>
@@ -57,11 +58,11 @@
         </li>
       </ul>
     </div>
-</nav>
+</nav> -->
 
 
 
-
+<!-- 2nd nav -->
 <nav class="sidebar close">
   <header>
     <div class="toggle-container">
@@ -124,15 +125,24 @@
 </div>
 </nav>
 
-<main class="content">
+<!-- main content for user page-->
+<main class="user-page content">
 <div class="container-fluid">
   <div class="row row-cols-1 row-cols-md-4 row-cols-lg-4 g-3">
   <div class="col">
-    <div class="card h-100">
+      <div class="card h-100">
       <img class="card-img-top" src="./resource/img/ethanol.jpg" alt="ethanol">
       <div class="card-body">
         <h5 class="card-text">Ethanol (99%)</h5>
         <h5 class="card-text stock-text">Stock: 36 ml</h5>
+        <div class="info">
+          <button class="btn-request">Request</button>
+          <button class="btn-view"
+          data-type="equipment"
+          data-name="Hydrochloric Acid (99%)"
+          data-stock="36 ml"
+          data-image="./resource/img/hydrochloric-acid.jpg">View Product</button>
+        </div>
       </div>
     </div>
   </div>
@@ -142,6 +152,14 @@
       <div class="card-body">
         <h5 class="card-text">Formaldehyde (37%)</h5>
         <h5 class="card-text stock-text">Stock: 36 ml</h5>
+        <div class="info">
+          <button class="btn-request">Request</button>
+          <button class="btn-view" data-type="chemical"
+          data-name="Formaldehyde (99%)"
+          data-stock="36 ml"
+          data-image="./resource/img/formaldehyde.jpg"
+          >View Product</button>
+        </div>
       </div>
     </div>
   </div>
@@ -150,7 +168,15 @@
       <img class="card-img-top" src="./resource/img/hydrochloric-acid.jpg" alt="hydrochloric acid">
       <div class="card-body">
         <h5 class="card-text">Hydrochloric Acid (99%)</h5>
-        <h5 class="card-text stock-text mb-2">Stock: 36 ml</h5>
+        <h5 class="card-text stock-text">Stock: 36 ml</h5>
+        <div class="info">
+        <button class="btn-request">Request</button>
+        <button class="btn-view" data-type="equipment"
+        data-name="Hydrochloric Acid (99%)"
+        data-stock="36 ml"
+        data-image="./resource/img/hydrochloric-acid.jpg"
+        >View Product</button>
+        </div>
       </div>
     </div>
 </div>
@@ -160,85 +186,202 @@
     <div class="card-body">
       <h5 class="card-text">Formaldehyde (37%)</h5>
       <h5 class="card-text stock-text">Stock: 36 ml</h5>
+      <div class="info">
+        <button class="btn-request">Request</button>
+        <button class="btn-view" data-type="chemical"
+        data-name="Hydrochloric Acid (99%)"
+        data-stock="36 ml"
+        data-image="./resource/img/formaldehyde.jpg"
+        >View Product</button>
+      </div>
     </div>
   </div>
   </div>
 <div class="col">
-  <div class="card mt-3">
+  <div class="card h-100">
     <img class="card-img-top" src="./resource/img/ethanol.jpg" alt="ethanol">
     <div class="card-body">
       <h5 class="card-text">Ethanol (99%)</h5>
       <h5 class="card-text stock-text">Stock: 36 ml</h5>
+      <div class="info">
+        <button class="btn-request">Request</button>
+        <button class="btn-view" data-type="chemical"
+        data-name="Hydrochloric Acid (99%)"
+        data-stock="36 ml"
+        data-image="./resource/img/formaldehyde.jpg"
+        >View Product</button>
+      </div>
       </div>
   </div>
 </div>
 <div class="col">
-  <div class="card mt-3">
+  <div class="card h-100">
     <img class="card-img-top" src="./resource/img/hydrochloric-acid.jpg" alt="hydrochloric acid">
     <div class="card-body">
       <h5 class="card-text">Hydrochloric Acid (37%)</h5>
       <h5 class="card-text stock-text">Stock: 36 ml</h5>
+      <div class="info">
+        <button class="btn-request">Request</button>
+        <button class="btn-view" data-type="equipment"
+        data-name="Hydrochloric Acid (99%)"
+        data-stock="36 ml"
+        data-image="./resource/img/formaldehyde.jpg"
+        >View Product</button>
+      </div>
     </div>
   </div>
 </div>
 <div class="col">
-  <div class="card mt-3">
+  <div class="card h-100">
       <img class="card-img-top" src="./resource/img/ethanol.jpg" alt="ethanol">
       <div class="card-body">
         <h5 class="card-text">Ethanol (99%)</h5>
         <h5 class="card-text stock-text">Stock: 36 ml</h5>
+        <div class="info">
+          <button class="btn-request">Request</button>
+          <button class="btn-view" data-type="equipment"
+          data-name="Hydrochloric Acid (99%)"
+          data-stock="36 ml"
+          data-image="./resource/img/formaldehyde.jpg"
+          >View Product</button>
+        </div>
       </div>
   </div>
 </div>
 <div class="col">
-  <div class="card mt-3">
+  <div class="card h-100">
     <img class="card-img-top" src="./resource/img/hydrochloric-acid.jpg" alt="hydrochloric acid">
     <div class="card-body">
       <h5 class="card-text">Hydrochloric Acid (37%)</h5>
       <h5 class="card-text stock-text">Stock: 36 ml</h5>
+      <div class="info">
+        <button class="btn-request">Request</button>
+        <button class="btn-view" data-type="equipment"
+        data-name="Hydrochloric Acid (99%)"
+        data-stock="36 ml"
+        data-image="./resource/img/formaldehyde.jpg"
+        >View Product</button>
+      </div>
     </div>
   </div>
 </div>
 <div class="col">
-  <div class="card mt-3">
+  <div class="card h-100">
     <img class="card-img-top" src="./resource/img/ethanol.jpg" alt="ethanol">
     <div class="card-body">
       <h5 class="card-text">Ethanol (99%)</h5>
       <h5 class="card-text stock-text">Stock: 36 ml</h5>
+      <div class="info">
+        <button class="btn-request">Request</button>
+        <button class="btn-view" data-type="equipment"
+        data-name="Hydrochloric Acid (99%)"
+        data-stock="36 ml"
+        data-image="./resource/img/formaldehyde.jpg"
+        >View Product</button>
+      </div>
     </div>
   </div>
 </div>
 <div class="col">
-  <div class="card mt-3">
+  <div class="card h-100">
   <img class="card-img-top" src="./resource/img/ethanol.jpg" alt="ethanol">
   <div class="card-body">
     <h5 class="card-text">Ethanol (99%)</h5>
     <h5 class="card-text stock-text">Stock: 36 ml</h5>
-  </div>
-  </div>
-</div>
-<div class="col">
-  <div class="card mt-3">
-  <img class="card-img-top" src="./resource/img/ethanol.jpg" alt="ethanol">
-  <div class="card-body">
-    <h5 class="card-text">Ethanol (99%)</h5>
-    <h5 class="card-text stock-text">Stock: 36 ml</h5>
+    <div class="info">
+      <button class="btn-request">Request</button>
+      <button class="btn-view" 
+      data-type="chemical"
+      data-name="Hydrochloric Acid (99%)"
+      data-stock="36 ml"
+      data-image="./resource/img/formaldehyde.jpg"
+      >View Product</button>
     </div>
   </div>
 </div>
 </div>
+<div class="col">
+  <div class="card h-100">
+  <img class="card-img-top" src="./resource/img/ethanol.jpg" alt="ethanol">
+  <div class="card-body">
+    <h5 class="card-text">Ethanol (99%)</h5>
+    <h5 class="card-text stock-text">Stock: 36 ml</h5>
+    <div class="info">
+      <button class="btn-request">Request</button>
+      <button class="btn-view" 
+      data-type="equipment"
+      data-name="Hydrochloric Acid (99%)"
+      data-stock="36 ml"
+      data-image="./resource/img/formaldehyde.jpg"
+      >View Product</button>
+    </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- pop-up page -->
+
+<div id="equipment-popup" class="product-popup">
+  <div class="popup-content">
+    <button class="close-btn">&times;</button>
+    <div class="popup-image-container">
+      <img class="popup-image" src="./resource/img/hydrochloric-acid.jpg" alt="Microscope Equipment">
+    </div>
+    <div class="popup-details">
+      <div class="equipment-title-container">
+        <div class="equipment-titles-group">
+          <h5 class="equipment-title">Microscope</h5>
+          <h5 class="equipment-title equip-title">Equipment</h5>
+        </div>
+        <span class="stock-info">Stock: 5</span>
+      </div>
+      <h5 class="reservation-title mb-3">Reservation Queue</h5>
+      <div class="reservation-item">
+        August 31, 2025 - PHL 301 - Biology 101
+      </div>
+      <div class="reservation-item">
+        August 31, 2025 - PHL 301 - Biology 101
+      </div>
+    </div>
+    <div class="request-button-container">
+      <button class="request-button">Request</button>
+    </div>
+  </div>
+</div>
+
+<div id="chemical-popup" class="product-popup">
+    <div class="popup-content">
+        <button class="close-btn">&times;</button>
+        <div class="popup-image-container">
+            <img class="popup-image" src="./resource/img/hydrochloric-acid.jpg" alt="Hydrochloric Acid">
+        </div>
+        <div class="popup-details">
+            <div class="chemical-info-header">
+                <div class="chemical-titles">
+                    <h5 class="chemical-title">Hydrochloric Acid</h5>
+                    <h5 class="chemical-title chem-title">Chemical</h5>
+                </div>
+                <span class="stock-info">Stock: 5 ml</span>
+            </div>
+        </div>
+        <div class="request-button-container">
+          <button class="request-button">Request</button>
+        </div>
+    </div>
 </div>
 </main>
 
 <!-- footer -->
-<footer class="sticky- fixed-bottom ">
+<footer>
   <div class="container-fluid">
     <p class="text-center text-white pt-2"><small>
       CEU MALOLOS MOLECULES || <strong>Chemical Laboratory: sample@ceu.edu.ph</strong><br>
       <i class="fa-regular fa-copyright"></i> 2025 Copyright <strong>CENTRO ESCOLAR UNIVERSITY MALOLOS, Chemical Laboratory</strong><br>
       Developed by <strong>Renz Matthew Magsakay (official.renzmagsakay@gmail.com), Krizia Jane Lleva (lleva2234517@mls.ceu.edu.ph) & Angelique Mae Gabriel (gabriel2231439@mls.ceu.edu.ph)</strong>
       </small>
-      </p>
+    </p>
   </div>
 </footer>
     
