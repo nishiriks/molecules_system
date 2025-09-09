@@ -1,3 +1,22 @@
+<?php
+session_start();
+require_once 'resource/php/init.php';
+
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php');
+    exit();
+}
+
+$config = new config();
+$pdo = $config->con();
+
+$sql = "SELECT * FROM tbl_inventory ORDER BY name ASC";
+$stmt = $pdo->query($sql);
+
+$products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -128,198 +147,36 @@
 <!-- main content for user page-->
 <main class="user-page content">
 <div class="container-fluid">
-  <div class="row row-cols-1 row-cols-md-4 row-cols-lg-4 g-3">
-  <div class="col">
-      <div class="card h-100">
-      <img class="card-img-top" src="./resource/img/ethanol.jpg" alt="ethanol">
-      <div class="card-body">
-        <h5 class="card-text">Ethanol (99%)</h5>
-        <h5 class="card-text stock-text">Stock: 36 ml</h5>
-        <div class="info">
-          <button class="btn-request">Request</button>
-          <button class="btn-view"
-          data-type="equipment"
-          data-name="Hydrochloric Acid (99%)"
-          data-stock="36 ml"
-          data-image="./resource/img/hydrochloric-acid.jpg">View Product</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="col">
-    <div class="card h-100">
-      <img class="card-img-top" src="./resource/img/formaldehyde.jpg" alt="formaldehyde">
-      <div class="card-body">
-        <h5 class="card-text">Formaldehyde (37%)</h5>
-        <h5 class="card-text stock-text">Stock: 36 ml</h5>
-        <div class="info">
-          <button class="btn-request">Request</button>
-          <button class="btn-view" data-type="chemical"
-          data-name="Formaldehyde (99%)"
-          data-stock="36 ml"
-          data-image="./resource/img/formaldehyde.jpg"
-          >View Product</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="col">
-    <div class="card h-100">
-      <img class="card-img-top" src="./resource/img/hydrochloric-acid.jpg" alt="hydrochloric acid">
-      <div class="card-body">
-        <h5 class="card-text">Hydrochloric Acid (99%)</h5>
-        <h5 class="card-text stock-text">Stock: 36 ml</h5>
-        <div class="info">
-        <button class="btn-request">Request</button>
-        <button class="btn-view" data-type="equipment"
-        data-name="Hydrochloric Acid (99%)"
-        data-stock="36 ml"
-        data-image="./resource/img/hydrochloric-acid.jpg"
-        >View Product</button>
-        </div>
-      </div>
+    <div class="row row-cols-1 row-cols-md-4 row-cols-lg-4 g-3">
+         <?php foreach ($products as $product): ?>
+            <div class="col">
+                <div class="card h-100">
+                    <img class="card-img-top" src="<?= htmlspecialchars($product['image_path']) ?>" alt="<?= htmlspecialchars($product['name']) ?>">
+                    <div class="card-body">
+                        <h5 class="card-text"><?= htmlspecialchars($product['name']) ?></h5>
+                        <h5 class="card-text stock-text">
+                            Stock: <?= htmlspecialchars($product['stock']) ?> <?= htmlspecialchars($product['measure_unit']) ?>
+                        </h5>
+                        <div class="info">
+                             <form action="cartAction.php" method="POST">
+                                <input type="hidden" name="action" value="add">
+                                <input type="hidden" name="product_id" value="<?= $product['product_id'] ?>">
+                                <button type="submit" class="btn-request">Request</button>
+                            </form>
+                            <button class="btn-view" 
+                                    data-product-id="<?= $product['product_id'] ?>"
+                                    data-type="<?= htmlspecialchars($product['product_type']) ?>"
+                                    data-image="<?= htmlspecialchars($product['image_path']) ?>">
+                                View Product
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <?php endforeach; ?>
     </div>
 </div>
-<div class="col">
-  <div class="card h-100">
-    <img class="card-img-top" src="./resource/img/formaldehyde.jpg" alt="formaldehyde">
-    <div class="card-body">
-      <h5 class="card-text">Formaldehyde (37%)</h5>
-      <h5 class="card-text stock-text">Stock: 36 ml</h5>
-      <div class="info">
-        <button class="btn-request">Request</button>
-        <button class="btn-view" data-type="chemical"
-        data-name="Hydrochloric Acid (99%)"
-        data-stock="36 ml"
-        data-image="./resource/img/formaldehyde.jpg"
-        >View Product</button>
-      </div>
-    </div>
-  </div>
-  </div>
-<div class="col">
-  <div class="card h-100">
-    <img class="card-img-top" src="./resource/img/ethanol.jpg" alt="ethanol">
-    <div class="card-body">
-      <h5 class="card-text">Ethanol (99%)</h5>
-      <h5 class="card-text stock-text">Stock: 36 ml</h5>
-      <div class="info">
-        <button class="btn-request">Request</button>
-        <button class="btn-view" data-type="chemical"
-        data-name="Hydrochloric Acid (99%)"
-        data-stock="36 ml"
-        data-image="./resource/img/formaldehyde.jpg"
-        >View Product</button>
-      </div>
-      </div>
-  </div>
-</div>
-<div class="col">
-  <div class="card h-100">
-    <img class="card-img-top" src="./resource/img/hydrochloric-acid.jpg" alt="hydrochloric acid">
-    <div class="card-body">
-      <h5 class="card-text">Hydrochloric Acid (37%)</h5>
-      <h5 class="card-text stock-text">Stock: 36 ml</h5>
-      <div class="info">
-        <button class="btn-request">Request</button>
-        <button class="btn-view" data-type="equipment"
-        data-name="Hydrochloric Acid (99%)"
-        data-stock="36 ml"
-        data-image="./resource/img/formaldehyde.jpg"
-        >View Product</button>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="col">
-  <div class="card h-100">
-      <img class="card-img-top" src="./resource/img/ethanol.jpg" alt="ethanol">
-      <div class="card-body">
-        <h5 class="card-text">Ethanol (99%)</h5>
-        <h5 class="card-text stock-text">Stock: 36 ml</h5>
-        <div class="info">
-          <button class="btn-request">Request</button>
-          <button class="btn-view" data-type="equipment"
-          data-name="Hydrochloric Acid (99%)"
-          data-stock="36 ml"
-          data-image="./resource/img/formaldehyde.jpg"
-          >View Product</button>
-        </div>
-      </div>
-  </div>
-</div>
-<div class="col">
-  <div class="card h-100">
-    <img class="card-img-top" src="./resource/img/hydrochloric-acid.jpg" alt="hydrochloric acid">
-    <div class="card-body">
-      <h5 class="card-text">Hydrochloric Acid (37%)</h5>
-      <h5 class="card-text stock-text">Stock: 36 ml</h5>
-      <div class="info">
-        <button class="btn-request">Request</button>
-        <button class="btn-view" data-type="equipment"
-        data-name="Hydrochloric Acid (99%)"
-        data-stock="36 ml"
-        data-image="./resource/img/formaldehyde.jpg"
-        >View Product</button>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="col">
-  <div class="card h-100">
-    <img class="card-img-top" src="./resource/img/ethanol.jpg" alt="ethanol">
-    <div class="card-body">
-      <h5 class="card-text">Ethanol (99%)</h5>
-      <h5 class="card-text stock-text">Stock: 36 ml</h5>
-      <div class="info">
-        <button class="btn-request">Request</button>
-        <button class="btn-view" data-type="equipment"
-        data-name="Hydrochloric Acid (99%)"
-        data-stock="36 ml"
-        data-image="./resource/img/formaldehyde.jpg"
-        >View Product</button>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="col">
-  <div class="card h-100">
-  <img class="card-img-top" src="./resource/img/ethanol.jpg" alt="ethanol">
-  <div class="card-body">
-    <h5 class="card-text">Ethanol (99%)</h5>
-    <h5 class="card-text stock-text">Stock: 36 ml</h5>
-    <div class="info">
-      <button class="btn-request">Request</button>
-      <button class="btn-view" 
-      data-type="chemical"
-      data-name="Hydrochloric Acid (99%)"
-      data-stock="36 ml"
-      data-image="./resource/img/formaldehyde.jpg"
-      >View Product</button>
-    </div>
-  </div>
-</div>
-</div>
-<div class="col">
-  <div class="card h-100">
-  <img class="card-img-top" src="./resource/img/ethanol.jpg" alt="ethanol">
-  <div class="card-body">
-    <h5 class="card-text">Ethanol (99%)</h5>
-    <h5 class="card-text stock-text">Stock: 36 ml</h5>
-    <div class="info">
-      <button class="btn-request">Request</button>
-      <button class="btn-view" 
-      data-type="equipment"
-      data-name="Hydrochloric Acid (99%)"
-      data-stock="36 ml"
-      data-image="./resource/img/formaldehyde.jpg"
-      >View Product</button>
-    </div>
-    </div>
-  </div>
-</div>
-</div>
-</div>
+
 
 <!-- pop-up page -->
 
@@ -346,8 +203,12 @@
       </div>
     </div>
     <div class="request-button-container">
-      <button class="request-button">Request</button>
-    </div>
+      <form action="cartAction.php" method="POST">
+          <input type="hidden" name="action" value="add">
+          <input type="hidden" name="product_id" id="equipment-popup-product-id" value="">
+          <button type="submit" class="request-button">Request</button>
+      </form>
+</div>
   </div>
 </div>
 
@@ -367,7 +228,11 @@
             </div>
         </div>
         <div class="request-button-container">
-          <button class="request-button">Request</button>
+          <form action="cartAction.php" method="POST">
+              <input type="hidden" name="action" value="add">
+              <input type="hidden" name="product_id" id="chemical-popup-product-id" value="">
+              <button type="submit" class="request-button">Request</button>
+          </form>
         </div>
     </div>
 </div>

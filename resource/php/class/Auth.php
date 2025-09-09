@@ -83,12 +83,14 @@ class Auth extends config {
 
             if ($user_data && password_verify($password, $user_data[0]['password'])) {
                 $user = $user_data[0];
+                $_SESSION['user_id'] = $user['user_id'];
+                
                 $_SESSION['user_email'] = $user['email'];
                 $_SESSION['first_name'] = $user['first_name'];
                 $_SESSION['account_type'] = $user['account_type'];
 
                 if ($user['account_type'] == 'Admin') {
-                    header('Location: admin/home-admin.php');
+                    header('Location: home-admin.php');
                 } else {
                     header('Location: index.php');
                 }

@@ -1,6 +1,27 @@
+<?php
+session_start();
+require_once './resource/php/init.php';
+require_once './resource/php/class/cartItems.php';
+
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php');
+    exit();
+}
+
+$config = new config();
+$pdo = $config->con();
+$cart = new CartItems($pdo, $_SESSION['user_id']);
+
+if (isset($_POST['finalize-btn'])) {
+    header('Location: home-admin.php'); 
+    exit();
+}
+
+$items_in_cart = $cart->getItems();
+?>
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Page (Equipment)</title>
@@ -18,126 +39,120 @@
 
 </head>
 <body>
-<nav class="navbar">
-  <a class="navbar-brand" href="#">
-    <img class="ceu-logo img-fluid" src="./resource/img/ceu-molecules.png"/>
-  </a>
-  <button class="navbar-toggler me-3 custom-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-    <div class="offcanvas-header">
-      <h5 class="offcanvas-title" id="offcanvasNavbarLabel">CEU Molecules</h5>
-      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body">
-      <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-        <li class="nav-item">
-          <a class="nav-link active text-white" aria-current="page" href="#">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="#">Profile</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="#">Search</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="#">Requests</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="#">About</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="#">Help</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="#">Logout</a>
-        </li>
-      </ul>
-    </div>
-</nav>
+    <nav class="navbar">
+      <a class="navbar-brand" href="#">
+        <img class="ceu-logo img-fluid" src="./resource/img/ceu-molecules.png"/>
+      </a>
+      <button class="navbar-toggler me-3 custom-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+        <div class="offcanvas-header">
+          <h5 class="offcanvas-title" id="offcanvasNavbarLabel">CEU Molecules</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+          <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+            <li class="nav-item">
+              <a class="nav-link active text-white" aria-current="page" href="#">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white" href="#">Profile</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white" href="#">Search</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white" href="#">Requests</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white" href="#">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white" href="#">Help</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white" href="#">Logout</a>
+            </li>
+          </ul>
+        </div>
+    </nav>
 
-<main class="equipment-page">
-    <div class="container-fluid py-5">
-  <div class="row justify-content-center">
-    <div class="col-lg-8 col-md-10">
-      <div class="request-form-card">
-        <form>
-          <div class="row mb-3 align-items-end">
-            <div class="col-md">
-                <label for="name" class="form-label">Name of Instructor or Graduate Student:</label>
-                <input type="text" class="form-control" id="name" placeholder="Enter name">
-            </div>
-            <div class="col-md">
-                <label for="signature" class="form-label">Attach Signature:</label>
-                <input type="file" class="form-control" id="signature">
-            </div>
-            <div class="col-md">
-                <label for="subject" class="form-label">Subject:</label>
-                <input type="text" class="form-control" id="subject" placeholder="Enter subject">
+    <main class="equipment-page">
+        <div class="container-fluid py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 col-md-10">
+                    <div class="request-form-card">
+                        <form method="post" action="">
+                          <div class="row mb-3 align-items-end">
+                            <div class="col-md">
+                                <label for="name" class="form-label">Name of Instructor or Graduate Student:</label>
+                                <input type="text" class="form-control" id="name" name="prof_name" placeholder="Enter name" required>
+                            </div>
+                            <div class="col-md">
+                                <label for="signature" class="form-label">Attach Signature:</label>
+                                <input type="file" class="form-control" id="signature" name="signature">
+                            </div>
+                            <div class="col-md">
+                                <label for="subject" class="form-label">Subject:</label>
+                                <input type="text" class="form-control" id="subject" name="subject" placeholder="Enter subject" required>
+                            </div>
+                        </div>
+                            
+                        <div class="row mb-4 align-items-end">
+                            <div class="col-md-3">
+                                <label for="date-from" class="form-label">Date of Use (From):</label>
+                                <input type="date" class="form-control" id="date-from" name="date_from">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="date-to" class="form-label">To (Disregard if one day use):</label>
+                                <input type="date" class="form-control" id="date-to" name="date_to">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="time-from" class="form-label">Time (From):</label>
+                                <input type="time" class="form-control" id="time-from" name="time_from">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="time-to" class="form-label">Time (To):</label>
+                                <input type="time" class="form-control" id="time-to" name="time_to">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="room" class="form-label">Room:</label>
+                                <input type="text" class="form-control" id="room" name="room" placeholder="Enter Room">
+                            </div>
+                        </div>
+                            <h4 class="request-details-title mt-4 mb-3">Request Details:</h4>
+                            <div id="request-list-container">
+                                <?php foreach ($items_in_cart as $item): ?>
+                                    <div class="request-item-card d-flex align-items-center mb-3">
+                                        <div class="item-details-simple flex-grow-1">
+                                            <h5 class="item-name mb-0">
+                                                <?= htmlspecialchars($item['name']) ?> - Amount: <?= htmlspecialchars($item['amount']) ?>
+                                            </h5>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                            
+                            <div class="d-flex justify-content-end mt-4">
+                                <button type="submit" class="btn finalize-btn" name="finalize-btn">Finalize Request</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
-          
-          <div class="row mb-4 align-items-end">
-            <div class="col-md-3">
-              <label for="date-from" class="form-label">Date of Use (From):</label>
-              <input type="date" class="form-control" id="date-from" placeholder="Enter date">
-            </div>
-            <div class="col-md-3">
-              <label for="date-to" class="form-label">To (Disregard if one day use):</label>
-              <input type="date" class="form-control" id="date-to" placeholder="Enter date">
-            </div>
-            <div class="col-md-2">
-              <label for="time-from" class="form-label">Time (From):</label>
-              <input type="time" class="form-control" id="time-from" placeholder="Enter time">
-            </div>
-            <div class="col-md-2">
-              <label for="time-to" class="form-label">Time (To):</label>
-              <input type="time" class="form-control" id="time-to" placeholder="Enter time">
-            </div>
-            <div class="col-md-2">
-              <label for="room" class="form-label">Room:</label>
-              <input type="text" class="form-control" id="room" placeholder="Enter Room">
-            </div>
-          </div>
+    </main>
 
-          <h4 class="request-details-title mt-4 mb-3">Request Details:</h4>
-          
-          <div id="request-list-container">
-            <div class="request-item-card d-flex align-items-center mb-3">
-              <div class="item-details-simple flex-grow-1">
-                <h5 class="item-name mb-0">Hydrochloric Acid - 10mL</h5>
-              </div>
-            </div>
-            <div class="request-item-card d-flex align-items-center mb-3">
-              <div class="item-details-simple flex-grow-1">
-                <h5 class="item-name mb-0">Microscope - x1</h5>
-              </div>
-            </div>
-          </div>
-          
-          <div class="d-flex justify-content-end mt-4">
-            <button type="submit" class="btn finalize-btn">Finalize Request</button>
-          </div>
-        </form>
+    <footer>
+      <div class="container-fluid">
+        <p class="text-center text-white pt-2"><small>
+          CEU MALOLOS MOLECULES || <strong>Chemical Laboratory: sample@ceu.edu.ph</strong><br>
+          <i class="fa-regular fa-copyright"></i> 2025 Copyright <strong>CENTRO ESCOLAR UNIVERSITY MALOLOS, Chemical Laboratory</strong><br>
+          Developed by <strong>Renz Matthew Magsakay (official.renzmagsakay@gmail.com), Krizia Jane Lleva (lleva2234517@mls.ceu.edu.ph) & Angelique Mae Gabriel (gabriel2231439@mls.ceu.edu.ph)</strong>
+          </small>
+        </p>
       </div>
-    </div>
-  </div>
-</div>
-</main>
-
-<footer>
-  <div class="container-fluid">
-    <p class="text-center text-white pt-2"><small>
-      CEU MALOLOS MOLECULES || <strong>Chemical Laboratory: sample@ceu.edu.ph</strong><br>
-      <i class="fa-regular fa-copyright"></i> 2025 Copyright <strong>CENTRO ESCOLAR UNIVERSITY MALOLOS, Chemical Laboratory</strong><br>
-      Developed by <strong>Renz Matthew Magsakay (official.renzmagsakay@gmail.com), Krizia Jane Lleva (lleva2234517@mls.ceu.edu.ph) & Angelique Mae Gabriel (gabriel2231439@mls.ceu.edu.ph)</strong>
-      </small>
-    </p>
-  </div>
-</footer>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
-</body>
+    </footer>
+  </body>
 </html>
-

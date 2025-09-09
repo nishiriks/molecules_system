@@ -1,59 +1,28 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function () {
     const editPopup = document.getElementById('edit-popup');
-    const closeBtn = editPopup.querySelector('.close-btn');
-    const editForm = document.getElementById('edit-form');
-    const itemNameInput = document.getElementById('edit-item-name');
-    const itemAmountInput = document.getElementById('edit-item-amount');
-    
-    const cartEditButtons = document.querySelectorAll('.cart-card-item .edit-btn');
-    
-    let activeCartItemCard = null;
-
-    const showPopup = () => {
-        editPopup.classList.add('show');
-    };
-
-    const hidePopup = () => {
-        editPopup.classList.remove('show');
-    };
-
-    cartEditButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const parentCard = button.closest('.cart-card-item');
-            activeCartItemCard = parentCard;
+    if (editPopup) {
+        // This is the standard Bootstrap 5 event listener for a modal
+        editPopup.addEventListener('show.bs.modal', function (event) {
             
-            const itemName = parentCard.querySelector('.item-name').textContent;
-            const itemAmount = parentCard.querySelector('.item-amount').textContent;
-            
+            // Get the button that triggered the modal
+            const button = event.relatedTarget; 
+
+            // Extract the data from the button's data-* attributes
+            const itemId = button.getAttribute('data-item-id');
+            const itemName = button.getAttribute('data-item-name');
+            const itemAmount = button.getAttribute('data-item-amount');
+
+            // Find the elements inside the modal
+            const modalTitle = editPopup.querySelector('.modal-title');
+            const itemIdInput = editPopup.querySelector('#edit-item-id');
+            const itemNameInput = editPopup.querySelector('#edit-item-name');
+            const itemAmountInput = editPopup.querySelector('#edit-item-amount');
+
+            // Update the modal's content with the item's data
+            modalTitle.textContent = 'Edit ' + itemName;
+            itemIdInput.value = itemId;
             itemNameInput.value = itemName;
-            itemAmountInput.value = itemAmount.replace('Amount: ', '').trim();
-
-            showPopup();
-        });
-    });
-
-    if (closeBtn) {
-        closeBtn.addEventListener('click', hidePopup);
-    }
-
-    if (editForm) {
-        editForm.addEventListener('submit', (event) => {
-            event.preventDefault();
-
-            if (activeCartItemCard) {
-                const itemNameElement = activeCartItemCard.querySelector('.item-name');
-                const itemAmountElement = activeCartItemCard.querySelector('.item-amount');
-                
-                itemNameElement.textContent = itemNameInput.value;
-                itemAmountElement.textContent = `Amount: ${itemAmountInput.value}`;
-            }
-            hidePopup();
+            itemAmountInput.value = itemAmount;
         });
     }
-
-    window.addEventListener('click', (event) => {
-        if (event.target === editPopup) {
-            hidePopup();
-        }
-    });
 });

@@ -1,3 +1,19 @@
+<?php
+session_start();
+require_once 'resource/php/init.php';
+require_once 'resource/php/class/cartItems.php';
+
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php');
+    exit();
+}
+
+$config = new config();
+$pdo = $config->con();
+$cart = new CartItems($pdo, $_SESSION['user_id']);
+$items_in_cart = $cart->getItems();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,7 +58,7 @@
                         <a class="nav-link text-white" href="#">Profile</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Search</a>
+                        <a class="nav-link text-white" href="user-search.php">Search</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-white" href="#">Requests</a>
@@ -54,76 +70,91 @@
                         <a class="nav-link text-white" href="#">Help</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Logout</a>
+                        <a class="nav-link text-white" href="logout.php">Logout</a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
 
-<main class="user-cart">
+    <main class="user-cart">
         <div class="container">
-            <h2 class="requests-heading mt-2">Cart</h2>
+            <h2 class="requests-heading mt-2">My Cart</h2>
             <div class="row">
-                <div class="col-12 mb-3">
-                    <div class="cart-card-item">
-                        <div class="item-details-left">
-                            <img src="resource/img/hydrochloric-acid.jpg" alt="Product Image" class="item-img img-fluid">
-                            <div class="item-info">
-                                <h5 class="item-name">Hydrochloric Acid (37%)</h5>
-                                <p class="item-type">Chemical</p>
-                            </div>
-                        </div>
-                        <div class="item-details-right">
-                            <div class="item-amount">Amount: 10mL</div>
-                            <div class="item-actions">
-                                <button class="edit-btn">Edit</button>
-                                <button class="remove-btn">Remove</button>
-                            </div>
+                <?php if (empty($items_in_cart)): ?>
+                    <div class="col-12">
+                        <p class="text-center fs-4 mt-5">Your cart is empty.</p>
+                        <div class="text-center">
+                            <a href="user-search.php" class="btn btn-primary">Browse Products</a>
                         </div>
                     </div>
-                </div>
-                <div class="col-12 mb-3">
-                    <div class="cart-card-item">
-                        <div class="item-details-left">
-                            <img src="resource/img/hydrochloric-acid.jpg" alt="Product Image" class="item-img img-fluid">
-                            <div class="item-info">
-                                <h5 class="item-name">Hydrochloric Acid (37%)</h5>
-                                <p class="item-type">Chemical</p>
+                <?php else: ?>
+                    <?php foreach ($items_in_cart as $item): ?>
+                        <div class="col-12 mb-3">
+                            <div class="cart-card-item">
+                                <div class="item-details-left">
+                                    <img src="<?= htmlspecialchars($item['image_path']) ?>" alt="<?= htmlspecialchars($item['name']) ?>" class="item-img img-fluid">
+                                    <div class="item-info">
+                                        <h5 class="item-name"><?= htmlspecialchars($item['name']) ?></h5>
+                                        <p class="item-type"><?= htmlspecialchars($item['product_type']) ?></p>
+                                    </div>
+                                </div>
+                                <div class="item-details-right">
+                                    <div class="item-amount">Amount: <?= htmlspecialchars($item['amount']) ?> <?= htmlspecialchars($item['measure_unit']) ?></div>
+                                    <div class="item-actions">
+                                        <button class="edit-btn" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#edit-popup"
+                                                data-item-id="<?= $item['item_id'] ?>"
+                                                data-item-name="<?= htmlspecialchars($item['name']) ?>"
+                                                data-item-amount="<?= htmlspecialchars($item['amount']) ?>">
+                                            Edit
+                                        </button>
+
+                                        <form action="cartAction.php" method="POST" style="display: inline;">
+                                            <input type="hidden" name="action" value="remove">
+                                            <input type="hidden" name="item_id" value="<?= $item['item_id'] ?>">
+                                            <button type="submit" class="remove-btn">Remove</button>
+                                        </form>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="item-details-right">
-                            <div class="item-amount">Amount: 10mL</div>
-                            <div class="item-actions">
-                                <button class="edit-btn">Edit</button>
-                                <button class="remove-btn">Remove</button>
-                            </div>
-                        </div>
-                    </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+            
+            <?php if (!empty($items_in_cart)): ?>
+                <div class="finalize-btn-container text-end mt-4">
+                    <a href="equipment.php" class="finalize-request-btn" style="text-decoration: none;">Finalize Request</a>
                 </div>
-            </div>
-            <div class="finalize-btn-container text-end mt-4">
-                <button class="finalize-request-btn">Finalize Request</button>
-            </div>
+            <?php endif; ?>
         </div>
     </main>
 
-    <div id="edit-popup" class="product-popup">
-        <div class="popup-content">
-            <button class="close-btn">&times;</button>
-            <div class="popup-details">
-                <h2 class="popup-title">Edit Item</h2>
-                <form id="edit-form">
-                    <div class="form-group">
-                        <label for="edit-item-name">Item Name:</label>
-                        <input type="text" id="edit-item-name" name="item-name">
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-item-amount">Amount:</label>
-                        <input type="text" id="edit-item-amount" name="item-amount">
-                    </div>
-                    <button type="submit" class="save-btn">Save Changes</button>
-                </form>
+    <div class="modal fade" id="edit-popup" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="edit-popup-title">Edit Item</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="edit-form" action="cartAction.php" method="POST">
+                        <input type="hidden" name="action" value="update">
+                        <input type="hidden" id="edit-item-id" name="item_id" value="">
+                        
+                        <div class="mb-3">
+                            <label for="edit-item-name" class="form-label">Item Name:</label>
+                            <input type="text" id="edit-item-name" class="form-control" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit-item-amount" class="form-label">Amount:</label>
+                            <input type="number" id="edit-item-amount" name="amount" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 save-btn">Save Changes</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

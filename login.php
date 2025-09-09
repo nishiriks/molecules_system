@@ -1,4 +1,12 @@
-<?php require_once './resource/php/init.php';
+<?php 
+session_start();
+
+if (isset($_SESSION['user_id'])) {
+    header('Location: index.php'); 
+    exit();
+}
+
+require_once './resource/php/init.php';
 require_once './resource/php/class/Auth.php';
 $auth = new Auth();
 

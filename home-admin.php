@@ -36,7 +36,7 @@
           <a class="nav-link text-white" href="#">Requests</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="#">Inventory</a>
+          <a class="nav-link text-white" href="admin-search.php">Inventory</a>
         </li>
         <li class="nav-item">
           <a class="nav-link text-white" href="#">Report</a>

@@ -121,7 +121,7 @@
 
     <div class="bottom-content">
   <li class="nav-links">
-    <a href="#">
+    <a href="logout.php">
       <i class="fa-solid fa-arrow-right-from-bracket icon"></i>
       <span class="text nav-text">Logout</span>
     </a>

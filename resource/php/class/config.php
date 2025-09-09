@@ -18,5 +18,8 @@ class config {
             die("Database connection failed: " . $e->getMessage());
         }
     }
+    public function con() {
+        return $this->pdo;
+    }
 }
 ?>
