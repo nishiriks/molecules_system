@@ -36,13 +36,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     popupToShow.querySelector('.stock-info').textContent = productStock;
                     popupToShow.querySelector('.popup-image').src = productImage;
                     popupToShow.querySelector('#equipment-popup-product-id').value = productId;
-                } else if (productType === 'Chemical' && chemicalPopup) {
+                } else if ((productType === 'Chemical' || productType === 'Supplies' || productType === 'Specimen' || productType === 'Models') && chemicalPopup) {
                     popupToShow = chemicalPopup;
                     popupToShow.querySelector('.chemical-title').textContent = productName;
                     popupToShow.querySelector('.stock-info').textContent = productStock;
                     popupToShow.querySelector('.popup-image').src = productImage;
                     popupToShow.querySelector('#chemical-popup-product-id').value = productId;
-                }
+}
 
                 if (popupToShow) {
                     popupToShow.classList.add('show');

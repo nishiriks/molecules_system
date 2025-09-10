@@ -10,8 +10,25 @@ if (!isset($_SESSION['user_id'])) {
 $config = new config();
 $pdo = $config->con();
 
-$sql = "SELECT * FROM tbl_inventory ORDER BY name ASC";
-$stmt = $pdo->query($sql);
+// A title to show the user what they're viewing
+$page_title = "All Products";
+
+// Check if a category type was passed in the URL
+if (isset($_GET['type']) && !empty($_GET['type'])) {
+    // A type was provided, so filter the results
+    $product_type = $_GET['type'];
+    $page_title = "Showing: " . htmlspecialchars($product_type);
+    
+    // Use a prepared statement to prevent SQL injection
+    $sql = "SELECT * FROM tbl_inventory WHERE product_type = ? ORDER BY name ASC";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$product_type]);
+
+} else {
+    // No type was provided, so get all products
+    $sql = "SELECT * FROM tbl_inventory ORDER BY name ASC";
+    $stmt = $pdo->query($sql);
+}
 
 $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -39,49 +56,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 <body>
 
- <!-- 1st nav -->
- <!-- <nav class="navbar">
-  <a class="navbar-brand" href="#">
-    <img class="ceu-logo img-fluid" src="./resource/img/ceu-molecules.png"/>
-  </a>
-  <button class="navbar-toggler me-3 custom-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-    <div class="offcanvas-header">
-      <h5 class="offcanvas-title" id="offcanvasNavbarLabel">CEU Molecules</h5>
-      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body">
-      <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-        <li class="nav-item">
-          <a class="nav-link active text-white" aria-current="page" href="#">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="#">Profile</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="#">Search</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="#">Requests</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="#">About</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="#">Help</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="#">Logout</a>
-        </li>
-      </ul>
-    </div>
-</nav> -->
-
-
-
-<!-- 2nd nav -->
+<!-- nav -->
 <nav class="sidebar close">
   <header>
     <div class="toggle-container">
@@ -96,31 +71,31 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
           <input type="search" placeholder=" Search..." class="search-input">
       </li>
       <li class="nav-links chemicals-btn">
-        <a href="#">
+        <a href="user-search.php?type=Chemical">
           <i class="fa-solid fa-flask icon"></i>
           <span class="text nav-text">Chemicals</span>
         </a>
       </li>
       <li class="nav-links chemicals-btn">
-        <a href="#">
+        <a href="user-search.php?type=Supplies">
           <i class="fa-solid fa-prescription-bottle icon"></i>
           <span class="text nav-text">Supplies</span>
         </a>
       </li>
       <li class="nav-links chemicals-btn">
-        <a href="#">
+        <a href="user-search.php?type=Models">
           <i class="fa-solid fa-diagram-project  icon"></i>
           <span class="text nav-text">Model/Charts</span>
         </a>
       </li>
       <li class="nav-links chemicals-btn">
-        <a href="#">
+        <a href="user-search.php?type=Equipment">
           <i class="fa-solid fa-microscope icon"></i>
           <span class="text nav-text">Equipments</span>
         </a>
       </li>
       <li class="nav-links chemicals-btn">
-        <a href="#">
+        <a href="user-search.php?type=Specimen">
           <i class="fa-solid fa-vial icon"></i>
           <span class="text nav-text">Specimens</span>
         </a>
@@ -208,7 +183,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
           <input type="hidden" name="product_id" id="equipment-popup-product-id" value="">
           <button type="submit" class="request-button">Request</button>
       </form>
-</div>
+    </div>
   </div>
 </div>
 
@@ -249,10 +224,11 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </p>
   </div>
 </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+
+  <script src="resource/js/script.js"></script>
     
 </body>
 </html>
     
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
-
-<script src="resource/js/script.js"></script>

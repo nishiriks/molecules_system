@@ -133,6 +133,7 @@
 <!-- main content for admin page-->
 <main class="admin-page content d-flex flex-column min-vh-100">
 <div class="container-fluid">
+  <h2 class="mb-4"><?= $page_title ?></h2>
   <div class="row row-cols-1 row-cols-md-4 row-cols-lg-4 g-3">
   <div class="col">
       <div class="card h-100">
@@ -224,6 +225,8 @@
     </div>
 </div>
 
+
+<!-- edit popup -->
 <div id="edit-equipment-popup" class="edit-popup">
   <div class="edit-popup-content">
     <button class="close-btn edit-close-btn">&times;</button>

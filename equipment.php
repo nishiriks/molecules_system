@@ -60,7 +60,7 @@ $items_in_cart = $cart->getItems();
               <a class="nav-link text-white" href="#">Profile</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link text-white" href="#">Search</a>
+              <a class="nav-link text-white" href="user-search.php">Search</a>
             </li>
             <li class="nav-item">
               <a class="nav-link text-white" href="#">Requests</a>
@@ -72,7 +72,7 @@ $items_in_cart = $cart->getItems();
               <a class="nav-link text-white" href="#">Help</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link text-white" href="#">Logout</a>
+              <a class="nav-link text-white" href="logout.php">Logout</a>
             </li>
           </ul>
         </div>
@@ -91,7 +91,7 @@ $items_in_cart = $cart->getItems();
                             </div>
                             <div class="col-md">
                                 <label for="signature" class="form-label">Attach Signature:</label>
-                                <input type="file" class="form-control" id="signature" name="signature">
+                                <input type="file" class="form-control" id="signature" name="signature" required>
                             </div>
                             <div class="col-md">
                                 <label for="subject" class="form-label">Subject:</label>
@@ -102,7 +102,7 @@ $items_in_cart = $cart->getItems();
                         <div class="row mb-4 align-items-end">
                             <div class="col-md-3">
                                 <label for="date-from" class="form-label">Date of Use (From):</label>
-                                <input type="date" class="form-control" id="date-from" name="date_from">
+                                <input type="date" class="form-control" id="date-from" name="date_from" required>
                             </div>
                             <div class="col-md-3">
                                 <label for="date-to" class="form-label">To (Disregard if one day use):</label>
@@ -110,15 +110,15 @@ $items_in_cart = $cart->getItems();
                             </div>
                             <div class="col-md-2">
                                 <label for="time-from" class="form-label">Time (From):</label>
-                                <input type="time" class="form-control" id="time-from" name="time_from">
+                                <input type="time" class="form-control" id="time-from" name="time_from" required>
                             </div>
                             <div class="col-md-2">
                                 <label for="time-to" class="form-label">Time (To):</label>
-                                <input type="time" class="form-control" id="time-to" name="time_to">
+                                <input type="time" class="form-control" id="time-to" name="time_to" required>
                             </div>
                             <div class="col-md-2">
                                 <label for="room" class="form-label">Room:</label>
-                                <input type="text" class="form-control" id="room" name="room" placeholder="Enter Room">
+                                <input type="text" class="form-control" id="room" name="room" placeholder="Enter Room" required>
                             </div>
                         </div>
                             <h4 class="request-details-title mt-4 mb-3">Request Details:</h4>
@@ -154,5 +154,10 @@ $items_in_cart = $cart->getItems();
         </p>
       </div>
     </footer>
+
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+    
   </body>
 </html>

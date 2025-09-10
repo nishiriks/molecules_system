@@ -50,14 +50,14 @@ class CartItems {
     }
     
     private function getActiveCartId($create_if_not_exists = false) {
-        $stmt = $this->pdo->prepare("SELECT cart_id FROM tbl_cart WHERE cart_user_id = ? AND cart_status = 'active'");
+        $stmt = $this->pdo->prepare("SELECT cart_id FROM tbl_cart WHERE user_id = ? AND cart_status = 'active'");
         $stmt->execute([$this->user_id]);
         $cart = $stmt->fetch();
 
         if ($cart) {
             return $cart['cart_id'];
         } elseif ($create_if_not_exists) {
-            $stmt = $this->pdo->prepare("INSERT INTO tbl_cart (cart_user_id, cart_status) VALUES (?, 'active')");
+            $stmt = $this->pdo->prepare("INSERT INTO tbl_cart (user_id, cart_status) VALUES (?, 'active')");
             $stmt->execute([$this->user_id]);
             return $this->pdo->lastInsertId();
         }
