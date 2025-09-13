@@ -99,25 +99,20 @@ body{
   --tran-05: all 0.5s ease;
 }
 
-body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
 
 
 /* needs to be adjusted in cp view */
 /* main and the main prob */
 .sidebar{ 
   position: fixed;
-    top: 0;
-    left: 0;
-    height: 100%; /* Change to 100% to fill the entire height of the viewport */
-    width: 280px;
-    background: var(--sidebar-color);
-    border-right: #DDD 1px solid;
-    transition: all 0.4s ease; /* Add transition for smooth animation */
-    z-index: 999
+  top: 0;
+  left: 0;  
+  height: 100%; 
+  width: 280px;
+  background: var(--sidebar-color);
+  border-right: #DDD 1px solid;
+  transition: all 0.4s ease; 
+  z-index: 999;
 }
 
 .sidebar.close{
@@ -392,7 +387,7 @@ body {
 
 
 .content { 
-margin-left: 280px; 
+/* margin-left: 280px;  */
 padding: 20px; 
 } 
 
@@ -426,7 +421,7 @@ flex-grow: 1;
 }
 footer {
   background-color: #161542;
-  z-index: 1000;
+  z-index: 1001;
   /* width: 1vw; */
 }
 
@@ -1210,11 +1205,6 @@ footer,p,.fa-copyright{
   margin: 0;
 }
 
-
-
-
-
-/* Media query to make the stock-info responsive on smaller screens */
 
 
 
