@@ -1141,7 +1141,23 @@ footer,p,.fa-copyright{
   text-align: right; 
 }
 #chemical-popup .request-button-container {
-    margin-top: 30px;
+  margin-top: 30px;
+}
+
+#chemical-popup .stock-quantity-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+/* New rule to style the 'Stock' and 'Quantity' text */
+#chemical-popup .stock-info {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #161542;
+  margin: 0;
+  white-space: nowrap;
+  text-align: right;
 }
 
 /* Quantity Controls */
