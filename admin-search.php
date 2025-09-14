@@ -1,6 +1,42 @@
+<?php
+// session_start();
+require_once 'resource/php/init.php';
+
+// This should be an admin check, not a user check
+// if (!isset($_SESSION['user_id'])) { 
+//     header('Location: login.php');
+//     exit();
+// }
+
+$config = new config();
+$pdo = $config->con();
+
+// A title to show the user what they're viewing
+// $page_title = "All Products";
+
+// Check if a category type was passed in the URL
+if (isset($_GET['type']) && !empty($_GET['type'])) {
+    // A type was provided, so filter the results
+    $product_type = $_GET['type'];
+    $page_title = "Showing: " . htmlspecialchars($product_type);
+    
+    // Use a prepared statement to prevent SQL injection
+    $sql = "SELECT * FROM tbl_inventory WHERE product_type = ? ORDER BY name ASC";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$product_type]);
+
+} else {
+    // No type was provided, so get all products
+    $sql = "SELECT * FROM tbl_inventory ORDER BY name ASC";
+    $stmt = $pdo->query($sql);
+}
+
+$products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+?>
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search for Admin</title>
@@ -16,58 +52,10 @@
     <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://kit.fontawesome.com/6563a04357.js" crossorigin="anonymous"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-
-</head>
+    </head>
 <body>
 
- <!-- 1st nav -->
-<!-- <nav class="navbar navbar-expand-lg">
-  <a class="navbar-brand" href="#">
-    <img class="ceu-logo img-fluid" src="./resource/img/ceu-molecules.png" alt="CEU Molecules Logo"/>
-  </a>
-  
-  <button class="navbar-toggler me-3 custom-toggler d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  
-  <div class="d-none d-lg-block ms-auto">
-      <ul class="navbar-nav pe-3">
-        <li class="nav-item">
-          <a class="nav-link text-white" href="#">Requests</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="#">Inventory</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="#">Report</a>
-        </li>
-      </ul>
-  </div>
-
-  <div class="offcanvas offcanvas-end d-lg-none" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-    <div class="offcanvas-header">
-      <h5 class="offcanvas-title" id="offcanvasNavbarLabel">CEU Molecules</h5>
-      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body">
-      <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-        <li class="nav-item">
-          <a class="nav-link text-white" href="#">Requests</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="#">Inventory</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="#">Report</a>
-        </li>
-      </ul>
-    </div>
-  </div>
-</nav> -->
-
-
-
-<!-- 2nd nav -->
+<!-- nav -->
 <nav class="sidebar close">
   <header>
     <div class="toggle-container">
@@ -82,31 +70,31 @@
           <input type="search" placeholder=" Search..." class="search-input">
       </li>
       <li class="nav-links chemicals-btn">
-        <a href="#">
+        <a href="admin-search.php?type=Chemical">
           <i class="fa-solid fa-flask icon"></i>
           <span class="text nav-text">Chemicals</span>
         </a>
       </li>
       <li class="nav-links chemicals-btn">
-        <a href="#">
+        <a href="admin-search.php?type=Supplies">
           <i class="fa-solid fa-prescription-bottle icon"></i>
           <span class="text nav-text">Supplies</span>
         </a>
       </li>
       <li class="nav-links chemicals-btn">
-        <a href="#">
+        <a href="admin-search.php?type=Models">
           <i class="fa-solid fa-diagram-project  icon"></i>
           <span class="text nav-text">Model/Charts</span>
         </a>
       </li>
       <li class="nav-links chemicals-btn">
-        <a href="#">
+        <a href="admin-search.php?type=Equipment">
           <i class="fa-solid fa-microscope icon"></i>
           <span class="text nav-text">Equipments</span>
         </a>
       </li>
       <li class="nav-links chemicals-btn">
-        <a href="#">
+        <a href="admin-search.php?type=Specimen">
           <i class="fa-solid fa-vial icon"></i>
           <span class="text nav-text">Specimens</span>
         </a>
@@ -130,76 +118,53 @@
 </div>
 </nav>
 
-<!-- main content for admin page-->
 <main class="admin-page content d-flex flex-column min-vh-100">
-<div class="container-fluid">
-  <h2 class="mb-4"><?= $page_title ?></h2>
-  <div class="row row-cols-1 row-cols-md-4 row-cols-lg-4 g-3">
-  <div class="col">
-      <div class="card h-100">
-      <img class="card-img-top" src="./resource/img/ethanol.jpg" alt="ethanol">
-      <div class="card-body">
-        <h5 class="card-text">Ethanol (99%)</h5>
-        <h5 class="card-text stock-text">Stock: 36 ml</h5>
-        <div class="info">
-          <button class="btn-view"
-          data-type="equipment"
-          data-image="./resource/img/hydrochloric-acid.jpg">Edit Product
-          <i class="fa-solid fa-pencil"></i>
-        </button>
-
+  <div class="container-fluid">
+    
+    <div class="row row-cols-1 row-cols-md-4 row-cols-lg-4 g-3">
+      <?php foreach ($products as $product): ?>
+        <div class="col">
+          <div class="card h-100">
+            <img class="card-img-top" src="<?= htmlspecialchars($product['image_path']) ?>" alt="<?= htmlspecialchars($product['name']) ?>">
+            <div class="card-body">
+              <h5 class="card-text"><?= htmlspecialchars($product['name']) ?></h5>
+              <h5 class="card-text stock-text">
+                  Stock: <?= htmlspecialchars($product['stock']) ?> <?= htmlspecialchars($product['measure_unit']) ?>
+              </h5>
+              <div class="info">
+                <button class="btn-view" 
+                        data-product-id="<?= $product['product_id'] ?>"
+                        data-type="<?= htmlspecialchars($product['product_type']) ?>"
+                        data-image="<?= htmlspecialchars($product['image_path']) ?>">
+                    Edit Product
+                    <i class="fa-solid fa-pencil"></i>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  </div>
-  <div class="col">
-    <div class="card h-100">
-      <img class="card-img-top" src="./resource/img/formaldehyde.jpg" alt="formaldehyde">
-      <div class="card-body">
-        <h5 class="card-text">Formaldehyde (37%)</h5>
-        <h5 class="card-text stock-text">Stock: 36 ml</h5>
-        <div class="info">
-          <button class="btn-view" data-type="chemical"
-          data-image="./resource/img/formaldehyde.jpg"
-          >Edit Product
-          <i class="fa-solid fa-pencil"></i>
-        </button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-</div>
-</body>
-</html>
-</main>
+      <?php endforeach; ?>
+    </div></div>
 
-<!-- pop-up page -->
-
-<div id="equipment-popup" class="product-popup">
+    <div id="equipment-popup" class="product-popup">
   <div class="popup-content">
     <button class="close-btn">&times;</button>
     <div class="popup-image-container">
-      <img class="popup-image" src="./resource/img/hydrochloric-acid.jpg" alt="Microscope Equipment">
+      <img class="popup-image" src="" alt="Equipment">
     </div>
     <div class="popup-details">
       <div class="equipment-title-container">
         <div class="equipment-titles-group">
-          <h5 class="equipment-title">Microscope</h5>
+          <h5 class="equipment-title"></h5>
           <h5 class="equipment-title equip-title">Equipment</h5>
         </div>
-        <span class="stock-info">Stock: 5</span>
+        <span class="stock-info"></span>
       </div>
       <h5 class="reservation-title mb-3">Reservation Queue</h5>
-      <div class="reservation-item">
-        August 31, 2025 - PHL 301 - Biology 101
-      </div>
-      <div class="reservation-item">
-        August 31, 2025 - PHL 301 - Biology 101
-      </div>
+      <div class="reservation-item">August 31, 2025 - PHL 301 - Biology 101</div>
     </div>
     <div class="edit-button-container">
-      <button class="request-button edit-button">Edit</button>
+      <button type="button" class="request-button edit-button">Edit</button>
     </div>
   </div>
 </div>
@@ -208,34 +173,34 @@
     <div class="popup-content">
         <button class="close-btn">&times;</button>
         <div class="popup-image-container">
-            <img class="popup-image" src="./resource/img/hydrochloric-acid.jpg" alt="Hydrochloric Acid">
+            <img class="popup-image" src="" alt="Product Image">
         </div>
         <div class="popup-details">
             <div class="chemical-info-header">
                 <div class="chemical-titles">
-                    <h5 class="chemical-title">Hydrochloric Acid</h5>
+                    <h5 class="chemical-title"></h5>
                     <h5 class="chemical-title chem-title">Chemical</h5>
                 </div>
-                <span class="stock-info">Stock: 5 ml</span>
+                <span class="stock-info"></span>
             </div>
         </div>
         <div class="edit-button-container">
-          <button class="request-button edit-button">Edit</button>
+            <button type="button" class="request-button edit-button">Edit</button>
         </div>
     </div>
 </div>
 
-
-<!-- edit popup -->
 <div id="edit-equipment-popup" class="edit-popup">
   <div class="edit-popup-content">
-    <button class="close-btn edit-close-btn">&times;</button>
+    <button type="button" class="close-btn edit-close-btn">&times;</button>
     <h4>Edit Equipment Details</h4>
-    <form id="edit-equipment-form">
+    <form id="edit-equipment-form" action="updateProduct.php" method="POST">
+      <input type="hidden" name="product_id" value="">
+      
       <label for="edit-equipment-title">Equipment Name:</label>
-      <input type="text" id="edit-equipment-title" name="edit-equipment-title">
+      <input type="text" id="edit-equipment-title" name="name">
       <label for="edit-equipment-stock">Stock:</label>
-      <input type="number" id="edit-equipment-stock" name="edit-equipment-stock">
+      <input type="number" id="edit-equipment-stock" name="stock">
       <div class="button-container">
         <button type="submit" class="save-btn">Save Changes</button>
       </div>
@@ -245,18 +210,23 @@
 
 <div id="edit-chemical-popup" class="edit-popup">
   <div class="edit-popup-content">
-    <button class="close-btn edit-close-btn">&times;</button>
+    <button type="button" class="close-btn edit-close-btn">&times;</button>
     <h4>Edit Chemical Details</h4>
-    <form id="edit-chemical-form">
+    <form id="edit-chemical-form" action="updateProduct.php" method="POST">
+      <input type="hidden" name="product_id" value="">
+
       <label for="edit-chemical-title">Chemical Name:</label>
-      <input type="text" id="edit-chemical-title" name="edit-chemical-title">
+      <input type="text" id="edit-chemical-title" name="name">
       <label for="edit-chemical-stock">Stock:</label>
       <div class="stock-input-group">
-        <input type="number" id="edit-chemical-stock" name="edit-chemical-stock">
-         <select id="edit-chemical-stock-unit" name="edit-chemical-stock-unit">
-          <option value="" selected disabled>Select Unit</option> 
+        <input type="number" id="edit-chemical-stock" name="stock">
+         <select id="edit-chemical-stock-unit" name="measure_unit">
+          <option value="" disabled>Select Unit</option> 
           <option value="ml">ml</option>
           <option value="l">l</option>
+          <option value="g">g</option>
+          <option value="kg">kg</option>
+          <option value="pcs">pcs</option>
         </select>
       </div>
       <div class="button-container">
@@ -265,21 +235,24 @@
       </form>
     </div>
 </div>
+</main>
 
-<!-- footer -->
+
+
 <footer>
   <div class="container-fluid">
     <p class="text-center text-white pt-2"><small>
       CEU MALOLOS MOLECULES || <strong>Chemical Laboratory: sample@ceu.edu.ph</strong><br>
       <i class="fa-regular fa-copyright"></i> 2025 Copyright <strong>CENTRO ESCOLAR UNIVERSITY MALOLOS, Chemical Laboratory</strong><br>
-      Developed by <strong>Renz Matthew Magsakay (official.renzmagsakay@gmail.com), Krizia Jane Lleva (lleva2234517@mls.ceu.edu.ph) & Angelique Mae Gabriel (gabriel2231439@mls.ceu.edu.ph)</strong>
+      Developed by <strong>Renz Matthew Magsakay, Krizia Jane Lleva & Angelique Mae Gabriel</strong>
       </small>
     </p>
   </div>
 </footer>
-</body>
-</html>
-    
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 
 <script src="resource/js/script.js"></script>
+
+</body>
+</html>

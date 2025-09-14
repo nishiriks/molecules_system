@@ -133,11 +133,11 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             Stock: <?= htmlspecialchars($product['stock']) ?> <?= htmlspecialchars($product['measure_unit']) ?>
                         </h5>
                         <div class="info">
-                             <form action="cartAction.php" method="POST">
+                             <!-- <form action="cartAction.php" method="POST">
                                 <input type="hidden" name="action" value="add">
-                                <input type="hidden" name="product_id" value="<?= $product['product_id'] ?>">
+                                <input type="hidden" name="product_id" value="<?//= $product['product_id'] ?>">
                                 <button type="submit" class="btn-request">Request</button>
-                            </form>
+                            </form> -->
                             <button class="btn-view" 
                                     data-product-id="<?= $product['product_id'] ?>"
                                     data-type="<?= htmlspecialchars($product['product_type']) ?>"
@@ -224,6 +224,25 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </p>
   </div>
 </footer>
+
+<!-- bubble nav -->
+<input type="checkbox" class="nav--checkbox" id="nav-toggle">
+
+<label for="nav-toggle" class="nav--button">
+    <span>&nbsp;</span>
+</label>
+
+<div class="nav--small nav--btn-1">
+    <a href="cart.php"><i class="fa-solid fa-cart-shopping cart-icon"></i></a>
+</div>
+
+<div class="nav--small nav--btn-2">
+    <a href="#"><i class="fa-solid fa-house house-icon"></i></a>
+</div>
+
+<div class="nav--small nav--btn-3">
+    <a href="#"><i class="fa-solid fa-user user-icon"></i></a>
+</div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 

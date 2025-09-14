@@ -1,89 +1,111 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    // --- LOGIC FOR SIDEBAR (Runs on any page with a sidebar) ---
+    // --- LOGIC FOR SIDEBAR ---
     const sidebar = document.querySelector(".sidebar");
     if (sidebar) {
         const toggle = document.querySelector(".toggle");
         if (toggle) {
-            toggle.addEventListener("click", () => {
-                sidebar.classList.toggle("close");
-            });
+            toggle.addEventListener("click", () => sidebar.classList.toggle("close"));
         }
     }
 
-    // --- LOGIC FOR "VIEW PRODUCT" POPUPS (For user-search.php) ---
-    const viewButtons = document.querySelectorAll('.btn-view');
+    // --- CACHE ALL POPUP ELEMENTS ONCE ---
     const equipmentPopup = document.getElementById('equipment-popup');
     const chemicalPopup = document.getElementById('chemical-popup');
-    
-    // This code only runs if there are "View" buttons on the page
-    if (viewButtons.length > 0) {
-        const allPopups = document.querySelectorAll('.product-popup');
+    const editEquipmentPopup = document.getElementById('edit-equipment-popup');
+    const editChemicalPopup = document.getElementById('edit-chemical-popup');
 
-        viewButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const productType = button.getAttribute('data-type');
-                const productId = button.getAttribute('data-product-id');
-                const productImage = button.getAttribute('data-image');
-                const cardBody = button.closest('.card-body');
-                const productName = cardBody.querySelector('.card-text').textContent;
-                const productStock = cardBody.querySelector('.stock-text').textContent;
+    // --- A SINGLE, UNIFIED LISTENER FOR ALL POPUP ACTIONS ---
+    document.body.addEventListener('click', (event) => {
+        
+        const viewButton = event.target.closest('.btn-view');
+        const editButton = event.target.closest('.edit-button');
+        const closeTrigger = event.target.closest('.close-btn, .edit-close-btn');
+        const popupOverlay = event.target.closest('.product-popup, .edit-popup');
 
-                let popupToShow = null;
-                if (productType === 'Equipment' && equipmentPopup) {
-                    popupToShow = equipmentPopup;
-                    popupToShow.querySelector('.equipment-title').textContent = productName;
-                    popupToShow.querySelector('.stock-info').textContent = productStock;
-                    popupToShow.querySelector('.popup-image').src = productImage;
-                    popupToShow.querySelector('#equipment-popup-product-id').value = productId;
-                } else if ((productType === 'Chemical' || productType === 'Supplies' || productType === 'Specimen' || productType === 'Models') && chemicalPopup) {
-                    popupToShow = chemicalPopup;
-                    popupToShow.querySelector('.chemical-title').textContent = productName;
-                    popupToShow.querySelector('.stock-info').textContent = productStock;
-                    popupToShow.querySelector('.popup-image').src = productImage;
-                    popupToShow.querySelector('#chemical-popup-product-id').value = productId;
-}
+        // --- ACTION 1: OPEN "VIEW" POPUP (Works for both Admin and User) ---
+        if (viewButton) {
+            const productId = viewButton.dataset.productId;
+            const productType = viewButton.dataset.type.toLowerCase();
+            const cardBody = viewButton.closest('.card-body');
+            const productName = cardBody.querySelector('.card-text').textContent;
+            const productStock = cardBody.querySelector('.stock-text').textContent;
+            let popupToShow = null;
 
-                if (popupToShow) {
-                    popupToShow.classList.add('show');
-                }
-            });
-        });
-
-        // Add close functionality to the view popups
-        allPopups.forEach(popup => {
-            const closeBtn = popup.querySelector('.close-btn');
-            if (closeBtn) {
-                closeBtn.addEventListener('click', () => popup.classList.remove('show'));
+            if (productType === 'equipment' || productType === 'equipments') {
+                popupToShow = equipmentPopup;
+                if(popupToShow) popupToShow.querySelector('.equipment-title').textContent = productName;
+            } else if (['chemical', 'chemicals', 'supplies', 'specimen', 'models'].includes(productType)) {
+                popupToShow = chemicalPopup;
+                if(popupToShow) popupToShow.querySelector('.chemical-title').textContent = productName;
             }
-            popup.addEventListener('click', (event) => {
-                if (event.target === popup) {
-                    popup.classList.remove('show');
+            
+            if (popupToShow) {
+                popupToShow.dataset.editingProductId = productId; // Store ID for admin edit
+                popupToShow.querySelector('.stock-info').textContent = productStock;
+                popupToShow.querySelector('.popup-image').src = viewButton.dataset.image;
+                popupToShow.querySelector('.popup-image').alt = productName;
+
+                // For the user "Request" form, populate the hidden product_id
+                const productIdInput = popupToShow.querySelector('input[name="product_id"]');
+                if (productIdInput) {
+                    productIdInput.value = productId;
                 }
-            });
-        });
-    }
+                
+                popupToShow.classList.add('show');
+            }
+            return; 
+        }
 
-    // --- LOGIC FOR "EDIT ITEM" POPUP (For cart.php) ---
-    const editPopupModal = document.getElementById('edit-popup');
-    
-    // This code only runs if the edit popup exists on the page
-    if (editPopupModal) {
-        editPopupModal.addEventListener('show.bs.modal', function (event) {
-            const button = event.relatedTarget;
-            const itemId = button.getAttribute('data-item-id');
-            const itemName = button.getAttribute('data-item-name');
-            const itemAmount = button.getAttribute('data-item-amount');
+        // --- ACTION 2: OPEN "EDIT" POPUP (Admin only) ---
+        if (editButton) {
+            const viewPopup = editButton.closest('.product-popup');
+            if (!viewPopup) return;
+            
+            const productId = viewPopup.dataset.editingProductId;
+            let editPopupToShow = null;
 
-            const modalTitle = editPopupModal.querySelector('.modal-title');
-            const itemIdInput = editPopupModal.querySelector('#edit-item-id');
-            const itemNameInput = editPopupModal.querySelector('#edit-item-name');
-            const itemAmountInput = editPopupModal.querySelector('#edit-item-amount');
+            if (viewPopup.id === 'equipment-popup' && editEquipmentPopup) {
+                editPopupToShow = editEquipmentPopup;
+                const title = viewPopup.querySelector('.equipment-title').textContent;
+                const stockText = viewPopup.querySelector('.stock-info').textContent;
+                const stockValue = stockText.replace(/Stock:\s*/, '').trim().split(' ')[0];
+                
+                editPopupToShow.querySelector('#edit-equipment-title').value = title;
+                editPopupToShow.querySelector('#edit-equipment-stock').value = stockValue;
 
-            modalTitle.textContent = 'Edit ' + itemName;
-            itemIdInput.value = itemId;
-            itemNameInput.value = itemName;
-            itemAmountInput.value = itemAmount;
-        });
-    }
+            } else if (viewPopup.id === 'chemical-popup' && editChemicalPopup) {
+                editPopupToShow = editChemicalPopup;
+                const title = viewPopup.querySelector('.chemical-title').textContent;
+                const stockText = viewPopup.querySelector('.stock-info').textContent;
+                const stockString = stockText.replace(/Stock:\s*/, '').trim();
+                const match = stockString.match(/^([\d.]+)\s*(\w+)?$/);
+                const stockValue = match ? match[1] : '';
+                const stockUnit = match ? match[2] : '';
+
+                editPopupToShow.querySelector('#edit-chemical-title').value = title;
+                editPopupToShow.querySelector('#edit-chemical-stock').value = stockValue;
+                const unitSelect = editPopupToShow.querySelector('#edit-chemical-stock-unit');
+                if (unitSelect) unitSelect.value = stockUnit || "";
+            }
+
+            if (editPopupToShow) {
+                const hiddenIdInput = editPopupToShow.querySelector('input[name="product_id"]');
+                if (hiddenIdInput) {
+                    hiddenIdInput.value = productId;
+                }
+                
+                viewPopup.classList.remove('show');
+                editPopupToShow.classList.add('show');
+            }
+            return;
+        }
+
+        // --- ACTION 3: CLOSE ANY POPUP ---
+        if (closeTrigger || (popupOverlay && event.target === popupOverlay)) {
+            if (popupOverlay) {
+                popupOverlay.classList.remove('show');
+            }
+        }
+    });
 });

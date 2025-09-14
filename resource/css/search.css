@@ -426,6 +426,7 @@ main {
 }
 footer {
   background-color: #161542;
+  z-index: 1000;
 }
 
 footer,p,.fa-copyright{
@@ -671,29 +672,50 @@ footer,p,.fa-copyright{
   display: flex; 
 }
 
+/* Replace your old .edit-popup rule with this block */
 .edit-popup {
-  display: none; 
-  position: fixed;
-  z-index: 1000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0,0,0,0.4); /* Dark overlay */
-  padding-top: 50px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    /* Hidden by default for smooth animation */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0s 0.3s;
 }
 
+/* This makes the popup visible when the script adds the .show class */
+.edit-popup.show {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease;
+}
+
+/* This adds the subtle zoom effect to the content box */
+.edit-popup.show .edit-popup-content {
+    transform: scale(1);
+}
+
+/* Base style for the content box inside the popup */
 .edit-popup-content {
-  background-color: #E3E3E3;
-  margin: 5% auto;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%;
-  max-width: 400px;
-  border-radius: 10px;
-  position: relative;
-  text-align: center;
+    background-color: #E3E3E3;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 400px;
+    border-radius: 10px;
+    position: relative;
+    text-align: center;
+    transform: scale(0.95); /* Start slightly smaller */
+    transition: transform 0.3s ease;
 }
 
 .edit-popup-content h4 {
@@ -744,7 +766,155 @@ footer,p,.fa-copyright{
 
 
 
+/* bubble nav */
 
+/* Big main button */
+.nav--checkbox {
+  display: none;
+}
+
+.nav--button {
+  position: fixed; 
+  bottom: 50px;
+  right: 50px;
+  height: 70px;
+  width: 70px;
+  background-color: #F55197;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  z-index: 1111;
+  transition: background-color 0.3s ease;
+}
+
+.nav--button:hover {
+  background-color: #fff;
+}
+
+.nav--button:hover span,
+.nav--button:hover span::before,
+.nav--button:hover span::after {
+  background-color: #F55197; 
+}
+
+.nav--button span {
+  position: relative;
+  display: inline-block;
+  top: 35px;
+  left: 50%;
+  height: 3px;
+  width: 25px;
+  transform: translateX(-50%);
+  transition: all 0.3s ease;
+}
+
+.nav--button span::after,
+.nav--button span::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  display: inherit;
+  height: inherit;
+  width: inherit;
+  background-color: #fff;
+  transition: all 0.3s ease;
+}
+
+.nav--button span::before {
+  top: -5px;
+}
+
+.nav--button span::after {
+  top: 5px;
+}
+
+/* Transform the lines into a checkmark on click */
+.nav--checkbox:checked + .nav--button span {
+  background-color: transparent;
+}
+
+.nav--checkbox:checked + .nav--button span::before {
+  top: 0;
+  transform: rotate(45deg);
+}
+
+.nav--checkbox:checked + .nav--button span::after {
+  top: 0;
+  transform: rotate(-45deg);
+}
+
+/* Small buttons */
+.nav--small {
+  position: fixed; 
+  bottom: 65px;
+  right: 65px;
+  height: 40px;
+  width: 40px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  transition: all 500ms cubic-bezier(0.6, -0.5, 0.4, 1.5);
+  z-index: 1;
+}
+
+.nav--small a {
+  position: relative;
+  display: block;
+  height: inherit;
+  width: inherit;
+  border-radius: inherit;
+  text-decoration: none;
+  color: white;
+  transition: color 0.3s ease; 
+}
+
+.nav--small a i {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 19px;
+}
+
+.nav--btn-1 {
+  background-color: #F55197;
+}
+
+.nav--btn-2 {
+  background-color: #F55197;
+  transition-delay: 50ms;
+}
+
+.nav--btn-3 {
+  background-color: #F55197;
+  transition-delay: 100ms;
+}
+
+.nav--btn-1:hover,
+.nav--btn-2:hover,
+.nav--btn-3:hover {
+  background-color: #ad3b6d;
+  transition: background-color 0.3s ease;
+}
+
+/* .nav--btn-1:hover a,
+.nav--btn-2:hover a,
+.nav--btn-3:hover a {
+  color: #F55197;
+} */
+
+/* When checked */
+.nav--checkbox:checked ~ .nav--btn-1 {
+  bottom: 135px;
+  position: fixed;
+}
+.nav--checkbox:checked ~ .nav--btn-2 {
+  bottom: 118px;
+  right: 118px;
+  position: fixed;
+}
+.nav--checkbox:checked ~ .nav--btn-3 {
+  right: 135px;
+  position: fixed;
+}
 
 
 
