@@ -91,6 +91,10 @@ section.home{
 .row-no-gutters>*{
     padding: 0 !important;
 }
+.card-link, .card-link:visited{
+    text-decoration: none;
+}
+
 .home-card{
     margin-top: 5%;
     -webkit-box-shadow: -3px 2px 2px 0px rgba(110,110,110,0.57); 

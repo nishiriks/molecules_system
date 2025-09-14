@@ -91,46 +91,56 @@ $is_logged_in = isset($_SESSION['user_id']);
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4"> 
                 <div class="col">
                     <div class="card home-card">
+                      <a class="card-link" href="user-search.php?type=Chemical">
                         <div class="card-body text-center d-flex flex-column justify-content-center">
-                            <div class="card-title gradient-text"><i class="fa-solid fa-flask"></i></div>
-                            <div class="card-text pt-2">CHEMICALS</div>
+                          <div class="card-title gradient-text"><i class="fa-solid fa-flask"></i></div>
+                          <div class="card-text pt-2">CHEMICALS</div>
                         </div>
+                      </a>
                     </div>
                 </div>
 
                 <div class="col">
                     <div class="card home-card">
-                        <div class="card-body text-center d-flex flex-column justify-content-center">
-                            <div class="card-title gradient-text"><i class="fa-solid fa-prescription-bottle"></i></div>
-                            <div class="card-text pt-2">SUPPLIES</div>
+                      <a class="card-link" href="user-search.php?type=Supplies">
+                        <div class="card-body text-center d-flex flex-column justify-content-center">                       
+                          <div class="card-title gradient-text"><i class="fa-solid fa-prescription-bottle"></i></div>
+                          <div class="card-text pt-2">SUPPLIES</div>                       
                         </div>
+                      </a>
                     </div>
                 </div>
 
                 <div class="col">
                     <div class="card home-card">
-                        <div class="card-body text-center d-flex flex-column justify-content-center">
-                            <div class="card-title gradient-text"><i class="fa-solid fa-diagram-project"></i></div> 
-                            <div class="card-text pt-2">MODELS/CHARTS</div>
+                      <a class="card-link" href="user-search.php?type=Models">
+                        <div class="card-body text-center d-flex flex-column justify-content-center">                   
+                          <div class="card-title gradient-text"><i class="fa-solid fa-diagram-project"></i></div> 
+                          <div class="card-text pt-2">MODELS/CHARTS</div>                  
                         </div>
+                      </a>
                     </div>
                 </div>
 
                 <div class="col">
                     <div class="card home-card">
+                      <a class="card-link" href="user-search.php?type=Equipment">
                         <div class="card-body text-center d-flex flex-column justify-content-center">
-                            <div class="card-title gradient-text"><i class="fa-solid fa-microscope"></i></div>
-                            <div class="card-text pt-2">EQUIPMENT</div>
+                          <div class="card-title gradient-text"><i class="fa-solid fa-microscope"></i></div>
+                          <div class="card-text pt-2">EQUIPMENT</div>
                         </div>
+                      </a>
                     </div>
                 </div>
 
                 <div class="col">
                     <div class="card home-card">
-                        <div class="card-body text-center d-flex flex-column justify-content-center">
-                            <div class="card-title gradient-text"><i class="fa-solid fa-vial"></i></div>
-                            <div class="card-text pt-2">SPECIMENS</div>
+                      <a class="card-link" href="user-search.php?type=Specimen">
+                        <div class="card-body text-center d-flex flex-column justify-content-center">                       
+                          <div class="card-title gradient-text"><i class="fa-solid fa-vial"></i></div>
+                          <div class="card-text pt-2">SPECIMENS</div>
                         </div>
+                      </a>
                     </div>
                 </div>
             </div>
