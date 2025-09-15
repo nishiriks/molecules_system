@@ -23,6 +23,17 @@ $is_logged_in = isset($_SESSION['user_id']);
 </head>
 
 <body>
+<?php
+    if (isset($_SESSION['success_message'])) {
+        echo '<div class="alert alert-success alert-dismissible fade show m-3" role="alert">';
+        echo    $_SESSION['success_message'];
+        echo    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+        echo '</div>';
+        
+        unset($_SESSION['success_message']);
+    }
+  ?>
+
 <!-- navbar -->
 <nav class="navbar">
   <a class="navbar-brand" href="#">
