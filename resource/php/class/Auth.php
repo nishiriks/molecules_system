@@ -42,7 +42,7 @@ class Auth extends config {
             $account_type = 'Faculty';
         }
 
-        $valid_ceu_domains = ['@ceu.edu.ph', '@malolos.ceu.edu.ph'];
+        $valid_ceu_domains = ['@ceu.edu.ph', '@mls.ceu.edu.ph'];
         $user_email_domain = strtolower(substr($email, strpos($email, '@')));
         
         if (!in_array($user_email_domain, $valid_ceu_domains)) {
