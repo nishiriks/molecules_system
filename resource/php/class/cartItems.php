@@ -47,13 +47,37 @@ class CartItems {
 
     public function finalizeRequest($requestData) {
         $cart_id = $this->getActiveCartId();
-        if ($cart_id) {
-            $stmt = $this->pdo->prepare(
+        if (!$cart_id) {
+            return false;
+        }
+
+        $items = $this->getItems();
+        if (empty($items)) {
+            return false; 
+        }
+
+        try {
+            $this->pdo->beginTransaction();
+
+            $stock_update_stmt = $this->pdo->prepare(
+                "UPDATE tbl_inventory SET stock = stock - ? WHERE product_id = ?"
+            );
+            foreach ($items as $item) {
+                $stock_update_stmt->execute([$item['amount'], $item['product_id']]);
+            }
+
+            $cart_status_stmt = $this->pdo->prepare(
                 "UPDATE tbl_cart SET cart_status = 'pending' WHERE cart_id = ?"
             );
-            return $stmt->execute([$cart_id]);
+            $cart_status_stmt->execute([$cart_id]);
+
+            $this->pdo->commit();
+            return true;
+
+        } catch (Exception $e) {
+            $this->pdo->rollBack();
+            return false;
         }
-        return false;
     }
     
     // MODIFIED: Changed from private to public
