@@ -14,30 +14,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const productCols = document.querySelectorAll('.product-col');
 
     if (searchInput && productCols.length > 0) {
-        // This function filters products already on the page
         const filterProducts = () => {
             const searchTerm = searchInput.value.trim().toLowerCase();
             productCols.forEach(col => {
                 const productName = col.querySelector('.card-text').textContent.toLowerCase();
                 if (productName.includes(searchTerm)) {
-                    col.style.display = ''; // Show matching items
+                    col.style.display = ''; 
                 } else {
-                    col.style.display = 'none'; // Hide non-matching items
+                    col.style.display = 'none'; 
                 }
             });
         };
 
-        // Listen for typing to filter in real-time
         searchInput.addEventListener('input', filterProducts);
-
-        // Listen for the 'Enter' key to perform a full database search
         searchInput.addEventListener('keydown', (event) => {
             if (event.key === 'Enter') {
-                event.preventDefault(); // Stop any default browser action
+                event.preventDefault(); 
                 const searchTerm = searchInput.value.trim();
                 
                 if (searchTerm) {
-                    // Manually redirect to the search results page
                     window.location.href = `admin-search.php?search=${encodeURIComponent(searchTerm)}`;
                 }
             }
