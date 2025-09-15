@@ -71,10 +71,48 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // --- ACTION 2: OPEN "EDIT" POPUP (Admin only) ---
         if (editButton) {
-            // This part of the logic remains unchanged
             const viewPopup = editButton.closest('.product-popup');
             if (!viewPopup) return;
-            // ... (rest of the edit logic)
+            
+            const productId = viewPopup.dataset.editingProductId;
+            let editPopupToShow = null;
+
+            if (viewPopup.id === 'equipment-popup' && editEquipmentPopup) {
+                editPopupToShow = editEquipmentPopup;
+                const title = viewPopup.querySelector('.equipment-title').textContent;
+                const stockText = viewPopup.querySelector('.stock-info').textContent;
+                const stockValue = stockText.replace(/Stock:\s*/, '').trim().split(' ')[0];
+                
+                editPopupToShow.querySelector('.edit-popup-title').textContent = `Edit: ${title}`;
+                editPopupToShow.querySelector('#edit-equipment-title').value = title;
+                editPopupToShow.querySelector('#edit-equipment-stock').value = stockValue;
+
+            } else if (viewPopup.id === 'chemical-popup' && editChemicalPopup) {
+                editPopupToShow = editChemicalPopup;
+                const title = viewPopup.querySelector('.chemical-title').textContent;
+                const stockText = viewPopup.querySelector('.stock-info').textContent;
+                const stockString = stockText.replace(/Stock:\s*/, '').trim();
+                const match = stockString.match(/^([\d.]+)\s*(\w+)?$/);
+                const stockValue = match ? match[1] : '';
+                const stockUnit = match ? match[2] : '';
+
+                editPopupToShow.querySelector('.edit-popup-title').textContent = `Edit: ${title}`;
+                editPopupToShow.querySelector('#edit-chemical-title').value = title;
+                editPopupToShow.querySelector('#edit-chemical-stock').value = stockValue;
+                const unitSelect = editPopupToShow.querySelector('#edit-chemical-stock-unit');
+                if (unitSelect) unitSelect.value = stockUnit || "";
+            }
+
+            if (editPopupToShow) {
+                const hiddenIdInput = editPopupToShow.querySelector('input[name="product_id"]');
+                if (hiddenIdInput) {
+                    hiddenIdInput.value = productId;
+                }
+                
+                viewPopup.classList.remove('show');
+                editPopupToShow.classList.add('show');
+            }
+            return;
         }
 
         // --- ACTION 3: CLOSE ANY POPUP ---
