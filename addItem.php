@@ -1,7 +1,6 @@
 <?php
 session_start();
 require_once './resource/php/init.php';
-require_once './resource/php/class/cartItems.php';
 
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
@@ -10,14 +9,25 @@ if (!isset($_SESSION['user_id'])) {
 
 $config = new config();
 $pdo = $config->con();
-$cart = new CartItems($pdo, $_SESSION['user_id']);
+$success_message = '';
 
-if (isset($_POST['finalize-btn'])) {
-    header('Location: home-admin.php'); 
-    exit();
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add-item-btn'])) {
+    $item_name = $_POST['item_name'];
+    $product_type = $_POST['type'];
+    $quantity = $_POST['amount'];
+    $unit = $_POST['unit'];
+    
+    $image_path = './resource/img/default.png'; 
+
+    $sql = "INSERT INTO tbl_inventory (name, product_type, stock, measure_unit, image_path) VALUES (?, ?, ?, ?, ?)";
+    $stmt = $pdo->prepare($sql);
+
+    if ($stmt->execute([$item_name, $product_type, $quantity, $unit, $image_path])) {
+        $success_message = "Item '$item_name' was added successfully!";
+    } else {
+        $success_message = "Error: Could not add the item.";
+    }
 }
-
-$items_in_cart = $cart->getItems();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -52,7 +62,7 @@ $items_in_cart = $cart->getItems();
       <div class="d-none d-lg-block ms-auto">
           <ul class="navbar-nav pe-3">
             <li class="nav-item">
-              <a class="nav-link text-white" href="#">Requests</a>
+              <a class="nav-link text-white" href="home-admin.php">Requests</a>
             </li>
             <li class="nav-item">
               <a class="nav-link text-white" href="admin-search.php">Inventory</a>
@@ -93,7 +103,7 @@ $items_in_cart = $cart->getItems();
                           <div class="row mb-3 align-items-end">
                             <div class="col-md">
                                 <label for="name" class="form-label">Item Name:</label>
-                                <input type="text" class="form-control" id="name" name="prof_name" placeholder="Enter item name" required>
+                                <input type="text" class="form-control" id="name" name="item_name" placeholder="Enter item name" required>
                             </div>
                         </div>
                             
