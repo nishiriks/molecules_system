@@ -12,10 +12,6 @@ class CartController {
         $this->cart = new CartItems($this->pdo, $this->userId);
     }
 
-    /**
-     * Handles the incoming action from a form.
-     * @param array $postData The $_POST data from the form.
-     */
     public function handleAction($postData) {
         if (!isset($postData['action'])) {
             return; 
@@ -25,10 +21,10 @@ class CartController {
 
         switch ($action) {
             case 'add':
-                if (isset($postData['product_id'])) {
-                    $this->cart->addItem($postData['product_id'], 1);
-                }
-                break;
+                if (isset($postData['product_id'], $postData['quantity'])) {
+                $this->cart->addItem($postData['product_id'], $postData['quantity']);
+            }
+            break;
             case 'remove':
                 if (isset($postData['item_id'])) {
                     $this->cart->removeItem($postData['item_id']);
@@ -45,10 +41,6 @@ class CartController {
         }
     }
 
-    /**
-     * Redirects the user to a specified location.
-     * @param string $location The URL to redirect to.
-     */
     public function redirect($location) {
         header("Location: $location");
         exit();
