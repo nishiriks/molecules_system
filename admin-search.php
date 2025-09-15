@@ -1,32 +1,26 @@
 <?php
-// session_start();
+session_start();
 require_once 'resource/php/init.php';
 
-// This should be an admin check, not a user check
-// if (!isset($_SESSION['user_id'])) { 
-//     header('Location: login.php');
-//     exit();
-// }
+if (!isset($_SESSION['user_id'])) { 
+    header('Location: login.php');
+    exit();
+}
 
 $config = new config();
 $pdo = $config->con();
 
-// A title to show the user what they're viewing
 // $page_title = "All Products";
 
-// Check if a category type was passed in the URL
 if (isset($_GET['type']) && !empty($_GET['type'])) {
-    // A type was provided, so filter the results
     $product_type = $_GET['type'];
     $page_title = "Showing: " . htmlspecialchars($product_type);
     
-    // Use a prepared statement to prevent SQL injection
     $sql = "SELECT * FROM tbl_inventory WHERE product_type = ? ORDER BY name ASC";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$product_type]);
 
 } else {
-    // No type was provided, so get all products
     $sql = "SELECT * FROM tbl_inventory ORDER BY name ASC";
     $stmt = $pdo->query($sql);
 }
