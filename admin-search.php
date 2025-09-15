@@ -200,11 +200,14 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
       <label for="edit-equipment-title">Equipment Name:</label>
       <input type="text" id="edit-equipment-title" name="name">
       <label for="edit-equipment-stock">Stock:</label>
-      <input type="number" id="edit-equipment-stock" name="stock" min="1">
-      <select id="edit-chemical-stock-unit" name="measure_unit">
-          <option value="" disabled>Select Unit</option> 
-          <option value="pcs">units</option>
+      <div class="stock-input-group">
+        <input type="number" id="edit-equipment-stock" name="stock" min="1">
+
+        <select id="edit-equipment-stock-unit" name="measure_unit">
+            <option value="" disabled>Select Unit</option> 
+            <option value="units">units</option>
         </select>
+      </div>
       <div class="button-container">
         <button type="submit" class="save-btn">Save Changes</button>
       </div>
