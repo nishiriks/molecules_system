@@ -142,12 +142,13 @@ main {
   background-color: #E3E3E3;
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: none;
+  /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
   display: flex;
   justify-content: space-between; 
   align-items: center;
   transition: transform 0.2s, box-shadow 0.2s;
-  border: 1px solid #d1d1d1;
+  /* border: 1px solid #d1d1d1; */
 }
 
 .request-details-container {
