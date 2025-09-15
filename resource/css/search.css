@@ -509,6 +509,7 @@ footer,p,.fa-copyright{
   justify-content: space-between;
 }
 
+
 .request-button {
   background-color: #F0F8FF;
   width: 250px;
@@ -524,6 +525,50 @@ footer,p,.fa-copyright{
 }
 
 .request-button:hover {
+  background-color: #F55197;
+  color: #F0F8FF;
+}
+.edit-button-container {
+  display: flex;
+  justify-content: center; /* Centers buttons horizontally if you want */
+  gap: 10px; /* Adds space between the buttons */
+}
+
+.edit-button {
+  background-color: #F0F8FF;
+  color: #F55197;
+  padding: 12px 30px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+  /* Removed width: 250px; because flexbox handles the sizing */
+}
+
+.edit-button:hover {
+  background-color: #F55197;
+  color: #F0F8FF;
+}
+.delete-button {
+  background-color: #F0F8FF;
+  color: #F55197;
+  padding: 12px 30px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+  /* Removed width: 250px; because flexbox handles the sizing */
+}
+
+.delete-button:hover {
   background-color: #F55197;
   color: #F0F8FF;
 }
@@ -727,7 +772,13 @@ footer,p,.fa-copyright{
   border-radius: 5px;
   cursor: pointer;
   font-weight: bold;
+  justify-content: center;
+  margin-right: 10px;
 }
+
+/* .btn-con{
+  justify-content: center;
+} */
 
 .stock-input-group {
   display: flex;
@@ -736,6 +787,9 @@ footer,p,.fa-copyright{
 .stock-input-group input,
 .stock-input-group select {
   flex-grow: 1; 
+}
+#edit-chemical-stock-unit{
+  height: 40px;
 }
 
 .button-container {
