@@ -85,17 +85,17 @@ $items_in_cart = $cart->getItems();
                     <div class="request-form-card">
                         <form method="post" action="">
                           <div class="row mb-3 align-items-end">
-                            <div class="col-md">
+                            <div class="col-md-5">
                                 <label for="name" class="form-label">Name of Instructor or Graduate Student:</label>
                                 <input type="text" class="form-control" id="name" name="prof_name" placeholder="Enter name" required>
                             </div>
-                            <div class="col-md">
-                                <label for="signature" class="form-label">Attach Signature:</label>
-                                <input type="file" class="form-control" id="signature" name="signature" required>
-                            </div>
-                            <div class="col-md">
+                            <div class="col-md-4">
                                 <label for="subject" class="form-label">Subject:</label>
                                 <input type="text" class="form-control" id="subject" name="subject" placeholder="Enter subject" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="room" class="form-label">Room:</label>
+                                <input type="text" class="form-control" id="room" name="room" placeholder="Enter Room" required>
                             </div>
                         </div>
                             
@@ -116,10 +116,7 @@ $items_in_cart = $cart->getItems();
                                 <label for="time-to" class="form-label">Time (To):</label>
                                 <input type="time" class="form-control" id="time-to" name="time_to" required>
                             </div>
-                            <div class="col-md-2">
-                                <label for="room" class="form-label">Room:</label>
-                                <input type="text" class="form-control" id="room" name="room" placeholder="Enter Room" required>
-                            </div>
+                            
                         </div>
                             <h4 class="request-details-title mt-4 mb-3">Request Details:</h4>
                             <div id="request-list-container">
