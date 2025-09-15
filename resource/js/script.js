@@ -9,6 +9,37 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // --- LOGIC FOR LIVE PRODUCT SEARCH ---
+    const searchInput = document.querySelector('.search-input');
+    const productCols = document.querySelectorAll('.product-col');
+
+    if (searchInput && productCols.length > 0) {
+        const filterProducts = () => {
+            const searchTerm = searchInput.value.trim().toLowerCase();
+            productCols.forEach(col => {
+                const productName = col.querySelector('.card-text').textContent.toLowerCase();
+                if (productName.includes(searchTerm)) {
+                    col.style.display = ''; 
+                } else {
+                    col.style.display = 'none'; 
+                }
+            });
+        };
+
+        searchInput.addEventListener('input', filterProducts);
+
+        searchInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault(); 
+                const searchTerm = searchInput.value.trim();
+                
+                if (searchTerm) {                   
+                    window.location.href = `user-search.php?search=${encodeURIComponent(searchTerm)}`;
+                }
+            }
+        });
+    }
+
     // --- CACHE ALL POPUP ELEMENTS ONCE ---
     const equipmentPopup = document.getElementById('equipment-popup');
     const chemicalPopup = document.getElementById('chemical-popup');
@@ -28,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (viewButton) {
             const productId = viewButton.dataset.productId;
             const productType = viewButton.dataset.type;
-            const productStockValue = parseInt(viewButton.dataset.stock, 10); // Get raw stock number
+            const productStockValue = parseInt(viewButton.dataset.stock, 10);
             const cardBody = viewButton.closest('.card-body');
             const productName = cardBody.querySelector('.card-text').textContent;
             const productStock = cardBody.querySelector('.stock-text').textContent;
@@ -43,9 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             if (popupToShow) {
-                // Store the max stock on the popup itself for easy access
                 popupToShow.dataset.maxStock = productStockValue;
-
                 popupToShow.querySelector('.popup-product-type').textContent = productType;
                 popupToShow.dataset.editingProductId = productId;
                 popupToShow.querySelector('.stock-info').textContent = productStock;
@@ -57,11 +86,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     productIdInput.value = productId;
                 }
 
-                // Set max value on the quantity input and reset its value
                 const quantityInput = popupToShow.querySelector('.quantity-input');
                 if (quantityInput) {
-                    quantityInput.value = 1; // Reset to 1
-                    quantityInput.max = productStockValue; // Set the max attribute
+                    quantityInput.value = 1;
+                    quantityInput.max = productStockValue;
                 }
                 
                 popupToShow.classList.add('show');
@@ -117,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // --- ACTION 3: CLOSE ANY POPUP ---
         if (closeTrigger || (popupOverlay && event.target === popupOverlay)) {
-            if (popupOverlay) {
+            if (popupToShow) {
                 popupOverlay.classList.remove('show');
             }
         }
@@ -136,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     currentValue++;
                 }
             } else if (quantityBtn.id.includes('decrement')) {
-                currentValue = Math.max(1, currentValue - 1); 
+                currentValue = Math.max(1, currentValue - 1);
             }
             
             input.value = currentValue;

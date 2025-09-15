@@ -9,18 +9,25 @@ if (!isset($_SESSION['user_id'])) {
 
 $config = new config();
 $pdo = $config->con();
-
 $page_title = "All Products";
 
-if (isset($_GET['type']) && !empty($_GET['type'])) {
+if (isset($_GET['search']) && !empty(trim($_GET['search']))) {
+    $search_term = trim($_GET['search']);
+    $page_title = "Searching for: \"" . htmlspecialchars($search_term) . "\"";
+
+    $sql = "SELECT * FROM tbl_inventory WHERE name LIKE ? ORDER BY name ASC";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(["%$search_term%"]);
+}
+else if (isset($_GET['type']) && !empty($_GET['type'])) {
     $product_type = $_GET['type'];
     $page_title = "Showing: " . htmlspecialchars($product_type);
     
     $sql = "SELECT * FROM tbl_inventory WHERE product_type = ? ORDER BY name ASC";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$product_type]);
-
-} else {
+} 
+else {
     $sql = "SELECT * FROM tbl_inventory ORDER BY name ASC";
     $stmt = $pdo->query($sql);
 }
@@ -118,8 +125,16 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <main class="user-page content">
 <div class="container-fluid">
     <div class="row row-cols-1 row-cols-md-4 row-cols-lg-4 g-3">
+      <?php if (empty($products)): ?>
+        <div class="col-12">
+            <div class="card p-5 text-center">
+                <p class="fs-4 mt-3">No products found in this category.</p>
+                <a href="user-search.php" class="btn btn-primary mt-3 mx-auto" style="max-width: 250px;">View All Products</a>
+            </div>
+        </div>
+      <?php else: ?>
          <?php foreach ($products as $product): ?>
-            <div class="col">
+            <div class="col product-col">
                 <div class="card h-100">
                     <img class="card-img-top" src="<?= htmlspecialchars($product['image_path']) ?>" alt="<?= htmlspecialchars($product['name']) ?>">
                     <div class="card-body">
@@ -145,6 +160,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
             </div>
         <?php endforeach; ?>
+      <?php endif; ?>
     </div>
 </div>
 
