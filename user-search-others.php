@@ -147,6 +147,25 @@ if (!isset($_SESSION['user_id'])) {
     </p>
   </div>
 </footer>
+
+<!-- bubble nav -->
+<input type="checkbox" class="nav--checkbox" id="nav-toggle">
+
+<label for="nav-toggle" class="nav--button">
+    <span>&nbsp;</span>
+</label>
+
+<div class="nav--small nav--btn-1">
+    <a href="cart.php"><i class="fa-solid fa-cart-shopping cart-icon"></i></a>
+</div>
+
+<div class="nav--small nav--btn-2">
+    <a href="index.php"><i class="fa-solid fa-house house-icon"></i></a>
+</div>
+
+<div class="nav--small nav--btn-3">
+    <a href="#"><i class="fa-solid fa-user user-icon"></i></a>
+</div>
     
 </body>
 </html>

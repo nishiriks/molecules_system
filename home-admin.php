@@ -36,7 +36,7 @@
           <a class="nav-link text-white" href="#">Requests</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="admin-search.php">Inventory</a>
+          <a class="nav-link text-white" href="#">Inventory</a>
         </li>
         <li class="nav-item">
           <a class="nav-link text-white" href="#">Report</a>
@@ -70,60 +70,75 @@
 <main class="home-admin">
     <div class="container">
       <h2 class="requests-heading">Requests</h2>
+      <div class="filter-buttons">
+            <button class="filter-btn active">ALL</button>
+            <button class="filter-btn">Faculty Approved</button>
+            <button class="filter-btn">For Pick-up</button>
+            <button   class="filter-btn">Completed</button>
+            <button class="filter-btn">Returned</button>
+            <button class="filter-btn">Canceled</button>
+            <button class="filter-btn">Disapproved</button>
+        </div>
         <div class="row">
             <div class="col-12 mb-3">
                 <div class="request-card">
                   <div class="request-details-container">
                         <div class="request-text">
                             <h5 class="request-title">Request Received!</h5>
-                            <p class="request-info">From: Renz Magsakay</p>
-                            <p class="request-info">Status: Submitted</p>
+                            <p class="request-info">From: Renz Magsakay (Student)</p>
+                            <p class="request-info">Status: Faculty Approved</p>
                         </div>
-                        <div class="request-timestamp">
+                      </div>
+                        <div class="right-column-container">
+                          <div class="request-timestamp">
                             <span class="timestamp-text">08/31/2025 - 7:00PM</span>
                         </div>
+                        <div class="view-button-container">
+                          <button class="view-button-btn">View</button>
+                        </div>
+                      </div>
                     </div>
-                    <div class="view-button-container">
-                        <button class="view-button">View</button>
-                    </div>
-                </div>
-            </div>
+                  </div>
 
             <div class="col-12 mb-3">
                 <div class="request-card">
-                    <div class="request-details-container">
+                  <div class="request-details-container">
                         <div class="request-text">
                             <h5 class="request-title">Request Received!</h5>
-                            <p class="request-info">From: Renz Magsakay</p>
-                            <p class="request-info">Status: Submitted</p>
+                            <p class="request-info">From: Renz Magsakay (Student)</p>
+                            <p class="request-info">Status: Faculty Approved</p>
                         </div>
-                        <div class="request-timestamp">
+                      </div>
+                        <div class="right-column-container">
+                          <div class="request-timestamp">
                             <span class="timestamp-text">08/31/2025 - 7:00PM</span>
                         </div>
+                        <div class="view-button-container">
+                          <button class="view-button-btn">View</button>
+                        </div>
+                      </div>
                     </div>
-                    <div class="view-button-container">
-                        <button class="view-button">View</button>
-                    </div>
-                </div>
-            </div>
+                  </div>
 
             <div class="col-12 mb-3">
                 <div class="request-card">
-                    <div class="request-details-container">
+                  <div class="request-details-container">
                         <div class="request-text">
                             <h5 class="request-title">Request Received!</h5>
-                            <p class="request-info">From: Renz Magsakay</p>
-                            <p class="request-info">Status: Submitted</p>
+                            <p class="request-info">From: Renz Magsakay (Student)</p>
+                            <p class="request-info">Status: Faculty Approved</p>
                         </div>
-                        <div class="request-timestamp">
+                      </div>
+                        <div class="right-column-container">
+                          <div class="request-timestamp">
                             <span class="timestamp-text">08/31/2025 - 7:00PM</span>
                         </div>
+                        <div class="view-button-container">
+                          <button class="view-button-btn">View</button>
+                        </div>
+                      </div>
                     </div>
-                    <div class="view-button-container">
-                        <button class="view-button">View</button>
-                    </div>
-                </div>
-            </div>
+                  </div>
 
         </div>
     </div>

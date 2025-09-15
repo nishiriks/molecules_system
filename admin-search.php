@@ -234,7 +234,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
           <option value="" disabled>Select Unit</option> 
           <option value="ml">ml</option>
           <option value="l">l</option>
-          <option value="pcs">units</option>
+          <option value="units">units</option>
         </select>
       </div>
       <div class="button-container">
@@ -257,6 +257,25 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </p>
   </div>
 </footer>
+
+<!-- bubble nav -->
+<input type="checkbox" class="nav--checkbox" id="nav-toggle">
+
+<label for="nav-toggle" class="nav--button">
+    <span>&nbsp;</span>
+</label>
+
+<div class="nav--small nav--btn-1">
+    <a href="#"><i class="fa-solid fa-file-pen"></i></a>
+</div>
+
+<div class="nav--small nav--btn-2">
+    <a href="home-admin.php"><i class="fa-solid fa-house house-icon"></i></a>
+</div>
+
+<div class="nav--small nav--btn-3">
+    <a href="#"><i class="fa-solid fa-rectangle-list"></i></a>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 
