@@ -151,54 +151,56 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
       <?php endforeach; ?>
     </div></div>
-
+    
     <div id="equipment-popup" class="product-popup">
+      <div class="popup-content">
+        <button class="close-btn">&times;</button>
+        <div class="popup-image-container">
+          <img class="popup-image" src="" alt="Equipment">
+        </div>
+        <div class="popup-details">
+          <div class="equipment-title-container">
+            <div class="equipment-titles-group">
+              <h5 class="equipment-title"></h5>
+              <h5 class="popup-product-type equip-title">Equipment</h5>
+            </div>
+            <span class="stock-info"></span>
+          </div>
+          <h5 class="reservation-title mb-3">Reservation Queue</h5>
+          <div class="reservation-item">
+            August 31, 2025 - PHL 301 - Biology 101
+          </div>
+          <div class="reservation-item">
+            August 31, 2025 - PHL 301 - Biology 101
+          </div>
+        </div>
+        <div class="edit-button-container">
+          <button type="button" class="btn-button edit-button">Edit</button>
+          <button type="button" class="btn-button delete-button">Delete</button>
+        </div>
+      </div>
+    </div>
+
+<div id="chemical-popup" class="product-popup">
   <div class="popup-content">
     <button class="close-btn">&times;</button>
     <div class="popup-image-container">
-      <img class="popup-image" src="" alt="Equipment">
+      <img class="popup-image" src="" alt="Product Image">
     </div>
     <div class="popup-details">
-      <div class="equipment-title-container">
-        <div class="equipment-titles-group">
-          <h5 class="equipment-title"></h5>
-          <h5 class="popup-product-type equip-title">Equipment</h5>
+      <div class="chemical-info-header">
+        <div class="chemical-titles">
+          <h5 class="chemical-title"></h5>
+          <h5 class="popup-product-type chem-title">Chemical</h5>
         </div>
         <span class="stock-info"></span>
       </div>
-      <h5 class="reservation-title mb-3">Reservation Queue</h5>
-      <div class="reservation-item">August 31, 2025 - PHL 301 - Biology 101</div>
-      <div class="reservation-item">
-        August 31, 2025 - PHL 301 - Biology 101
-      </div>
     </div>
     <div class="button-container">
-      <button type="button" class="request-button edit-button">Edit</button>
-      <button type="button" class="request-button delete-button">Delete</button>
+      <button type="button" class="btn-button edit-button">Edit</button>
+      <button type="button" class="btn-button delete-button">Delete</button>
     </div>
   </div>
-</div>
-
-<div id="chemical-popup" class="product-popup">
-    <div class="popup-content">
-        <button class="close-btn">&times;</button>
-        <div class="popup-image-container">
-            <img class="popup-image" src="" alt="Product Image">
-        </div>
-        <div class="popup-details">
-            <div class="chemical-info-header">
-                <div class="chemical-titles">
-                    <h5 class="chemical-title"></h5>
-                    <h5 class="popup-product-type chem-title">Chemical</h5>
-                </div>
-                <span class="stock-info"></span>
-            </div>
-        </div>
-        <div class="button-container">
-            <button type="button" class="request-button edit-button">Edit</button>
-            <button type="button" class="request-button delete-button">Delete</button>
-        </div>
-    </div>
 </div>
 
 <div id="edit-equipment-popup" class="edit-popup">
@@ -220,7 +222,8 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </select>
       </div>
       <div class="button-container">
-        <button type="submit" class="save-btn">Save Changes</button>
+        <button type="submit" class="save-btn">Save</button>
+        <button type="submit" class="save-btn">Cancel</button>
       </div>
     </form>
   </div>
@@ -246,7 +249,8 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </select>
       </div>
       <div class="button-container">
-        <button type="submit" class="save-btn">Save Changes</button>
+        <button type="submit" class="save-btn">Save</button>
+        <button type="submit" class="save-btn">Cancel</button>
        </div>
       </form>
     </div>

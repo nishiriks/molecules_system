@@ -539,6 +539,50 @@ footer,p,.fa-copyright{
   color: #F0F8FF;
 }
 
+.edit-button-container {
+  display: flex;
+  justify-content: center; 
+  gap: 10px; 
+}
+
+.edit-button {
+  background-color: #F0F8FF;
+  color: #F55197;
+  padding: 12px 30px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+  /* Removed width: 250px; because flexbox handles the sizing */
+}
+
+.edit-button:hover {
+  background-color: #F55197;
+  color: #F0F8FF;
+}
+.delete-button {
+  background-color: #F0F8FF;
+  color: #F55197;
+  padding: 12px 30px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+}
+
+.delete-button:hover {
+  background-color: #F55197;
+  color: #F0F8FF;
+}
+
 /* Equipment Pop-up Specific Styles */
 #equipment-popup .popup-content {
   width: 650px;
@@ -663,7 +707,7 @@ footer,p,.fa-copyright{
   text-align: right; 
 }
 #chemical-popup .request-button-container {
-    margin-top: 30px;
+  margin-top: 30px;
 }
 
 
@@ -705,9 +749,9 @@ footer,p,.fa-copyright{
 
 /* This makes the popup visible when the script adds the .show class */
 .edit-popup.show {
-    opacity: 1;
-    visibility: visible;
-    transition: opacity 0.3s ease;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.3s ease;
 }
 
 /* This adds the subtle zoom effect to the content box */
@@ -717,17 +761,17 @@ footer,p,.fa-copyright{
 
 /* Base style for the content box inside the popup */
 .edit-popup-content {
-    background-color: #E3E3E3;
-    margin: 5% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
-    max-width: 400px;
-    border-radius: 10px;
-    position: relative;
-    text-align: center;
-    transform: scale(0.95); /* Start slightly smaller */
-    transition: transform 0.3s ease;
+  background-color: #E3E3E3;
+  margin: 5% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 400px;
+  border-radius: 10px;
+  position: relative;
+  text-align: center;
+  transform: scale(0.95); 
+  transition: transform 0.3s ease;
 }
 
 .edit-popup-content h4 {
@@ -759,6 +803,16 @@ footer,p,.fa-copyright{
   border-radius: 5px;
   cursor: pointer;
   font-weight: bold;
+  justify-content: center;
+  margin-right: 10px;
+}
+
+#edit-chemical-stock-unit{
+  height: 40px;
+}
+
+.btn-button{
+  margin-right: 10px;
 }
 
 .stock-input-group {
@@ -771,49 +825,9 @@ footer,p,.fa-copyright{
 }
 
 .button-container {
-    display: flex;
-    justify-content: center;
-    gap: 15px;               
-    margin-top: 20px;
-}
-
-.edit-button {
-  background-color: #F0F8FF;
-  color: #F55197;
-  padding: 12px 30px;
-  border: none;
-  border-radius: 8px;
-  font-size: 1.2rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  margin-bottom: 10px;
-  /* Removed width: 250px; because flexbox handles the sizing */
-}
-
-.edit-button:hover {
-  background-color: #F55197;
-  color: #F0F8FF;
-}
-.delete-button {
-  background-color: #F0F8FF;
-  color: #F55197;
-  padding: 12px 30px;
-  border: none;
-  border-radius: 8px;
-  font-size: 1.2rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  margin-bottom: 10px;
-  /* Removed width: 250px; because flexbox handles the sizing */
-}
-
-.delete-button:hover {
-  background-color: #F55197;
-  color: #F0F8FF;
+  /* text-align: center; */
+  width: 100%; 
+  /* margin-top: 20px;/ */
 }
 
 /* Quantity Controls */
