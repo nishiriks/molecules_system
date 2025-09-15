@@ -95,7 +95,7 @@ $items_in_cart = $cart->getItems();
         <div class="offcanvas-body">
           <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
             <li class="nav-item">
-              <a class="nav-link active text-white" aria-current="page" href="#">Home</a>
+              <a class="nav-link active text-white" aria-current="page" href="index.php">Home</a>
             </li>
             <li class="nav-item">
               <a class="nav-link text-white" href="#">Profile</a>
@@ -104,7 +104,7 @@ $items_in_cart = $cart->getItems();
               <a class="nav-link text-white" href="user-search.php">Search</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link text-white" href="#">Requests</a>
+              <a class="nav-link text-white" href="cart.php">Requests</a>
             </li>
             <li class="nav-item">
               <a class="nav-link text-white" href="#">About</a>
