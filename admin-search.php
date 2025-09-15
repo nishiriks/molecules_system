@@ -162,6 +162,9 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
       </div>
       <h5 class="reservation-title mb-3">Reservation Queue</h5>
       <div class="reservation-item">August 31, 2025 - PHL 301 - Biology 101</div>
+      <div class="reservation-item">
+        August 31, 2025 - PHL 301 - Biology 101
+      </div>
     </div>
     <div class="edit-button-container">
       <button type="button" class="request-button edit-button">Edit</button>
