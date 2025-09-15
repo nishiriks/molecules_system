@@ -12,6 +12,12 @@ $pdo = $config->con();
 
 // $page_title = "All Products";
 
+$status_message = '';
+if (isset($_SESSION['success_message'])) {
+    $status_message = $_SESSION['success_message'];
+    unset($_SESSION['success_message']); 
+}
+
 if (isset($_GET['type']) && !empty($_GET['type'])) {
     $product_type = $_GET['type'];
     $page_title = "Showing: " . htmlspecialchars($product_type);
@@ -114,6 +120,12 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <main class="admin-page content d-flex flex-column min-vh-100">
   <div class="container-fluid">
+
+   <?php if (!empty($status_message)): ?>
+        <div class="alert alert-info mt-3" role="alert">
+            <?= htmlspecialchars($status_message) ?>
+        </div>
+    <?php endif; ?>
     
     <div class="row row-cols-1 row-cols-md-4 row-cols-lg-4 g-3">
       <?php foreach ($products as $product): ?>
@@ -160,8 +172,9 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         August 31, 2025 - PHL 301 - Biology 101
       </div>
     </div>
-    <div class="edit-button-container">
+    <div class="button-container">
       <button type="button" class="request-button edit-button">Edit</button>
+      <button type="button" class="request-button delete-button">Delete</button>
     </div>
   </div>
 </div>
@@ -181,8 +194,9 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <span class="stock-info"></span>
             </div>
         </div>
-        <div class="edit-button-container">
+        <div class="button-container">
             <button type="button" class="request-button edit-button">Edit</button>
+            <button type="button" class="request-button delete-button">Delete</button>
         </div>
     </div>
 </div>

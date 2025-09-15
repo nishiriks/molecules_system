@@ -14,27 +14,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const productCols = document.querySelectorAll('.product-col');
 
     if (searchInput && productCols.length > 0) {
+        // This function filters products already on the page
         const filterProducts = () => {
             const searchTerm = searchInput.value.trim().toLowerCase();
             productCols.forEach(col => {
                 const productName = col.querySelector('.card-text').textContent.toLowerCase();
                 if (productName.includes(searchTerm)) {
-                    col.style.display = ''; 
+                    col.style.display = ''; // Show matching items
                 } else {
-                    col.style.display = 'none'; 
+                    col.style.display = 'none'; // Hide non-matching items
                 }
             });
         };
 
+        // Listen for typing to filter in real-time
         searchInput.addEventListener('input', filterProducts);
 
+        // Listen for the 'Enter' key to perform a full database search
         searchInput.addEventListener('keydown', (event) => {
             if (event.key === 'Enter') {
-                event.preventDefault(); 
+                event.preventDefault(); // Stop any default browser action
                 const searchTerm = searchInput.value.trim();
                 
-                if (searchTerm) {                   
-                    window.location.href = `user-search.php?search=${encodeURIComponent(searchTerm)}`;
+                if (searchTerm) {
+                    // Manually redirect to the search results page
+                    window.location.href = `admin-search.php?search=${encodeURIComponent(searchTerm)}`;
                 }
             }
         });
@@ -51,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const viewButton = event.target.closest('.btn-view');
         const editButton = event.target.closest('.edit-button');
+        const deleteButton = event.target.closest('.delete-button');
         const closeTrigger = event.target.closest('.close-btn, .edit-close-btn');
         const popupOverlay = event.target.closest('.product-popup, .edit-popup');
         const quantityBtn = event.target.closest('.quantity-btn');
@@ -143,14 +148,39 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // --- ACTION 3: CLOSE ANY POPUP ---
+        // --- ACTION 3: HANDLE DELETE BUTTON (Admin only) ---
+        if (deleteButton) {
+            const popup = deleteButton.closest('.product-popup');
+            const productId = popup.dataset.editingProductId;
+            const productNameElement = popup.querySelector('.equipment-title') || popup.querySelector('.chemical-title');
+            const productName = productNameElement ? productNameElement.textContent : 'this item';
+
+            // Show a confirmation dialog before deleting
+            if (confirm(`Are you sure you want to delete "${productName}"? This action cannot be undone.`)) {
+                // If confirmed, create a temporary form to submit the product ID
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = 'deleteProduct.php';
+                
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'product_id';
+                hiddenInput.value = productId;
+
+                form.appendChild(hiddenInput);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+
+        // --- ACTION 4: CLOSE ANY POPUP ---
         if (closeTrigger || (popupOverlay && event.target === popupOverlay)) {
-            if (popupToShow) {
+            if (popupOverlay) {
                 popupOverlay.classList.remove('show');
             }
         }
 
-        // --- ACTION 4: HANDLE QUANTITY CHANGES ---
+        // --- ACTION 5: HANDLE QUANTITY CHANGES ---
         if (quantityBtn) {
             const popup = quantityBtn.closest('.product-popup');
             const maxStock = popup && popup.dataset.maxStock ? parseInt(popup.dataset.maxStock, 10) : Infinity;
