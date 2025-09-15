@@ -141,7 +141,8 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <button class="btn-view" 
                                     data-product-id="<?= $product['product_id'] ?>"
                                     data-type="<?= htmlspecialchars($product['product_type']) ?>"
-                                    data-image="<?= htmlspecialchars($product['image_path']) ?>">
+                                    data-image="<?= htmlspecialchars($product['image_path']) ?>"
+                                    data-stock="<?= htmlspecialchars($product['stock']) ?>">
                                 View Product
                             </button>
                         </div>
