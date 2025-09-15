@@ -33,10 +33,10 @@
   <div class="d-none d-lg-block ms-auto">
       <ul class="navbar-nav pe-3">
         <li class="nav-item">
-          <a class="nav-link text-white" href="#">Requests</a>
+          <a class="nav-link text-white" href="home-admin.php">Requests</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="#">Inventory</a>
+          <a class="nav-link text-white" href="admin-search.php">Inventory</a>
         </li>
         <li class="nav-item">
           <a class="nav-link text-white" href="#">Report</a>
