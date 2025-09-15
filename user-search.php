@@ -181,6 +181,13 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
       <form action="cartAction.php" method="POST">
           <input type="hidden" name="action" value="add">
           <input type="hidden" name="product_id" id="equipment-popup-product-id" value="">
+
+          <div class="quantity-control-container">
+              <button type="button" class="quantity-btn" id="equipment-decrement-btn">-</button>
+              <input type="number" class="quantity-input" name="quantity" id="equipment-quantity-input" value="1" min="1">
+              <button type="button" class="quantity-btn" id="equipment-increment-btn">+</button>
+          </div>
+
           <button type="submit" class="request-button">Request</button>
       </form>
     </div>
@@ -206,6 +213,13 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
           <form action="cartAction.php" method="POST">
               <input type="hidden" name="action" value="add">
               <input type="hidden" name="product_id" id="chemical-popup-product-id" value="">
+
+              <div class="quantity-control-container">
+                  <button type="button" class="quantity-btn" id="chemical-decrement-btn">-</button>
+                  <input type="number" class="quantity-input" name="quantity" id="chemical-quantity-input" value="1" min="1">
+                  <button type="button" class="quantity-btn" id="chemical-increment-btn">+</button>
+              </div>
+
               <button type="submit" class="request-button">Request</button>
           </form>
         </div>

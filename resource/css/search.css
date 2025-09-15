@@ -764,7 +764,55 @@ footer,p,.fa-copyright{
   /* margin-top: 20px;/ */
 }
 
+/* Quantity Controls */
 
+.quantity-control-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0;
+  width: 100%;
+}
+
+.quantity-btn {
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  color: #555;
+  font-size: 1.5em;
+  padding: 5px 15px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.quantity-btn:hover {
+  background-color: #e0e0e0;
+}
+
+#equipment-decrement-btn,
+#chemical-decrement-btn {
+  border-radius: 5px 0 0 5px;
+}
+
+#equipment-increment-btn,
+#chemical-increment-btn {
+  border-radius: 0 5px 5px 0;
+}
+
+.quantity-input {
+  width: 80px;
+  text-align: center;
+  border: 1px solid #ccc;
+  font-size: 1.2em;
+  padding: 5px 0;
+  -moz-appearance: textfield; 
+
+}
+/* Hide arrows for Chrome, Safari, Edge */
+.quantity-input::-webkit-outer-spin-button,
+.quantity-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
 
 /* bubble nav */
 

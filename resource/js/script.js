@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const editButton = event.target.closest('.edit-button');
         const closeTrigger = event.target.closest('.close-btn, .edit-close-btn');
         const popupOverlay = event.target.closest('.product-popup, .edit-popup');
+        const quantityBtn = event.target.closest('.quantity-btn'); // Variable for quantity buttons
 
         // --- ACTION 1: OPEN "VIEW" POPUP (Works for both Admin and User) ---
         if (viewButton) {
@@ -41,9 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             if (popupToShow) {
-                // **NEW LINE IS HERE**: This finds our new placeholder and sets the correct category
                 popupToShow.querySelector('.popup-product-type').textContent = productType;
-
                 popupToShow.dataset.editingProductId = productId;
                 popupToShow.querySelector('.stock-info').textContent = productStock;
                 popupToShow.querySelector('.popup-image').src = viewButton.dataset.image;
@@ -110,6 +109,22 @@ document.addEventListener('DOMContentLoaded', () => {
             if (popupOverlay) {
                 popupOverlay.classList.remove('show');
             }
+        }
+
+        // --- ACTION 4: HANDLE QUANTITY CHANGES (MOVED INSIDE) ---
+        if (quantityBtn) {
+            const input = quantityBtn.parentElement.querySelector('.quantity-input');
+            if (!input) return;
+
+            let currentValue = parseInt(input.value, 10);
+            
+            if (quantityBtn.id.includes('increment')) {
+                currentValue++;
+            } else if (quantityBtn.id.includes('decrement')) {
+                currentValue = Math.max(1, currentValue - 1); // Prevents going below 1
+            }
+            
+            input.value = currentValue;
         }
     });
 });
