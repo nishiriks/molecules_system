@@ -57,74 +57,63 @@
     </div>
 </nav>
 
-<main class="equipment-page">
-    <div class="container-fluid py-5">
-  <div class="row justify-content-center">
-    <div class="col-lg-8 col-md-10">
-      <div class="request-form-card">
-        <form>
-          <div class="row mb-3 align-items-end">
-            <div class="col-md">
-                <label for="name" class="form-label">Name of Instructor or Graduate Student:</label>
-                <input type="text" class="form-control" id="name" placeholder="Enter name">
-            </div>
-            <!-- <div class="col-md">
-                <label for="signature" class="form-label">Attach Signature:</label>
-                <input type="file" class="form-control" id="signature">
-            </div> -->
-            <div class="col-md">
-                <label for="subject" class="form-label">Subject:</label>
-                <input type="text" class="form-control" id="subject" placeholder="Enter subject">
-            </div>
-        </div>
-          
-          <div class="row mb-4 align-items-end">
-            <div class="col-md-3">
-              <label for="date-from" class="form-label">Date of Use (From):</label>
-              <input type="date" class="form-control" id="date-from" placeholder="Enter date">
-            </div>
-            <div class="col-md-3">
-              <label for="date-to" class="form-label">To (Disregard if one day use):</label>
-              <input type="date" class="form-control" id="date-to" placeholder="Enter date">
-            </div>
-            <div class="col-md-2">
-              <label for="time-from" class="form-label">Time (From):</label>
-              <input type="time" class="form-control" id="time-from" placeholder="Enter time">
-            </div>
-            <div class="col-md-2">
-              <label for="time-to" class="form-label">Time (To):</label>
-              <input type="time" class="form-control" id="time-to" placeholder="Enter time">
-            </div>
-            <div class="col-md-2">
-              <label for="room" class="form-label">Room:</label>
-              <input type="text" class="form-control" id="room" placeholder="Enter Room">
-            </div>
-          </div>
+ <main class="equipment-page">
+        <div class="container-fluid py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 col-md-10">
+                    <div class="request-form-card">
+                        <form method="post" action="">
+                          <div class="row mb-3 align-items-end">
+                            <div class="col-md-5">
+                                <label for="name" class="form-label">Name of Instructor or Graduate Student:</label>
+                                <input type="text" class="form-control" id="name" name="prof_name" placeholder="Enter name" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="subject" class="form-label">Subject:</label>
+                                <input type="text" class="form-control" id="subject" name="subject" placeholder="Enter subject" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="room" class="form-label">Room:</label>
+                                <input type="text" class="form-control" id="room" name="room" placeholder="Enter Room" required>
+                            </div>
+                        </div>
+                            
+                        <div class="row mb-4 align-items-end">
+                            <div class="col-md-3">
+                                <label for="date-from" class="form-label">Date of Use (From):</label>
+                                <input type="date" class="form-control" id="date-from" name="date_from" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="date-to" class="form-label">To (Disregard if one day use):</label>
+                                <input type="date" class="form-control" id="date-to" name="date_to">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="time-from" class="form-label">Time (From):</label>
+                                <input type="time" class="form-control" id="time-from" name="time_from" required>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="time-to" class="form-label">Time (To):</label>
+                                <input type="time" class="form-control" id="time-to" name="time_to" required>
+                            </div>
+                          </div>
+                          <h4 class="request-details-title mt-4 mb-3">Request Details:</h4>
+                          <div id="request-list-container">
+                            <div class="request-item-card d-flex align-items-center mb-3">
+                              <div class="item-details-simple flex-grow-1">
+                                <h5 class="item-name mb-0"></h5>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="d-flex justify-content-end mt-4">
+                            <button type="submit" class="btn finalize-btn" name="finalize-btn">Finalize Request</button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </main>
 
-          <h4 class="request-details-title mt-4 mb-3">Request Details:</h4>
-          
-          <div id="request-list-container">
-            <div class="request-item-card d-flex align-items-center mb-3">
-              <div class="item-details-simple flex-grow-1">
-                <h5 class="item-name mb-0">Hydrochloric Acid - 10mL</h5>
-              </div>
-            </div>
-            <div class="request-item-card d-flex align-items-center mb-3">
-              <div class="item-details-simple flex-grow-1">
-                <h5 class="item-name mb-0">Microscope - x1</h5>
-              </div>
-            </div>
-          </div>
-          
-          <div class="d-flex justify-content-end mt-4">
-            <button type="submit" class="btn finalize-btn">Finalize Request</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-</main>
 
 <footer>
   <div class="container-fluid">

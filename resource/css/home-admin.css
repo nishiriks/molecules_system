@@ -399,9 +399,14 @@ footer,p,.fa-copyright{
   background-color: #E3E3E3; 
   padding: 30px;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
 }
 
+.form-control{
+  border: 1px solid #000000;
+  box-shadow: -4px 4px 4px 0px #00000040;
+
+}
 .request-details-title {
   color: #161542; 
   font-weight: bold;
@@ -524,4 +529,3 @@ footer,p,.fa-copyright{
   padding: 8px 15px;
 }
 }
-
