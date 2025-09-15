@@ -237,7 +237,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </div>
 
 <div class="nav--small nav--btn-2">
-    <a href="#"><i class="fa-solid fa-house house-icon"></i></a>
+    <a href="index.php"><i class="fa-solid fa-house house-icon"></i></a>
 </div>
 
 <div class="nav--small nav--btn-3">

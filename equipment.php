@@ -2,7 +2,15 @@
 session_start();
 require_once './resource/php/init.php';
 require_once './resource/php/class/cartItems.php';
+require_once './resource/php/class/requestForm.php';
 
+$showAlert = false;
+if (isset($_SESSION['show_finalized_alert']) && $_SESSION['show_finalized_alert'] === true) {
+    $showAlert = true;
+    unset($_SESSION['show_finalized_alert']);
+}
+
+// Security check for user login
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit();
@@ -12,8 +20,41 @@ $config = new config();
 $pdo = $config->con();
 $cart = new CartItems($pdo, $_SESSION['user_id']);
 
-if (isset($_POST['finalize-btn'])) {
-    header('Location: home-admin.php'); 
+// --- UPDATED FORM PROCESSING BLOCK ---
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['finalize-btn'])) {
+    
+    // 1. Get the active cart_id BEFORE we finalize it
+    $active_cart_id = $cart->getActiveCartId();
+
+    if ($active_cart_id) {
+        // NOTE: A full file upload implementation is more complex.
+        // This is a placeholder for the signature file name.
+        $signature_path = $_POST['signature']; 
+
+        // 2. Create the requestForm object with all the data from the form
+        $request = new requestForm(
+            $_POST['prof_name'],
+            $signature_path, 
+            $_POST['subject'],
+            $_POST['date_from'],
+            $_POST['date_to'] ?? '', // Use null coalescing for optional fields
+            $_POST['time_from'],
+            $_POST['time_to'],
+            $_POST['room'],
+            '', // tech_name is not in the form, so we pass an empty string
+            'pending' // The initial status of the request
+        );
+
+        // 3. Save the request details (prof name, subject, etc.) to the database
+        $request->reqOrder($active_cart_id);
+
+        // 4. Now, finalize the cart by setting its status to 'pending'
+        $cart->finalizeRequest($_POST);
+
+        $_SESSION['show_finalized_alert'] = true;
+    }
+
+    header('Location: equipment.php');
     exit();
 }
 
@@ -155,6 +196,13 @@ $items_in_cart = $cart->getItems();
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+
+    <?php if ($showAlert): ?>
+    <script type="text/javascript">
+        alert('Request submitted for approval');
+        window.location.href = 'index.php';
+    </script>
+    <?php endif; ?>
     
   </body>
 </html>
