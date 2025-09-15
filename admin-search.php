@@ -100,9 +100,9 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </a>
       </li>
       <li class="nav-links chemicals-btn">
-        <a href="#">
+        <a href="addItem.php">
           <i class="fa-solid fa-ellipsis icon"></i>
-          <span class="text nav-text">Others</span>
+          <span class="text nav-text">Add Item</span>
         </a>
       </li>
     </ul>

@@ -7,14 +7,6 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-$config = new config();
-$pdo = $config->con();
-
-$sql = "SELECT * FROM tbl_inventory ORDER BY name ASC";
-$stmt = $pdo->query($sql);
-
-$products = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
 ?>
 
 <!DOCTYPE html>
@@ -38,7 +30,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 </head>
 <body>
-<!-- 2nd nav -->
+<!-- nav -->
 <nav class="sidebar close">
   <header>
     <div class="toggle-container">
@@ -53,37 +45,37 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
           <input type="search" placeholder=" Search..." class="search-input">
       </li>
       <li class="nav-links chemicals-btn">
-        <a href="#">
+        <a href="user-search.php?type=Chemical">
           <i class="fa-solid fa-flask icon"></i>
           <span class="text nav-text">Chemicals</span>
         </a>
       </li>
       <li class="nav-links chemicals-btn">
-        <a href="#">
+        <a href="user-search.php?type=Supplies">
           <i class="fa-solid fa-prescription-bottle icon"></i>
           <span class="text nav-text">Supplies</span>
         </a>
       </li>
       <li class="nav-links chemicals-btn">
-        <a href="#">
+        <a href="user-search.php?type=Models">
           <i class="fa-solid fa-diagram-project  icon"></i>
           <span class="text nav-text">Model/Charts</span>
         </a>
       </li>
       <li class="nav-links chemicals-btn">
-        <a href="#">
+        <a href="user-search.php?type=Equipment">
           <i class="fa-solid fa-microscope icon"></i>
           <span class="text nav-text">Equipments</span>
         </a>
       </li>
       <li class="nav-links chemicals-btn">
-        <a href="#">
+        <a href="user-search.php?type=Specimen">
           <i class="fa-solid fa-vial icon"></i>
           <span class="text nav-text">Specimens</span>
         </a>
       </li>
       <li class="nav-links chemicals-btn">
-        <a href="#">
+        <a href="user-search-others.php">
           <i class="fa-solid fa-ellipsis icon"></i>
           <span class="text nav-text">Others</span>
         </a>
@@ -102,56 +94,47 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </nav>
 
 <!-- main content for user page-->
-<main class="user-page content">
-<div class="container-fluid">
-    <div class="row row-cols-1 row-cols-md-4 row-cols-lg-4 g-3">
-            <div class="col">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <div class="row justify-content-center">
-                            <div class="col-lg-8 col-md-10">
-                                <div class="request-form-card">
-                                    <form method="post" action="">
-                                      <div class="row mb-3 align-items-end">
-                                        <div class="col-md">
-                                            <label for="name" class="form-label">Item Name:</label>
-                                            <input type="text" class="form-control" id="name" name="prof_name" placeholder="Enter item name" required>
-                                        </div>
-                                    </div>
-                                        
-                                    <div class="row mb-3 align-items-end">
-                                      <div class="col-md">
-                                            <label for="type" class="form-label">Product Type:</label>
-                                            <select name="type" id="type" class="form-select">
-                                              <option value="Chemical">Chemical</option>
-                                              <option value="Equipment">Equipment</option>
-                                              <option value="Models">Models</option>
-                                              <option value="Specimen">Specimen</option>
-                                              <option value="Supplies">Supplies</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md">
-                                            <label for="amount" class="form-label">Quantity:</label>
-                                            <input type="number" class="form-control" id="amount" name="amount" placeholder="Enter Stock" min="1" required>
-                                        </div>
-                                        <div class="col-md">
-                                            <label for="unit" class="form-label">Unit Measure:</label>
-                                            <input type="text" class="form-control" id="unit" name="unit" placeholder="Enter Unit of Measurement" min="1" required>
-                                        </div>
-                                        <div class="d-flex justify-content-end mt-4">
-                                            <button type="submit" class="btn finalize-btn" name="finalize-btn">Add Item</button>
-                                        </div>
-                                    </form>
-                                  </div>
-                              </div>
-                          </div>
+    <main class="equipment-page">
+        <div class="container-fluid py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 col-md-10">
+                    <div class="request-form-card">
+                        <form method="post" action="">
+                          <div class="row mb-3 align-items-end">
+                            <div class="col-md">
+                                <label for="name" class="form-label">Item Name:</label>
+                                <input type="text" class="form-control" id="name" name="prof_name" placeholder="Enter item name" required>
+                            </div>
+                        </div>
+                            
+                        <div class="row mb-3 align-items-end">
+                          <div class="col-md">
+                                <label for="type" class="form-label">Product Type:</label>
+                                <select name="type" id="type" class="form-select">
+                                  <option value="Chemical">Chemical</option>
+                                  <option value="Equipment">Equipment</option>
+                                  <option value="Models">Models</option>
+                                  <option value="Specimen">Specimen</option>
+                                  <option value="Supplies">Supplies</option>
+                                </select>
+                            </div>
+                            <div class="col-md">
+                                <label for="amount" class="form-label">Quantity:</label>
+                                <input type="number" class="form-control" id="amount" name="amount" placeholder="Enter Stock" min="1" required>
+                            </div>
+                            <div class="col-md">
+                                <label for="unit" class="form-label">Unit Measure:</label>
+                                <input type="text" class="form-control" id="unit" name="unit" placeholder="Enter Unit of Measurement" min="1" required>
+                            </div>
+                            <div class="d-flex justify-content-end mt-4">
+                                <button type="submit" class="btn request-item-btn" name="request-item-btn">Request Item</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
-    </div>
-</div>
-
-</main>
+        </div>
+    </main>
 
 <!-- footer -->
 <footer>
