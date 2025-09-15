@@ -180,13 +180,6 @@ main {
   font-size: 0.9rem;
 }
 
-.view-button-container {
-  display: flex;
-  gap: 10px; 
-  justify-content: center;
-  align-items: center;
-}
-
 
 .request-card:hover {
   transform: translateY(-5px);
@@ -218,7 +211,7 @@ main {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 10px; /* Add a small gap between the buttons */
+  gap: 10px; /
 }
 
 /* Style for the "Cancel" button */
@@ -236,10 +229,11 @@ main {
 }
 
 /* Style for the "View" button */
-.view-button {
+.view-button-btn {
   background-color: #FFFFFF; 
   color: #F55197; 
   border: none;
+  width: 120px;
   padding: 8px 20px;
   border-radius: 20px;
   cursor: pointer;
@@ -250,6 +244,10 @@ main {
 }
 
 .cancel-button:hover, .view-button:hover {
+  background-color: #F55197;
+  color: #fff;
+}
+.cancel-button:hover, .view-button-btn:hover {
   background-color: #F55197;
   color: #fff;
 }
@@ -527,11 +525,27 @@ footer,p,.fa-copyright{
   box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
 }
 
+/* request history css */
 
-
-
-
-
+.history-button-container {
+  margin-left: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px; /
+}
+.view-button{
+  background-color: #FFFFFF; 
+  color: #F55197; 
+  border: none;
+  padding: 8px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s, color 0.3s;
+  white-space: nowrap;
+}
 
 
 @media (max-width: 768px) {
