@@ -165,7 +165,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
       <div class="equipment-title-container">
         <div class="equipment-titles-group">
           <h5 class="equipment-title">Microscope</h5>
-          <h5 class="equipment-title equip-title">Equipment</h5>
+          <h5 class="popup-product-type equip-title">Equipment</h5>
         </div>
         <span class="stock-info">Stock: 5</span>
       </div>
@@ -197,7 +197,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <div class="chemical-info-header">
                 <div class="chemical-titles">
                     <h5 class="chemical-title">Hydrochloric Acid</h5>
-                    <h5 class="chemical-title chem-title">Chemical</h5>
+                    <h5 class="popup-product-type chem-title"></h5>
                 </div>
                 <span class="stock-info">Stock: 5 ml</span>
             </div>

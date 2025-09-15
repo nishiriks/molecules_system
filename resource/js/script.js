@@ -26,27 +26,29 @@ document.addEventListener('DOMContentLoaded', () => {
         // --- ACTION 1: OPEN "VIEW" POPUP (Works for both Admin and User) ---
         if (viewButton) {
             const productId = viewButton.dataset.productId;
-            const productType = viewButton.dataset.type.toLowerCase();
+            const productType = viewButton.dataset.type; // Get the type, e.g., "Specimen"
             const cardBody = viewButton.closest('.card-body');
             const productName = cardBody.querySelector('.card-text').textContent;
             const productStock = cardBody.querySelector('.stock-text').textContent;
             let popupToShow = null;
 
-            if (productType === 'equipment' || productType === 'equipments') {
+            if (productType.toLowerCase() === 'equipment' || productType.toLowerCase() === 'equipments') {
                 popupToShow = equipmentPopup;
                 if(popupToShow) popupToShow.querySelector('.equipment-title').textContent = productName;
-            } else if (['chemical', 'chemicals', 'supplies', 'specimen', 'models'].includes(productType)) {
+            } else { // All other types go to the chemical-style popup
                 popupToShow = chemicalPopup;
                 if(popupToShow) popupToShow.querySelector('.chemical-title').textContent = productName;
             }
             
             if (popupToShow) {
-                popupToShow.dataset.editingProductId = productId; // Store ID for admin edit
+                // **NEW LINE IS HERE**: This finds our new placeholder and sets the correct category
+                popupToShow.querySelector('.popup-product-type').textContent = productType;
+
+                popupToShow.dataset.editingProductId = productId;
                 popupToShow.querySelector('.stock-info').textContent = productStock;
                 popupToShow.querySelector('.popup-image').src = viewButton.dataset.image;
                 popupToShow.querySelector('.popup-image').alt = productName;
 
-                // For the user "Request" form, populate the hidden product_id
                 const productIdInput = popupToShow.querySelector('input[name="product_id"]');
                 if (productIdInput) {
                     productIdInput.value = productId;
@@ -71,6 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const stockText = viewPopup.querySelector('.stock-info').textContent;
                 const stockValue = stockText.replace(/Stock:\s*/, '').trim().split(' ')[0];
                 
+                editPopupToShow.querySelector('.edit-popup-title').textContent = `Edit: ${title}`;
                 editPopupToShow.querySelector('#edit-equipment-title').value = title;
                 editPopupToShow.querySelector('#edit-equipment-stock').value = stockValue;
 
@@ -83,6 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const stockValue = match ? match[1] : '';
                 const stockUnit = match ? match[2] : '';
 
+                editPopupToShow.querySelector('.edit-popup-title').textContent = `Edit: ${title}`;
                 editPopupToShow.querySelector('#edit-chemical-title').value = title;
                 editPopupToShow.querySelector('#edit-chemical-stock').value = stockValue;
                 const unitSelect = editPopupToShow.querySelector('#edit-chemical-stock-unit');

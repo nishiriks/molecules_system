@@ -156,7 +156,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
       <div class="equipment-title-container">
         <div class="equipment-titles-group">
           <h5 class="equipment-title"></h5>
-          <h5 class="equipment-title equip-title">Equipment</h5>
+          <h5 class="popup-product-type equip-title">Equipment</h5>
         </div>
         <span class="stock-info"></span>
       </div>
@@ -179,7 +179,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <div class="chemical-info-header">
                 <div class="chemical-titles">
                     <h5 class="chemical-title"></h5>
-                    <h5 class="chemical-title chem-title">Chemical</h5>
+                    <h5 class="popup-product-type chem-title">Chemical</h5>
                 </div>
                 <span class="stock-info"></span>
             </div>
@@ -193,7 +193,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <div id="edit-equipment-popup" class="edit-popup">
   <div class="edit-popup-content">
     <button type="button" class="close-btn edit-close-btn">&times;</button>
-    <h4>Edit Equipment Details</h4>
+    <h4 class="edit-popup-title">Edit Equipment Details</h4>
     <form id="edit-equipment-form" action="updateProduct.php" method="POST">
       <input type="hidden" name="product_id" value="">
       
@@ -201,6 +201,10 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
       <input type="text" id="edit-equipment-title" name="name">
       <label for="edit-equipment-stock">Stock:</label>
       <input type="number" id="edit-equipment-stock" name="stock">
+      <select id="edit-chemical-stock-unit" name="measure_unit">
+          <option value="" disabled>Select Unit</option> 
+          <option value="pcs">units</option>
+        </select>
       <div class="button-container">
         <button type="submit" class="save-btn">Save Changes</button>
       </div>
@@ -211,7 +215,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <div id="edit-chemical-popup" class="edit-popup">
   <div class="edit-popup-content">
     <button type="button" class="close-btn edit-close-btn">&times;</button>
-    <h4>Edit Chemical Details</h4>
+    <h4 class="edit-popup-title">Edit Chemical Details</h4>
     <form id="edit-chemical-form" action="updateProduct.php" method="POST">
       <input type="hidden" name="product_id" value="">
 
@@ -224,9 +228,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
           <option value="" disabled>Select Unit</option> 
           <option value="ml">ml</option>
           <option value="l">l</option>
-          <option value="g">g</option>
-          <option value="kg">kg</option>
-          <option value="pcs">pcs</option>
+          <option value="pcs">units</option>
         </select>
       </div>
       <div class="button-container">
