@@ -1,3 +1,40 @@
+<?php 
+session_start();
+
+if (isset($_SESSION['user_id'])) {
+    header('Location: index.php'); 
+    exit();
+}
+
+require_once './resource/php/init.php';
+require_once './resource/php/class/Auth.php';
+$auth = new Auth();
+
+$errors = $_SESSION['login_errors'] ?? [];
+unset($_SESSION['login_errors']);
+
+$success_message = $_SESSION['success_message'] ?? '';
+unset($_SESSION['success_message']);
+
+if (isset($_GET['registered']) && $_GET['registered'] == 'success') {
+    $success_message = "Registration successful! Please log in.";
+}
+
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $email = $_POST['user_email'];
+    $password = $_POST['user_password'];
+
+    $login_errors = $auth->login($email, $password); 
+
+    if (!empty($login_errors)) {
+        $_SESSION['login_errors'] = $login_errors;
+        header('Location: login.php');
+        exit();
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -32,15 +69,23 @@
                             <img src="resource/img/molecules-logo.png" class="logo-img mb-3">
                             <h2 class="greetings fw-bold mb-1">Welcome Back!</h2>
                             <p class="text-email mb-4 d-flex flex-column align-items-center">Login with Email</p>
-                            <form>
+                            <?php //logUserMsg()?>
+                             <?php
+                                if (!empty($errors)) {
+                                    foreach ($errors as $error) {
+                                        $auth->showAlert($error);
+                                    }
+                                }
+                            ?>
+                            <form method="post">
                                 <div class="mb-3 text-start input-wrapper">
                                     <label class="label-text">Email:</label>
-                                    <input type="email" class="form-control d-flex flex-column align-items-center" placeholder="Enter email">
+                                    <input type="email" class="form-control d-flex flex-column align-items-center" placeholder="Enter email" name="user_email">
                                 </div>
                                 
                                 <div class="mb-3 text-start input-wrapper">
                                     <label class="label-text">Password:</label>
-                                    <input type="password" class="form-control" placeholder="Enter password">
+                                    <input type="password" class="form-control" placeholder="Enter password" name="user_password">
                                 </div>
                                 
                                 <div class="d-flex justify-content-between mb-3 input-wrapper">
@@ -50,9 +95,8 @@
                                     </div>
                                     <a href="#" class="label-t">Forgot your password?</a>
                                 </div>
-                                
-                                <button class="log-button btn btn-primary w-100 mb-2">Log In</button>
-                                <p class="log-footer">Don’t Have an Account? <a href="#" class="sign-footer">Sign up here</a></p>
+                                <button name="log-button" type="submit" class="log-button btn btn-primary w-100 mb-2">Log In</button>
+                                <p class="log-footer">Don’t Have an Account? <a href="sign-up.php" class="sign-footer">Sign up here</a></p>
                             </form>
                         </div>
 
@@ -61,5 +105,7 @@
             </div>
         </div>
     </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 </body>
 </html>

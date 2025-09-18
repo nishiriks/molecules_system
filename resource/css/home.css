@@ -3,7 +3,9 @@
 }
 
 body{
-    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
     font-family: 'Montserrat';
 }
 
@@ -89,6 +91,10 @@ section.home{
 .row-no-gutters>*{
     padding: 0 !important;
 }
+.card-link, .card-link:visited{
+    text-decoration: none;
+}
+
 .home-card{
     margin-top: 5%;
     -webkit-box-shadow: -3px 2px 2px 0px rgba(110,110,110,0.57); 
@@ -125,18 +131,19 @@ i{
     font-size: 3rem;
 }
 
-
-/*  */
-
-.container {
-  padding-bottom: 100px; /* adjust based on footer height */
+/* footer */
+.container{
+    padding-bottom: 50px;
+}
+main {
+    flex-grow: 1;
 }
 
-footer{
+footer {
     background-color: #161542;
-    height: 10vh;
-    margin-top: 3%;
 }
+
 footer,p,.fa-copyright{
     font-size: 0.7rem;
+
 }

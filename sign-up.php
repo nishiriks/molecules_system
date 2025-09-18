@@ -1,3 +1,25 @@
+<?php require_once './resource/php/init.php';
+require_once './resource/php/class/Auth.php';
+$auth = new Auth();
+$errors = [];
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $fname = $_POST['first_name'];
+    $lname = $_POST['last_name'];
+    $email = $_POST['email'];
+    $pass  = $_POST['password'];
+    $cpass = $_POST['confirm_password'];
+    $snum  = $_POST['student_number'];
+
+    $errors = $auth->register($fname, $lname, $email, $pass, $cpass, $snum);
+
+    if (empty($errors)) {
+        header('Location: login.php?registered=success');
+        exit();
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -43,37 +65,43 @@
                         <div class="col-md-6 p-4">
                             <img src="resource/img/molecules-logo.png" class="logo-img mb-3">
                             <h2 class="greetings fw-bold mb-1">Sign up</h2>
-
-                            <form onsubmit="event.preventDefault(); showAlert();">
+                                <?php
+                                    if (!empty($errors)) {
+                                        foreach ($errors as $error) {
+                                            $auth->showAlert($error);
+                                        }
+                                    }
+                                ?>
+                            <form method="POST" action="sign-up.php">
                                 <div class="row mb-3 mt-3">
                                     <div class="col-md-6">
                                         <label class="label-text">First Name:</label>
-                                        <input type="text" class="form-control" placeholder="Enter your first name">
+                                        <input type="text" class="form-control" name="first_name" placeholder="Enter your first name" required>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="label-text">Last Name:</label>
-                                        <input type="text" class="form-control" placeholder="Enter your last name">
+                                        <input type="text" class="form-control" name="last_name" placeholder="Enter your last name" required>
                                     </div>
                                 </div>
                                 <div class="row mb-3">
                                     <div class="col-md-6">
                                         <label class="label-text">Email:</label>
-                                        <input type="email" class="form-control" placeholder="Enter your email">
+                                        <input type="email" class="form-control" name="email" placeholder="Enter your email" required>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="label-text">Student Number:</label>
-                                        <input type="text" class="form-control" placeholder="Enter student number">
+                                        <input type="text" class="form-control" name="student_number" placeholder="Enter student number">
                                     </div>
                                 </div>
 
                                 <div class="row mb-3">
                                     <div class="col-md-6">
                                         <label class="label-text">Password:</label>
-                                        <input type="text" class="form-control" placeholder="Enter password">
+                                        <input type="password" class="form-control" name="password" placeholder="Enter password" required>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="label-text">Confirm Password:</label>
-                                        <input type="password" class="form-control" placeholder="Confirm password">
+                                        <input type="password" class="form-control" name="confirm_password" placeholder="Confirm password" required>
                                     </div>
                                 </div>
 
@@ -82,7 +110,7 @@
                                     <input type="password" class="form-control" placeholder="Confirm password">
                                 </div> -->
                                 <button class="log-button btn btn-primary w-100 mb-2">Create Account</button>
-                                <i class=" icon-i fa-solid fa-arrow-right"></i>
+                                <a href="login.php"><i class=" icon-i fa-solid fa-arrow-right"></i></a>
                             </form>
                         </div>
                     </div>
@@ -90,6 +118,8 @@
             </div>
         </div>
     </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 </body>
 </html>
 
