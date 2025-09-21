@@ -1,11 +1,12 @@
 <?php
 session_start();
-require_once './resource/php/init.php';
+require_once 'resource/php/init.php';
 
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['user_id'])) { 
     header('Location: login.php');
     exit();
 }
+
 
 $config = new config();
 $pdo = $config->con();
