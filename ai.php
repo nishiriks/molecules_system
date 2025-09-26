@@ -1,5 +1,4 @@
-<?php // from Google AI Studio
-
+<?php
 session_start();
 require_once 'resource/php/init.php';
 
@@ -9,21 +8,18 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $config = new config();
-$pdo = $config->con();   // PDO connection
-
-$GEMINI_API_KEY = 'AIzaSyB8JO8mY6M0osBW62Q8XR1eaiYY7psL1VM'; 
+$pdo = $config->con();
+$GEMINI_API_KEY = $config->getGeminiKey();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $postData = json_decode(file_get_contents('php://input'), true);
     $prompt = trim($postData['prompt'] ?? '');
 
-    // === STAT SUMMARY ===
+    // --- STAT_SUMMARY ---
     if ($prompt === 'STAT_SUMMARY') {
-        // Dates for current month
         $firstDay = date('Y-m-01');
         $lastDay  = date('Y-m-t');
 
-        // Prepared statement to get total ordered per product
         $sql = "
             SELECT i.name,
                    SUM(ci.amount) as total_amount
@@ -36,17 +32,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ORDER BY total_amount DESC
         ";
 
-        try {
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([$firstDay, $lastDay]);
-            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            header('Content-Type: application/json');
-            echo json_encode(["answer" => "DB error: ".$e->getMessage()]);
-            exit;
-        }
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$firstDay, $lastDay]);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Build text for Gemini
         $summaryText = "Here are the products ordered (completed status) from $firstDay to $lastDay:\n\n";
         if (!empty($rows)) {
             foreach ($rows as $row) {
@@ -56,27 +45,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $summaryText .= "(No completed orders this month)";
         }
 
-        // Replace prompt with actual text to send to Gemini
-        $prompt = "Provide a clear statistical summary of the following data:\n\n".$summaryText;
+        $prompt = "Provide a clear statistical summary of the following data. 
+Return the answer formatted in valid HTML with headings, bullet lists or tables (use <h2>, <ul>, <li>, <table> if needed). 
+Do NOT include <html> or <body> tags, only the HTML for the content itself:\n\n".$summaryText;
     }
 
-    // === STOCK ANALYSIS ===
+    // --- STOCK_ANALYSIS ---
     if ($prompt === 'STOCK_ANALYSIS') {
-        // 1. Fetch inventory
+
         $invSql = "SELECT name, stock, measure_unit, product_type FROM tbl_inventory";
-        try {
-            $invStmt = $pdo->query($invSql);
-            $inventory = $invStmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            header('Content-Type: application/json');
-            echo json_encode(["answer" => "DB error (inventory): ".$e->getMessage()]);
-            exit;
+        $invRows = $pdo->query($invSql)->fetchAll(PDO::FETCH_ASSOC);
+
+        $invText = "Inventory data:\n";
+        foreach ($invRows as $r) {
+            $invText .= "- {$r['name']} ({$r['product_type']}): {$r['stock']} {$r['measure_unit']}\n";
         }
 
-        // 2. Fetch current month sales summary
         $firstDay = date('Y-m-01');
         $lastDay  = date('Y-m-t');
-
         $salesSql = "
             SELECT i.name,
                    SUM(ci.amount) as total_amount
@@ -88,42 +74,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             GROUP BY i.name
             ORDER BY total_amount DESC
         ";
+        $stmt = $pdo->prepare($salesSql);
+        $stmt->execute([$firstDay, $lastDay]);
+        $salesRows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        try {
-            $salesStmt = $pdo->prepare($salesSql);
-            $salesStmt->execute([$firstDay, $lastDay]);
-            $sales = $salesStmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            header('Content-Type: application/json');
-            echo json_encode(["answer" => "DB error (sales): ".$e->getMessage()]);
-            exit;
-        }
-
-        // 3. Build inventory text
-        $invText = "Inventory (current stock):\n";
-        foreach ($inventory as $inv) {
-            $invText .= "- {$inv['name']} ({$inv['measure_unit']}): {$inv['stock']} units [{$inv['product_type']}]\n";
-        }
-
-        // 4. Build sales text
-        $salesText = "Monthly Completed Orders ($firstDay to $lastDay):\n";
-        if (!empty($sales)) {
-            foreach ($sales as $row) {
-                $salesText .= "- {$row['name']}: {$row['total_amount']} ordered\n";
+        $salesText = "Sales data ($firstDay to $lastDay):\n";
+        if (!empty($salesRows)) {
+            foreach ($salesRows as $r) {
+                $salesText .= "- {$r['name']}: {$r['total_amount']} units ordered\n";
             }
         } else {
             $salesText .= "(No completed orders this month)\n";
         }
 
-        // 5. Create analysis prompt for Gemini
-        $prompt = "Analyze the following inventory and recent sales data. "
-                ."Identify items that are nearing out of stock and predict which items "
-                ."might run out soon based on recent demand:\n\n"
-                .$invText."\n".$salesText;
+        $prompt = "Analyze the following inventory and recent sales data. 
+Return the answer formatted in valid HTML with clear headings and bullet lists or tables (use <h2>, <ul>, <li>, <table> if needed). 
+Do NOT include <html> or <body> tags, only the HTML for the content itself. 
+Here is the data:\n\n".$invText."\n".$salesText;
     }
 
     // --- Gemini API call ---
-    $endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$GEMINI_API_KEY";
+    $endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={$GEMINI_API_KEY}";
 
     $payload = [
         "contents" => [
@@ -185,6 +156,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     body { font-family: Arial, sans-serif; padding: 20px; background: #f8f8f8; }
     button { margin: 5px; padding: 10px 15px; cursor: pointer; }
     #output { margin-top: 20px; padding: 10px; border: 1px solid #ccc; background: #fff; min-height: 100px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+    th, td { border: 1px solid #ccc; padding: 6px; text-align: left; }
+    h2 { margin-top: 0; }
   </style>
 </head>
 <body>
@@ -206,7 +180,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       });
 
       const data = await res.json();
-      document.getElementById('output').innerText = data.answer || 'Error getting response.';
+      // Render HTML output from Gemini
+      document.getElementById('output').innerHTML = data.answer || 'Error getting response.';
     }
   </script>
 </body>
