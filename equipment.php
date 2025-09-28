@@ -157,7 +157,7 @@ $items_in_cart = $cart->getItems();
                                     <div class="request-item-card d-flex align-items-center mb-3">
                                         <div class="item-details-simple flex-grow-1">
                                             <h5 class="item-name mb-0">
-                                                <?= htmlspecialchars($item['name']) ?> - Amount: <?= htmlspecialchars($item['amount']) ?>
+                                                <?= htmlspecialchars($item['name']) ?> - Amount: <?= htmlspecialchars($item['amount']) ?> (<?= htmlspecialchars($item['product_type']) ?>)
                                             </h5>
                                         </div>
                                     </div>

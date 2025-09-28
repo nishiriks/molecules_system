@@ -8,92 +8,58 @@ class CartItems {
         $this->user_id = $user_id;
     }
 
-    public function addItem($product_id, $amount) {
-        $cart_id = $this->getActiveCartId(true);
-        $stmt = $this->pdo->prepare(
-            "INSERT INTO tbl_cart_items (cart_id, product_id, amount) VALUES (?, ?, ?)"
-        );
-        return $stmt->execute([$cart_id, $product_id, $amount]);
+    // Get the cart id for this user
+    private function getCartId() {
+        $stmt = $this->pdo->prepare("SELECT cart_id FROM tbl_cart WHERE user_id = ?");
+        $stmt->execute([$this->user_id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($row) {
+            return $row['cart_id'];
+        } else {
+            // if cart does not exist yet, create one
+            $stmt = $this->pdo->prepare("INSERT INTO tbl_cart (user_id) VALUES (?)");
+            $stmt->execute([$this->user_id]);
+            return $this->pdo->lastInsertId();
+        }
     }
 
     public function getItems() {
-        $cart_id = $this->getActiveCartId();
-        if (!$cart_id) return [];
+        $cart_id = $this->getCartId();
 
-        $sql = "SELECT 
-                    inv.*, 
-                    items.amount, 
-                    items.item_id
-                FROM tbl_cart_items AS items
-                JOIN tbl_inventory AS inv ON items.product_id = inv.product_id
-                WHERE items.cart_id = ?";
+        // IMPORTANT: Adjust this to your actual column names in tbl_inventory
+        // I used 'unit_measure' because your earlier message showed it.
+        // If your column is called 'measure_unit', rename below accordingly.
+        $sql = "
+            SELECT 
+                inv.name,
+                inv.product_type,
+                inv.image_path,
+                inv.measure_unit,
+                ci.amount,
+                ci.item_id
+            FROM tbl_cart_items AS ci
+            INNER JOIN tbl_inventory AS inv ON ci.product_id = inv.product_id
+            WHERE ci.cart_id = ?
+        ";
+
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$cart_id]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function updateItemAmount($item_id, $amount) {
-        $sql = "UPDATE tbl_cart_items SET amount = ? 
-                WHERE item_id = ? AND cart_id = ?";
-        $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute([$amount, $item_id, $this->getActiveCartId()]);
+    public function addItem($product_id, $amount) {
+        $cart_id = $this->getCartId();
+        $stmt = $this->pdo->prepare("INSERT INTO tbl_cart_items (cart_id, product_id, amount) VALUES (?, ?, ?)");
+        return $stmt->execute([$cart_id, $product_id, $amount]);
+    }
+
+    public function updateItem($item_id, $amount) {
+        $stmt = $this->pdo->prepare("UPDATE tbl_cart_items SET amount = ? WHERE item_id = ?");
+        return $stmt->execute([$amount, $item_id]);
     }
 
     public function removeItem($item_id) {
-        $sql = "DELETE FROM tbl_cart_items WHERE item_id = ? AND cart_id = ?";
-        $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute([$item_id, $this->getActiveCartId()]);
-    }
-
-    public function finalizeRequest($requestData) {
-        $cart_id = $this->getActiveCartId();
-        if (!$cart_id) {
-            return false;
-        }
-
-        $items = $this->getItems();
-        if (empty($items)) {
-            return false; 
-        }
-
-        try {
-            $this->pdo->beginTransaction();
-
-            $stock_update_stmt = $this->pdo->prepare(
-                "UPDATE tbl_inventory SET stock = stock - ? WHERE product_id = ?"
-            );
-            foreach ($items as $item) {
-                $stock_update_stmt->execute([$item['amount'], $item['product_id']]);
-            }
-
-            $cart_status_stmt = $this->pdo->prepare(
-                "UPDATE tbl_cart SET cart_status = 'pending' WHERE cart_id = ?"
-            );
-            $cart_status_stmt->execute([$cart_id]);
-
-            $this->pdo->commit();
-            return true;
-
-        } catch (Exception $e) {
-            $this->pdo->rollBack();
-            return false;
-        }
-    }
-    
-    // MODIFIED: Changed from private to public
-    public function getActiveCartId($create_if_not_exists = false) {
-        $stmt = $this->pdo->prepare("SELECT cart_id FROM tbl_cart WHERE user_id = ? AND cart_status = 'active'");
-        $stmt->execute([$this->user_id]);
-        $cart = $stmt->fetch();
-
-        if ($cart) {
-            return $cart['cart_id'];
-        } elseif ($create_if_not_exists) {
-            $stmt = $this->pdo->prepare("INSERT INTO tbl_cart (user_id, cart_status) VALUES (?, 'active')");
-            $stmt->execute([$this->user_id]);
-            return $this->pdo->lastInsertId();
-        }
-        
-        return null;
+        $stmt = $this->pdo->prepare("DELETE FROM tbl_cart_items WHERE item_id = ?");
+        return $stmt->execute([$item_id]);
     }
 }
