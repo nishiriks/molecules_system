@@ -84,10 +84,12 @@ class Auth extends config {
             if ($user_data && password_verify($password, $user_data[0]['password'])) {
                 $user = $user_data[0];
                 $_SESSION['user_id'] = $user['user_id'];
-                
                 $_SESSION['user_email'] = $user['email'];
                 $_SESSION['first_name'] = $user['first_name'];
                 $_SESSION['account_type'] = $user['account_type'];
+
+                // Add login log entry
+                $this->addLoginLog($user['user_id'], $user['account_type']);
 
                 if ($user['account_type'] == 'Admin') {
                     header('Location: home-admin.php');
@@ -101,6 +103,40 @@ class Auth extends config {
         }
         
         return $errors; 
+    }
+
+    /**
+     * Add login log entry based on account type
+     */
+    private function addLoginLog($user_id, $account_type) {
+        try {
+            $current_date = date('Y-m-d H:i:s');
+            
+            // Debug: Check what values we have
+            error_log("Logging login - User ID: $user_id, Account Type: $account_type");
+            
+            if ($account_type === 'Admin' || $account_type === 'Super Admin') {
+                // Insert into admin log table
+                $stmt = $this->pdo->prepare("INSERT INTO tbl_admin_log (user_id, log_date) VALUES (?, ?)");
+                $table = 'tbl_admin_log';
+            } else {
+                // Insert into user log table (for Student and Faculty)
+                $stmt = $this->pdo->prepare("INSERT INTO tbl_user_log (user_id, log_date) VALUES (?, ?)");
+                $table = 'tbl_user_log';
+            }
+            
+            $result = $stmt->execute([$user_id, $current_date]);
+            
+            if ($result) {
+                error_log("Successfully inserted login log into $table for user $user_id");
+            } else {
+                error_log("Failed to insert login log into $table for user $user_id");
+            }
+            
+        } catch (PDOException $e) {
+            // Log the error but don't interrupt the login process
+            error_log("Login log error: " . $e->getMessage());
+        }
     }
 }
 ?>
