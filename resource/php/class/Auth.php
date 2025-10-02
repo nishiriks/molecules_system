@@ -91,7 +91,7 @@ class Auth extends config {
                 // Add login log entry
                 $this->addLoginLog($user['user_id'], $user['account_type']);
 
-                if ($user['account_type'] == 'Admin') {
+                if ($user['account_type'] == 'Admin' || $user['account_type'] == 'Super Admin') {
                     header('Location: home-admin.php');
                 } else {
                     header('Location: index.php');
@@ -112,30 +112,19 @@ class Auth extends config {
         try {
             $current_date = date('Y-m-d H:i:s');
             
-            // Debug: Check what values we have
-            error_log("Logging login - User ID: $user_id, Account Type: $account_type");
-            
             if ($account_type === 'Admin' || $account_type === 'Super Admin') {
-                // Insert into admin log table
-                $stmt = $this->pdo->prepare("INSERT INTO tbl_admin_log (user_id, log_date) VALUES (?, ?)");
-                $table = 'tbl_admin_log';
+                // Insert into admin log table with 'Login' action
+                $stmt = $this->pdo->prepare("INSERT INTO tbl_admin_log (user_id, log_date, log_action) VALUES (?, ?, ?)");
+                $stmt->execute([$user_id, $current_date, 'Login']);
             } else {
                 // Insert into user log table (for Student and Faculty)
                 $stmt = $this->pdo->prepare("INSERT INTO tbl_user_log (user_id, log_date) VALUES (?, ?)");
-                $table = 'tbl_user_log';
-            }
-            
-            $result = $stmt->execute([$user_id, $current_date]);
-            
-            if ($result) {
-                error_log("Successfully inserted login log into $table for user $user_id");
-            } else {
-                error_log("Failed to insert login log into $table for user $user_id");
+                $stmt->execute([$user_id, $current_date]);
             }
             
         } catch (PDOException $e) {
-            // Log the error but don't interrupt the login process
-            error_log("Login log error: " . $e->getMessage());
+            // Log the error but don't interrupt the process
+            error_log("Log error: " . $e->getMessage());
         }
     }
 }

@@ -70,7 +70,7 @@ html{
 #offcanvasNavbar .offcanvas-body, 
 #offcanvasNavbar .offcanvas-header {
   background-color: #161542;
-  color: white;
+  color: red;
 }
 .nav-item:hover {
   border-bottom: 2px solid #F55197;
@@ -91,6 +91,12 @@ main {
     flex-grow: 1;
 }
 
+.logs-header{
+    background-color: #F55197;
+    text-align: center;
+    color: white;
+}
+
 /* Footer Styles */
 footer {
     background-color: #161542;
@@ -100,4 +106,56 @@ footer {
 
 footer p, .fa-copyright{
     font-size: 0.7rem;
+}
+
+/* AI CSS */
+.ai-output {
+    min-height: 200px;
+    line-height: 1.6;
+}
+
+.ai-output h2 {
+    color: #161542;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.ai-output h3 {
+    color: #F55197;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+}
+
+.ai-output table {
+    width: 100%;
+    margin: 1rem 0;
+    border-collapse: collapse;
+    background: white;
+}
+
+.ai-output th {
+    background-color: #161542;
+    color: white;
+    padding: 0.75rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+.ai-output td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.ai-output ul {
+    padding-left: 1.5rem;
+    margin: 1rem 0;
+}
+
+.ai-output li {
+    margin-bottom: 0.5rem;
+}
+
+.btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.1rem;
 }
