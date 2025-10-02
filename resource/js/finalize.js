@@ -81,7 +81,10 @@ document.addEventListener('DOMContentLoaded', function () {
       } else if (type.includes('chem') || type.includes('supply') || type.includes('model')) {
         lead = Math.max(lead, 2);
       } else if (type.includes('specimen')) {
-        lead = Math.max(lead, (accountType.toLowerCase() === 'student' ? 60 : 30));
+        // Faculty gets 30 days, Students get 60 days
+        const specimenLead = (accountType.toLowerCase() === 'faculty') ? 30 : 60;
+        lead = Math.max(lead, specimenLead);
+        console.log('Specimen item found. Account type:', accountType, 'Lead days:', specimenLead);
       } else {
         lead = Math.max(lead, 0);
       }
@@ -116,7 +119,10 @@ document.addEventListener('DOMContentLoaded', function () {
   const earliestAllowed = jsEarliestAllowedDate || earliestDateClient;
 
   console.log('Today:', today);
-  console.log('Earliest allowed date:', earliestAllowed);
+  console.log('Client calculated lead days:', clientLeadDays);
+  console.log('Earliest allowed date (from PHP):', jsEarliestAllowedDate);
+  console.log('Earliest allowed date (calculated):', earliestDateClient);
+  console.log('Final earliest allowed date:', earliestAllowed);
 
   // --- set min attributes ---
   if (dateFrom) {
@@ -143,7 +149,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // enforce earliestAllowed
       if (dateFrom.value < earliestAllowed) {
-        alertAndClear(dateFrom, `Date From must be at least ${earliestAllowed} based on your cart.`);
+        alertAndClear(dateFrom, `Date From must be at least ${earliestAllowed} based on your cart items and account type.`);
         return;
       }
 

@@ -19,6 +19,13 @@ $config = new config();
 $pdo = $config->con();
 $cart = new CartItems($pdo, $_SESSION['user_id']);
 
+// Get user account type from database
+$user_id = $_SESSION['user_id'];
+$stmt = $pdo->prepare("SELECT account_type FROM tbl_users WHERE user_id = ?");
+$stmt->execute([$user_id]);
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
+$account_type = $user['account_type'] ?? 'Student'; // Default to Student if not found
+
 // ✅ Fetch holidays once for later validation + JS
 $stmt = $pdo->query("SELECT holiday_date_from, holiday_date_to, holiday_type FROM tbl_holidays");
 $holidays = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -45,6 +52,67 @@ foreach ($holidays as $holiday) {
             'to'   => $h_to
         ];
     }
+}
+
+// get cart items including product_type
+$items_in_cart = $cart->getItems();
+
+// Calculate lead days based on cart items and account type
+$leadDays = 0;
+foreach ($items_in_cart as $item) {
+    $product_type = strtolower($item['product_type'] ?? '');
+    
+    if (strpos($product_type, 'equip') !== false) {
+        $leadDays = max($leadDays, 0);
+    } elseif (strpos($product_type, 'chem') !== false || 
+              strpos($product_type, 'supply') !== false || 
+              strpos($product_type, 'model') !== false) {
+        $leadDays = max($leadDays, 2);
+    } elseif (strpos($product_type, 'specimen') !== false) {
+        // Faculty gets 30 days, Students get 60 days
+        $specimen_lead = ($account_type === 'Faculty') ? 30 : 60;
+        $leadDays = max($leadDays, $specimen_lead);
+    } else {
+        $leadDays = max($leadDays, 0);
+    }
+}
+
+// Calculate earliest allowed date
+$today = date('Y-m-d');
+$earliestAllowedDate = $today;
+
+if ($leadDays > 0) {
+    // Add business days excluding Sundays and holidays
+    $currentDate = new DateTime($today);
+    $daysAdded = 0;
+    
+    while ($daysAdded < $leadDays) {
+        $currentDate->modify('+1 day');
+        $dateString = $currentDate->format('Y-m-d');
+        $monthDay = $currentDate->format('m-d');
+        $dayOfWeek = $currentDate->format('w'); // 0 = Sunday
+        
+        $isHoliday = false;
+        foreach ($blockedDates as $block) {
+            if ($block['type'] === 'once') {
+                if ($dateString >= $block['from'] && $dateString <= $block['to']) {
+                    $isHoliday = true;
+                    break;
+                }
+            } else {
+                if ($monthDay >= $block['from'] && $monthDay <= $block['to']) {
+                    $isHoliday = true;
+                    break;
+                }
+            }
+        }
+        
+        if ($dayOfWeek != 0 && !$isHoliday) {
+            $daysAdded++;
+        }
+    }
+    
+    $earliestAllowedDate = $currentDate->format('Y-m-d');
 }
 
 // --- FORM PROCESSING ---
@@ -114,9 +182,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['finalize-btn'])) {
     header('Location: equipment.php');
     exit();
 }
-
-// get cart items including product_type
-$items_in_cart = $cart->getItems();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -237,13 +302,16 @@ $items_in_cart = $cart->getItems();
     <script>
       // pass blocked dates and other data to JS
       window.blockedDates = <?php echo json_encode($blockedDates); ?>;
-      window.earliestAllowedDate = '<?php echo $earliestAllowedDate ?? ''; ?>';
-      window.leadDays = <?php echo $leadDays ?? 0; ?>;
+      window.earliestAllowedDate = '<?php echo $earliestAllowedDate; ?>';
+      window.leadDays = <?php echo $leadDays; ?>;
       window.itemsInCart = <?php echo json_encode($items_in_cart); ?>;
-      window.accountType = '<?php echo $_SESSION['account_type'] ?? 'Student'; ?>';
+      window.accountType = '<?php echo $account_type; ?>';
       
       // Debug
       console.log('PHP Blocked Dates:', <?php echo json_encode($blockedDates); ?>);
+      console.log('User Account Type:', '<?php echo $account_type; ?>');
+      console.log('Calculated Lead Days:', <?php echo $leadDays; ?>);
+      console.log('Earliest Allowed Date:', '<?php echo $earliestAllowedDate; ?>');
     </script>
     <script src="resource/js/finalize.js"></script>
 
