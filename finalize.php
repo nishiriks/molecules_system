@@ -25,18 +25,23 @@ $holidays = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $blockedDates = [];
 foreach ($holidays as $holiday) {
+    $h_from = $holiday['holiday_date_from'];
     $h_to = $holiday['holiday_date_to'] ?: $holiday['holiday_date_from'];
+    
+    // Ensure dates are in YYYY-MM-DD format
+    $h_from = date('Y-m-d', strtotime($h_from));
+    $h_to = date('Y-m-d', strtotime($h_to));
 
     if (strtolower($holiday['holiday_type']) === 'recurring holiday') {
         $blockedDates[] = [
             'type' => 'recurring',
-            'from' => date('m-d', strtotime($holiday['holiday_date_from'])),
+            'from' => date('m-d', strtotime($h_from)),
             'to'   => date('m-d', strtotime($h_to))
         ];
     } else {
         $blockedDates[] = [
             'type' => 'once',
-            'from' => $holiday['holiday_date_from'],
+            'from' => $h_from,
             'to'   => $h_to
         ];
     }
@@ -70,26 +75,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['finalize-btn'])) {
             die("❌ Date To cannot be before Date From.");
         }
 
-        // ✅ Block holidays server-side (applies to all days in range)
-        $userDates = [];
-        $start = new DateTime($date_from);
-        $end   = new DateTime($date_to ?: $date_from);
-        $end->modify('+1 day');
-        $interval = new DateInterval('P1D');
-        foreach (new DatePeriod($start, $interval, $end) as $dt) {
-            $userDates[] = $dt->format('Y-m-d');
-        }
+        // ✅ NEW VALIDATION FIX:
+        // Block holidays ONLY if Date From or Date To fall on a holiday
+        $checkDates = [$date_from];
+        if (!empty($date_to)) $checkDates[] = $date_to;
 
-        foreach ($userDates as $uDate) {
+        foreach ($checkDates as $uDate) {
             $monthDay = date('m-d', strtotime($uDate));
             foreach ($blockedDates as $block) {
                 if ($block['type'] === 'once') {
                     if ($uDate >= $block['from'] && $uDate <= $block['to']) {
-                        die("❌ Selected dates fall on a holiday/break.");
+                        die("❌ $uDate is a holiday and cannot be selected.");
                     }
                 } else {
                     if ($monthDay >= $block['from'] && $monthDay <= $block['to']) {
-                        die("❌ Selected dates fall on a recurring holiday.");
+                        die("❌ $uDate is a recurring holiday and cannot be selected.");
                     }
                 }
             }
@@ -235,8 +235,15 @@ $items_in_cart = $cart->getItems();
     </footer>
 
     <script>
-      // pass blocked dates to JS
-      const blockedDates = <?php echo json_encode($blockedDates); ?>;
+      // pass blocked dates and other data to JS
+      window.blockedDates = <?php echo json_encode($blockedDates); ?>;
+      window.earliestAllowedDate = '<?php echo $earliestAllowedDate ?? ''; ?>';
+      window.leadDays = <?php echo $leadDays ?? 0; ?>;
+      window.itemsInCart = <?php echo json_encode($items_in_cart); ?>;
+      window.accountType = '<?php echo $_SESSION['account_type'] ?? 'Student'; ?>';
+      
+      // Debug
+      console.log('PHP Blocked Dates:', <?php echo json_encode($blockedDates); ?>);
     </script>
     <script src="resource/js/finalize.js"></script>
 

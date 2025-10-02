@@ -1,4 +1,11 @@
 document.addEventListener('DOMContentLoaded', function () {
+  // Debug: Check what data we have
+  console.log('Blocked dates from PHP:', window.blockedDates);
+  console.log('Earliest allowed:', window.earliestAllowedDate);
+  console.log('Lead days:', window.leadDays);
+  console.log('Items in cart:', window.itemsInCart);
+  console.log('Account type:', window.accountType);
+
   // helper to find element by several possible ids/names
   function findEl(...ids) {
     for (const id of ids) {
@@ -29,18 +36,39 @@ document.addEventListener('DOMContentLoaded', function () {
   // --- utility ---
   function isHoliday(dateStr) {
     if (!dateStr) return false;
+    
     const d = new Date(dateStr);
     if (isNaN(d)) return false;
+    
     const ymd = dateStr; // 'yyyy-mm-dd'
     const md = ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
+    
+    console.log('Checking holiday for:', dateStr, 'MD:', md);
+    
     for (const block of jsBlockedDates) {
+      console.log('Checking against block:', block);
+      
       if (block.type === 'once') {
-        if (ymd >= block.from && ymd <= block.to) return true;
+        // For one-time holidays, check if the date falls within the range
+        if (ymd >= block.from && ymd <= block.to) {
+          console.log('Found one-time holiday match');
+          return true;
+        }
       } else {
-        if (md >= block.from && md <= block.to) return true;
+        // For recurring holidays, compare month-day format
+        if (md >= block.from && md <= block.to) {
+          console.log('Found recurring holiday match');
+          return true;
+        }
       }
     }
     return false;
+  }
+
+  function isSunday(dateStr) {
+    if (!dateStr) return false;
+    const d = new Date(dateStr);
+    return d.getDay() === 0; // 0 = Sunday
   }
 
   // compute lead days client-side (robust matching) — fallback when server values not available
@@ -87,9 +115,18 @@ document.addEventListener('DOMContentLoaded', function () {
   const earliestDateClient = jsEarliestAllowedDate || addBusinessDaysJS(today, clientLeadDays);
   const earliestAllowed = jsEarliestAllowedDate || earliestDateClient;
 
+  console.log('Today:', today);
+  console.log('Earliest allowed date:', earliestAllowed);
+
   // --- set min attributes ---
-  if (dateFrom) dateFrom.min = earliestAllowed;
-  if (dateTo) dateTo.min = earliestAllowed;
+  if (dateFrom) {
+    dateFrom.min = earliestAllowed;
+    console.log('Set dateFrom min to:', earliestAllowed);
+  }
+  if (dateTo) {
+    dateTo.min = earliestAllowed;
+    console.log('Set dateTo min to:', earliestAllowed);
+  }
 
   // --- validation helpers ---
   function alertAndClear(el, message) {
@@ -97,24 +134,11 @@ document.addEventListener('DOMContentLoaded', function () {
     if (el) el.value = '';
   }
 
-  // ✅ fixed: only block Sunday if it's start or end, holidays checked across whole range
-  function dateRangeHasInvalidDay(startStr, endStr) {
-    const start = new Date(startStr);
-    const end = new Date(endStr);
-
-    if (start.getDay() === 0) return { invalid: true, reason: 'Sunday', date: startStr };
-    if (end.getDay() === 0) return { invalid: true, reason: 'Sunday', date: endStr };
-
-    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-      const ymd = d.toISOString().split('T')[0];
-      if (isHoliday(ymd)) return { invalid: true, reason: 'Holiday', date: ymd };
-    }
-    return { invalid: false };
-  }
-
   // --- date field event handlers ---
   if (dateFrom && dateTo) {
     dateFrom.addEventListener('change', () => {
+      console.log('Date From changed to:', dateFrom.value);
+      
       if (!dateFrom.value) return;
 
       // enforce earliestAllowed
@@ -123,10 +147,9 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
       }
 
-      // block Sundays (only if directly selected as start)
-      const d = new Date(dateFrom.value);
-      if (d.getDay() === 0) {
-        alertAndClear(dateFrom, 'Sundays are not allowed. Please pick another date.');
+      // block Sundays
+      if (isSunday(dateFrom.value)) {
+        alertAndClear(dateFrom, 'Sundays are not allowed as Date From. Please pick another date.');
         return;
       }
 
@@ -139,6 +162,7 @@ document.addEventListener('DOMContentLoaded', function () {
       // set dateTo.min
       dateTo.min = dateFrom.value;
 
+      // If dateTo exists, ensure it is not earlier
       if (dateTo.value && dateTo.value < dateFrom.value) {
         alertAndClear(dateTo, 'Date To cannot be earlier than Date From.');
       }
@@ -155,6 +179,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     dateTo.addEventListener('change', () => {
+      console.log('Date To changed to:', dateTo.value);
+      
       if (!dateTo.value) return;
       if (!dateFrom.value) {
         alertAndClear(dateTo, 'Please select Date From first.');
@@ -164,9 +190,17 @@ document.addEventListener('DOMContentLoaded', function () {
         alertAndClear(dateTo, 'Date To cannot be earlier than Date From.');
         return;
       }
-      const invalid = dateRangeHasInvalidDay(dateFrom.value, dateTo.value);
-      if (invalid.invalid) {
-        alertAndClear(dateTo, `Selected range includes a ${invalid.reason} (${invalid.date}). Please choose another range.`);
+      
+      // Check Sundays for end date
+      if (isSunday(dateTo.value)) {
+        alertAndClear(dateTo, 'Sundays are not allowed as Date To. Please pick another date.');
+        return;
+      }
+
+      // Check holidays for end date
+      if (isHoliday(dateTo.value)) {
+        alertAndClear(dateTo, 'That date is a holiday and cannot be selected.');
+        return;
       }
     });
   }
@@ -175,8 +209,8 @@ document.addEventListener('DOMContentLoaded', function () {
   if (!timeFrom || !timeTo) {
     console.warn('Time inputs not found.');
   } else {
-    const MIN_MINUTES = 7 * 60;
-    const MAX_MINUTES = 19 * 60;
+    const MIN_MINUTES = 7 * 60;   // 07:00
+    const MAX_MINUTES = 19 * 60;  // 19:00
 
     function timeStrToMinutes(t) {
       if (!t || typeof t !== 'string') return null;
@@ -228,6 +262,7 @@ document.addEventListener('DOMContentLoaded', function () {
     timeTo.addEventListener('blur', checkTimeOrder);
   }
 
+  // optional: prevent keyboard entry into date fields for consistent UX
   if (dateFrom) dateFrom.setAttribute('onkeydown', 'return false;');
   if (dateTo) dateTo.setAttribute('onkeydown', 'return false;');
 });
