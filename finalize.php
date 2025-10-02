@@ -25,18 +25,15 @@ $holidays = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $blockedDates = [];
 foreach ($holidays as $holiday) {
-    // handle null date_to
     $h_to = $holiday['holiday_date_to'] ?: $holiday['holiday_date_from'];
 
     if (strtolower($holiday['holiday_type']) === 'recurring holiday') {
-        // recurring – store as month/day only
         $blockedDates[] = [
             'type' => 'recurring',
             'from' => date('m-d', strtotime($holiday['holiday_date_from'])),
             'to'   => date('m-d', strtotime($h_to))
         ];
     } else {
-        // one-time holiday – store full date
         $blockedDates[] = [
             'type' => 'once',
             'from' => $holiday['holiday_date_from'],
@@ -50,21 +47,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['finalize-btn'])) {
     $active_cart_id = $cart->getActiveCartId();
 
     if ($active_cart_id) {
-
-        // ✅ Validate dates server-side
         $date_from = $_POST['date_from'] ?? '';
         $date_to   = $_POST['date_to'] ?? '';
 
         $today = date('Y-m-d');
 
-        // block past dates for date_from
+        // block past dates
         if (strtotime($date_from) < strtotime($today)) {
             die("❌ Date From cannot be earlier than today.");
         }
 
-        // Block Sundays
-        if (date('w', strtotime($date_from)) == 0 || (strlen($date_to) > 0 && date('w', strtotime($date_to)) == 0)) {
-            die("❌ Sundays are not allowed.");
+        // ✅ Block Sundays only if start or end falls on Sunday
+        if (date('w', strtotime($date_from)) == 0) {
+            die("❌ Date From cannot be Sunday.");
+        }
+        if (!empty($date_to) && date('w', strtotime($date_to)) == 0) {
+            die("❌ Date To cannot be Sunday.");
         }
 
         // Date To must be >= Date From
@@ -72,11 +70,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['finalize-btn'])) {
             die("❌ Date To cannot be before Date From.");
         }
 
-        // ✅ Block holidays server-side
+        // ✅ Block holidays server-side (applies to all days in range)
         $userDates = [];
         $start = new DateTime($date_from);
         $end   = new DateTime($date_to ?: $date_from);
-        $end->modify('+1 day'); // inclusive
+        $end->modify('+1 day');
         $interval = new DateInterval('P1D');
         foreach (new DatePeriod($start, $interval, $end) as $dt) {
             $userDates[] = $dt->format('Y-m-d');
@@ -86,12 +84,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['finalize-btn'])) {
             $monthDay = date('m-d', strtotime($uDate));
             foreach ($blockedDates as $block) {
                 if ($block['type'] === 'once') {
-                    // normal holiday
                     if ($uDate >= $block['from'] && $uDate <= $block['to']) {
                         die("❌ Selected dates fall on a holiday/break.");
                     }
                 } else {
-                    // recurring
                     if ($monthDay >= $block['from'] && $monthDay <= $block['to']) {
                         die("❌ Selected dates fall on a recurring holiday.");
                     }
@@ -107,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['finalize-btn'])) {
             $_POST['time_from'],
             $_POST['time_to'],
             $_POST['room'],
-            'pending' // status
+            'pending'
         );
         
         $request->reqOrder($active_cart_id);
