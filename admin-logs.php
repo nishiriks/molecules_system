@@ -92,10 +92,10 @@ $pdo = $config->con();
             <h3 class="card-title mb-0"><i class="fas fa-history me-2"></i>Admin Activity Logs</h3>
         </div>
         <div class="card-body">
-            <div class="table-responsive">
+            <div class="table-responsive text-center align-middle">
                 <table class="table table-striped table-bordered table-hover">
-                    <thead class="table-primary">
-                        <tr>
+                    <thead class="table-res">
+                        <tr class="text-center align-middle">
                             <th>User ID</th>
                             <th>Name</th>
                             <th>Email</th>

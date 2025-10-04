@@ -159,3 +159,121 @@ footer p, .fa-copyright{
     padding: 0.75rem 1.5rem;
     font-size: 1.1rem;
 }
+
+.table-res th{
+    background: #D9D9D9;
+    border-right: 2px solid #DEE2E6;
+    border-bottom: 2px #F55197 solid ;
+}
+
+.table-responsive{
+    border: #F55197 solid 2px;
+}
+
+/* Search Button */
+.btn-primary-search {
+    background-color: #F55197;
+    border: none;
+    color: white;
+}
+.btn-primary-search:hover {
+    background-color: #D94485;
+    color: white;
+}
+/* Filter Button */
+.btn-primary-filter {
+    background-color: #F55197;
+    border: none;
+    color: white;
+}
+.btn-primary-filter:hover {
+    background-color: #D94485;
+    color: white;
+}
+
+/* Account Management */
+.bg-warning{
+    background-color: #c91c5e!important;
+}
+.bg-success{
+    background-color: #b56576!important;
+}
+
+.bg-danger{
+    background-color: #800020!important;
+}
+
+.bg-info{
+    background-color: #935a6d!important;
+}
+.bg-primary{
+    background-color: #F55197!important;
+}
+
+.btn-order{
+    background-color: #c91c5e;
+    border: none;
+    color: white;
+}
+
+.btn-order:hover {
+    background-color: #F55197;
+    border-color: #c91c5e; 
+    color: white;
+}
+
+.btn-order:active {
+    background-color: #D94485;
+    border-color: #a31540; 
+    color: white;
+}
+
+.btn-month{
+    background-color: #F55197;
+    border: none;
+    color: white;
+}
+.btn-month:active {
+    background-color: #a31540;
+    border-color: #a31540; 
+    color: white;
+}
+.btn-month:hover {
+    background-color: #D94485;
+    border-color: #c91c5e; /* Good to change the border too */
+    color: white;
+}
+.btn-previous{
+    background-color: #D94485;
+    color: white;
+}
+
+.btn-previous:active {
+    background-color: #a31540;
+    border-color: #a31540; 
+    color: white;
+}
+.btn-previous:hover {
+    background-color: #c91c5e;
+    border-color: #c91c5e; /* Good to change the border too */
+    color: white;
+}
+/*Holiday Management*/
+.btn-success-holiday{
+    background-color: #F55197;
+    border: none;
+    color: white;
+}
+.btn-success-holiday:hover{
+    background-color: #D94485;
+    color: white;
+}
+.btn-outline-primary-edit{
+    color: #F55197;
+    border: 1px solid #F55197;
+}
+.btn-outline-primary-edit:hover{
+    background-color: #F55197;
+    color: white;
+}
+

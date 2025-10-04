@@ -90,13 +90,13 @@ $pdo = $config->con();
 <section class="logs container my-5">
     <div class="card shadow">
         <div class="logs-header card-header text-white">
-            <h3 class="card-title mb-0"><i class="fas fa-history me-2"></i>User Activity Logs</h3>
+          <h3 class="card-title mb-0"><i class="fas fa-history me-2"></i>User Activity Logs</h3>
         </div>
         <div class="card-body">
-            <div class="table-responsive">
+            <div class="table-responsive text-center align-middle">
                 <table class="table table-striped table-bordered table-hover">
-                    <thead class="table-primary">
-                        <tr>
+                    <thead class="table-res">
+                        <tr class="text-center align-middle">
                             <th>Log ID</th>
                             <th>User ID</th>
                             <th>Name</th>

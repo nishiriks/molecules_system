@@ -256,7 +256,7 @@ function formatHolidayDate($date_from, $date_to, $holiday_type) {
                         <input type="date" class="form-control" id="date_to" name="date_to" required>
                     </div>
                     <div class="col-md-3 d-flex align-items-end">
-                        <button type="submit" name="add_holiday" class="btn btn-success w-100">
+                        <button type="submit" name="add_holiday" class="btn btn-success-holiday w-100">
                             <i class="fas fa-plus me-2"></i>Add Holiday
                         </button>
                     </div>
@@ -277,7 +277,7 @@ function formatHolidayDate($date_from, $date_to, $holiday_type) {
                     <div class="col-md-6">
                         <div class="input-group">
                             <input type="text" class="form-control" placeholder="Search holiday name..." name="search" value="<?= htmlspecialchars($search) ?>">
-                            <button class="btn btn-primary" type="submit">
+                            <button class="btn btn-primary-search" type="submit">
                                 <i class="fas fa-search"></i>
                             </button>
                         </div>
@@ -292,24 +292,24 @@ function formatHolidayDate($date_from, $date_to, $holiday_type) {
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <button type="submit" class="btn btn-primary w-100">Filter</button>
+                        <button type="submit" class="btn btn-primary-filter w-100">Filter</button>
                     </div>
                 </form>
 
                 <div class="table-responsive">
                     <table class="table table-striped table-bordered table-hover">
-                        <thead class="table-primary">
-                            <tr>
-                                <th>Holiday Name</th>
-                                <th>Date</th>
-                                <th>Holiday Type</th>
-                                <th>Actions</th>
+                        <thead class="table-res">
+                            <tr class="text-center align-middle">
+                                <th class="">Holiday Name</th>
+                                <th class="">Date</th>
+                                <th class="">Holiday Type</th>
+                                <th class="">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if (count($holidays) > 0): ?>
                                 <?php foreach ($holidays as $holiday): ?>
-                                    <tr>
+                                    <tr class="text-center align-middle">
                                         <td><?= htmlspecialchars($holiday['holiday_name']) ?></td>
                                         <td><?= formatHolidayDate($holiday['holiday_date_from'], $holiday['holiday_date_to'], $holiday['holiday_type']) ?></td>
                                         <td>
@@ -323,7 +323,7 @@ function formatHolidayDate($date_from, $date_to, $holiday_type) {
                                         <td>
                                             <div class="btn-group" role="group">
                                                 <!-- Edit Holiday Button -->
-                                                <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                <button type="button" class="btn btn-sm btn-outline-primary-edit" 
                                                         data-bs-toggle="modal" 
                                                         data-bs-target="#editModal"
                                                         data-holiday-id="<?= $holiday['holiday_id'] ?>"
@@ -424,7 +424,7 @@ function formatHolidayDate($date_from, $date_to, $holiday_type) {
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" form="editForm" name="edit_holiday" class="btn btn-primary">Update Holiday</button>
+                <button type="submit" form="editForm" name="edit_holiday" class="btn btn-primary-update">Update Holiday</button>
             </div>
         </div>
     </div>
