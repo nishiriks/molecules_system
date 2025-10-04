@@ -540,6 +540,48 @@ footer,p,.fa-copyright{
   white-space: nowrap;
 }
 
+/* CSS for approval-details */
+.approved-btn {
+  background-color: white;
+  color: #F55197;
+  border: #F55197 1px solid;
+  padding: 10px 30px;
+  border-radius: 15px;
+  font-weight: bold;
+  box-shadow: -4px 4px 4px 0px #00000040;
+  transition: all 0.3s ease;
+}
+
+.approved-btn:hover,
+.approved-btn:active{
+  background-color: white;
+  color: #F55197;
+   border: #F55197 1px solid;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+.status-btn {
+  background-color: #f0f8ff;
+  color: #F55197;
+  border: 1px;
+  padding: 10px 30px;
+  border-radius: 15px;
+  font-weight: bold;
+  box-shadow: -4px 4px 4px 0px #00000040;
+  transition: all 0.3s ease;
+}
+
+.status-btn:hover,
+.status-btn:active{
+  background-color: #F55197;
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+
+
 
 @media (max-width: 768px) {
 /* .request-card {
