@@ -1,3 +1,46 @@
+<?php
+session_start();
+require_once 'resource/php/init.php';
+
+if (!isset($_SESSION['user_id']) || $_SESSION['account_type'] !== 'Admin') {
+    header('Location: login.php');
+    exit();
+}
+
+$config = new config();
+$pdo = $config->con();
+
+$filter_status = $_GET['status'] ?? 'ALL';
+
+$sql = "SELECT 
+            r.request_id,
+            r.request_date,
+            c.cart_id,
+            c.cart_status, 
+            u.first_name, 
+            u.last_name, 
+            u.account_type,
+            GROUP_CONCAT(DISTINCT inv.product_type SEPARATOR ', ') AS product_types
+        FROM tbl_requests AS r
+        JOIN tbl_cart AS c ON r.cart_id = c.cart_id
+        JOIN tbl_users AS u ON c.user_id = u.user_id
+        LEFT JOIN tbl_cart_items AS items ON c.cart_id = items.cart_id
+        LEFT JOIN tbl_inventory AS inv ON items.product_id = inv.product_id
+        WHERE c.cart_status != 'active'";
+
+$params = [];
+
+if ($filter_status !== 'ALL') {
+    $sql .= " AND c.cart_status = ?";
+    $params[] = $filter_status;
+}
+
+$sql .= " GROUP BY r.request_id ORDER BY r.request_date DESC";
+
+$stmt = $pdo->prepare($sql);
+$stmt->execute($params);
+$requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -71,76 +114,44 @@
     <div class="container">
       <h2 class="requests-heading">Requests</h2>
       <div class="filter-buttons">
-            <button class="filter-btn active">ALL</button>
-            <button class="filter-btn">Faculty Approved</button>
-            <button class="filter-btn">For Pick-up</button>
-            <button   class="filter-btn">Completed</button>
-            <button class="filter-btn">Returned</button>
-            <button class="filter-btn">Canceled</button>
-            <button class="filter-btn">Disapproved</button>
-        </div>
-        <div class="row">
-            <div class="col-12 mb-3">
-                <div class="request-card">
-                  <div class="request-details-container">
-                        <div class="request-text">
-                            <h5 class="request-title">Request Received!</h5>
-                            <p class="request-info">From: Renz Magsakay (Student)</p>
-                            <p class="request-info">Status: Faculty Approved</p>
-                        </div>
-                      </div>
-                        <div class="right-column-container">
-                          <div class="request-timestamp">
-                            <span class="timestamp-text">08/31/2025 - 7:00PM</span>
-                        </div>
-                        <div class="view-button-container">
-                          <button class="view-button-btn">View</button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+            <a href="home-admin.php" class="filter-btn <?= ($filter_status === 'ALL') ? 'active' : '' ?>">ALL</a>
+            <a href="home-admin.php?status=pending" class="filter-btn <?= ($filter_status === 'pending') ? 'active' : '' ?>">Submitted</a>
+            <a href="home-admin.php?status=approved" class="filter-btn <?= ($filter_status === 'approved') ? 'active' : '' ?>">Faculty Approved</a>
+            <a href="home-admin.php?status=pickup" class="filter-btn <?= ($filter_status === 'pickup') ? 'active' : '' ?>">For Pick-up</a>
+            <a href="home-admin.php?status=completed" class="filter-btn <?= ($filter_status === 'completed') ? 'active' : '' ?>">Completed</a>
+            <a href="home-admin.php?status=returned" class="filter-btn <?= ($filter_status === 'returned') ? 'active' : '' ?>">Returned</a>
+            <a href="home-admin.php?status=canceled" class="filter-btn <?= ($filter_status === 'canceled') ? 'active' : '' ?>">Canceled</a>
+            <a href="home-admin.php?status=disapproved" class="filter-btn <?= ($filter_status === 'disapproved') ? 'active' : '' ?>">Disapproved</a>
 
-            <div class="col-12 mb-3">
-                <div class="request-card">
-                  <div class="request-details-container">
-                        <div class="request-text">
-                            <h5 class="request-title">Request Received!</h5>
-                            <p class="request-info">From: Renz Magsakay (Student)</p>
-                            <p class="request-info">Status: Faculty Approved</p>
+            <div class="row">
+                <?php if (empty($requests)): ?>
+                    <div class="col-12"><p class="text-center fs-4 mt-5">No requests found.</p></div>
+                <?php else: ?>
+                    <?php foreach ($requests as $request): ?>
+                        <div class="col-12 mb-3">
+                            <div class="request-card">
+                                <div class="request-details-container">
+                                    <div class="request-text">
+                                        <h5 class="request-title">
+                                            <?= htmlspecialchars($request['product_types'] ?? 'General') ?> Request
+                                        </h5>
+                                        <p class="request-info">From: <?= htmlspecialchars($request['first_name'] . ' ' . $request['last_name']) ?> (<?= htmlspecialchars($request['account_type']) ?>)</p>
+                                        <p class="request-info">Status: <?= htmlspecialchars($request['cart_status']) ?></p>
+                                    </div>
+                                </div>
+                                <div class="right-column-container">
+                                    <div class="request-timestamp">
+                                        <span class="timestamp-text"><?= date('m/d/Y - g:ia', strtotime($request['request_date'])) ?></span>
+                                    </div>
+                                    <div class="view-button-container">
+                                        <button class="view-button-btn">View</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                      </div>
-                        <div class="right-column-container">
-                          <div class="request-timestamp">
-                            <span class="timestamp-text">08/31/2025 - 7:00PM</span>
-                        </div>
-                        <div class="view-button-container">
-                          <button class="view-button-btn">View</button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-            <div class="col-12 mb-3">
-                <div class="request-card">
-                  <div class="request-details-container">
-                        <div class="request-text">
-                            <h5 class="request-title">Request Received!</h5>
-                            <p class="request-info">From: Renz Magsakay (Student)</p>
-                            <p class="request-info">Status: Faculty Approved</p>
-                        </div>
-                      </div>
-                        <div class="right-column-container">
-                          <div class="request-timestamp">
-                            <span class="timestamp-text">08/31/2025 - 7:00PM</span>
-                        </div>
-                        <div class="view-button-container">
-                          <button class="view-button-btn">View</button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+      </div>
     </div>
 </main>
 
