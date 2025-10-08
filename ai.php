@@ -278,13 +278,13 @@ Here is the data:\n\n".$invText."\n".$salesText;
                         <p class="lead mb-4">Get AI-powered insights and analysis of your inventory and sales data.</p>
                         
                         <div class="d-flex flex-wrap gap-3 mb-4">
-                            <button class="btn btn-primary btn-lg" onclick="sendPrompt('STAT_SUMMARY')">
+                            <button class="btn btn-order btn-lg" onclick="sendPrompt('STAT_SUMMARY')">
                                 <i class="fas fa-chart-bar me-2"></i>Current Order Summary
                             </button>
-                            <button class="btn btn-success btn-lg" onclick="sendPrompt('STOCK_ANALYSIS')">
+                            <button class="btn btn-month btn-lg" onclick="sendPrompt('STOCK_ANALYSIS')">
                                 <i class="fas fa-boxes me-2"></i>Current Month Analysis
                             </button>
-                            <button class="btn btn-info btn-lg" onclick="sendPrompt('PREVIOUS_MONTH_ANALYSIS')">
+                            <button class="btn btn-previous btn-lg" onclick="sendPrompt('PREVIOUS_MONTH_ANALYSIS')">
                                 <i class="fas fa-chart-line me-2"></i>Previous Month Analysis
                             </button>
                         </div>

@@ -102,7 +102,10 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Account Management</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" 
+  crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+
   <link rel="stylesheet" type="text/css"  href="resource/css/logs.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css"/>
@@ -174,7 +177,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <div class="col-md-6">
                         <div class="input-group">
                             <input type="text" class="form-control" placeholder="Search by name or email..." name="search" value="<?= htmlspecialchars($search) ?>">
-                            <button class="btn btn-primary" type="submit">
+                            <button class="btn btn-primary-search" type="submit">
                                 <i class="fas fa-search"></i>
                             </button>
                         </div>
@@ -189,15 +192,15 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <button type="submit" class="btn btn-primary w-100">Filter</button>
+                        <button type="submit" class="btn btn-primary-filter w-100">Filter</button>
                     </div>
                 </form>
 
                 <div class="table-responsive">
                     <table class="table table-striped table-bordered table-hover">
-                        <thead class="table-primary">
-                            <tr>
-                                <th>User ID</th>
+                        <thead class="table-res">
+                            <tr class="text-center align-middle">
+                                <th >User ID</th>
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Account Type</th>
@@ -207,7 +210,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <tbody>
                             <?php if (count($users) > 0): ?>
                                 <?php foreach ($users as $user): ?>
-                                    <tr>
+                                    <tr class="text-center align-middle">
                                         <td><?= htmlspecialchars($user['user_id']) ?></td>
                                         <td><?= htmlspecialchars($user['first_name'] . ' ' . $user['last_name']) ?></td>
                                         <td><?= htmlspecialchars($user['email']) ?></td>
@@ -222,7 +225,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         <td>
                                             <div class="btn-group" role="group">
                                                 <!-- Change Account Type Button -->
-                                                <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                <button type="button" class="btn btn-sm btn-outline-primary-account" 
                                                         data-bs-toggle="modal" 
                                                         data-bs-target="#changeTypeModal"
                                                         data-user-id="<?= $user['user_id'] ?>"
@@ -305,7 +308,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" form="changeTypeForm" name="change_account_type" class="btn btn-primary">Update Account Type</button>
+                <button type="submit" form="changeTypeForm" name="change_account_type" class="btn btn-primary-update">Update Account Type</button>
             </div>
         </div>
     </div>
