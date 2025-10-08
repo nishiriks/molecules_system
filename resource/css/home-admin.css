@@ -145,7 +145,7 @@ main {
   justify-content: center;
   gap: 10px;
   margin-bottom: 30px;
-
+  
 }
 
 .filter-btn {
@@ -156,9 +156,10 @@ main {
   border-radius: 25px;
   font-weight: bold;
   cursor: pointer;
-  box-shadow: -4px 4px 4px 0px #00000040;
-  transition: all 0.3s ease;
-  white-space: nowrap;
+  box-shadow: -4px 4px 4px 0px #00000040; 
+  transition: all 0.3s ease; 
+  white-space: nowrap; 
+  text-decoration: none;
 }
 
 .filter-btn:hover {
