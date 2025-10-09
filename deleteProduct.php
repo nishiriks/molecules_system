@@ -2,7 +2,7 @@
 session_start();
 require_once 'resource/php/init.php';
 
-if (!isset($_SESSION['user_id'])) { 
+if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit();
 }
@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_id'])) {
 
     $sql = "DELETE FROM tbl_inventory WHERE product_id = ?";
     $stmt = $pdo->prepare($sql);
-    
+
     if ($stmt->execute([$product_id])) {
         $_SESSION['success_message'] = "Product was deleted successfully.";
     } else {
@@ -25,4 +25,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_id'])) {
 
 header('Location: admin-search.php');
 exit();
-?>

@@ -19,9 +19,9 @@ document.addEventListener('DOMContentLoaded', () => {
             productCols.forEach(col => {
                 const productName = col.querySelector('.card-text').textContent.toLowerCase();
                 if (productName.includes(searchTerm)) {
-                    col.style.display = ''; 
+                    col.style.display = '';
                 } else {
-                    col.style.display = 'none'; 
+                    col.style.display = 'none';
                 }
             });
         };
@@ -29,9 +29,9 @@ document.addEventListener('DOMContentLoaded', () => {
         searchInput.addEventListener('input', filterProducts);
         searchInput.addEventListener('keydown', (event) => {
             if (event.key === 'Enter') {
-                event.preventDefault(); 
+                event.preventDefault();
                 const searchTerm = searchInput.value.trim();
-                
+
                 if (searchTerm) {
                     window.location.href = `admin-search.php?search=${encodeURIComponent(searchTerm)}`;
                 }
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- A SINGLE, UNIFIED LISTENER FOR ALL POPUP ACTIONS ---
     document.body.addEventListener('click', (event) => {
-        
+
         const viewButton = event.target.closest('.btn-view');
         const editButton = event.target.closest('.edit-button');
         const deleteButton = event.target.closest('.delete-button');
@@ -67,12 +67,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (productType.toLowerCase() === 'equipment' || productType.toLowerCase() === 'equipments') {
                 popupToShow = equipmentPopup;
-                if(popupToShow) popupToShow.querySelector('.equipment-title').textContent = productName;
+                if (popupToShow) popupToShow.querySelector('.equipment-title').textContent = productName;
             } else {
                 popupToShow = chemicalPopup;
-                if(popupToShow) popupToShow.querySelector('.chemical-title').textContent = productName;
+                if (popupToShow) popupToShow.querySelector('.chemical-title').textContent = productName;
             }
-            
+
             if (popupToShow) {
                 popupToShow.dataset.maxStock = productStockValue;
                 popupToShow.querySelector('.popup-product-type').textContent = productType;
@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     quantityInput.value = 1;
                     quantityInput.max = productStockValue;
                 }
-                
+
                 popupToShow.classList.add('show');
             }
             return;
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (editButton) {
             const viewPopup = editButton.closest('.product-popup');
             if (!viewPopup) return;
-            
+
             const productId = viewPopup.dataset.editingProductId;
             let editPopupToShow = null;
 
@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const title = viewPopup.querySelector('.equipment-title').textContent;
                 const stockText = viewPopup.querySelector('.stock-info').textContent;
                 const stockValue = stockText.replace(/Stock:\s*/, '').trim().split(' ')[0];
-                
+
                 editPopupToShow.querySelector('.edit-popup-title').textContent = `Edit: ${title}`;
                 editPopupToShow.querySelector('#edit-equipment-title').value = title;
                 editPopupToShow.querySelector('#edit-equipment-stock').value = stockValue;
@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (hiddenIdInput) {
                     hiddenIdInput.value = productId;
                 }
-                
+
                 viewPopup.classList.remove('show');
                 editPopupToShow.classList.add('show');
             }
@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const form = document.createElement('form');
                 form.method = 'POST';
                 form.action = 'deleteProduct.php';
-                
+
                 const hiddenInput = document.createElement('input');
                 hiddenInput.type = 'hidden';
                 hiddenInput.name = 'product_id';
@@ -183,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!input) return;
 
             let currentValue = parseInt(input.value, 10);
-            
+
             if (quantityBtn.id.includes('increment')) {
                 if (currentValue < maxStock) {
                     currentValue++;
@@ -191,7 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (quantityBtn.id.includes('decrement')) {
                 currentValue = Math.max(1, currentValue - 1);
             }
-            
+
             input.value = currentValue;
         }
     });

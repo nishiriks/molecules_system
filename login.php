@@ -1,8 +1,8 @@
-<?php 
+<?php
 session_start();
 
 if (isset($_SESSION['user_id'])) {
-    header('Location: index.php'); 
+    header('Location: index.php');
     exit();
 }
 
@@ -25,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['user_email'];
     $password = $_POST['user_password'];
 
-    $login_errors = $auth->login($email, $password); 
+    $login_errors = $auth->login($email, $password);
 
     if (!empty($login_errors)) {
         $_SESSION['login_errors'] = $login_errors;
@@ -37,14 +37,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Log-in</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css"  href="resource/css/style.css">
+    <link rel="stylesheet" type="text/css" href="resource/css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -54,6 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script src="https://kit.fontawesome.com/6563a04357.js" crossorigin="anonymous"></script>
 
 </head>
+
 <body class="login-page">
     <section class="log-in d-flex justify-content-center align-items-center">
         <div class="container">
@@ -69,25 +71,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <img src="resource/img/molecules-logo.png" class="logo-img mb-3">
                             <h2 class="greetings fw-bold mb-1">Welcome Back!</h2>
                             <p class="text-email mb-4 d-flex flex-column align-items-center">Login with Email</p>
-                            <?php //logUserMsg()?>
-                             <?php
-                                if (!empty($errors)) {
-                                    foreach ($errors as $error) {
-                                        $auth->showAlert($error);
-                                    }
+                            <?php //logUserMsg()
+                            ?>
+                            <?php
+                            if (!empty($errors)) {
+                                foreach ($errors as $error) {
+                                    $auth->showAlert($error);
                                 }
+                            }
                             ?>
                             <form method="post">
                                 <div class="mb-3 text-start input-wrapper">
                                     <label class="label-text">Email:</label>
                                     <input type="email" class="form-control d-flex flex-column align-items-center" placeholder="Enter email" name="user_email">
                                 </div>
-                                
+
                                 <div class="mb-3 text-start input-wrapper">
                                     <label class="label-text">Password:</label>
                                     <input type="password" class="form-control" placeholder="Enter password" name="user_password">
                                 </div>
-                                
+
                                 <div class="d-flex justify-content-between mb-3 input-wrapper">
                                     <div class="form-check">
                                         <input type="checkbox" class="form-check-input" id="remember" />
@@ -108,4 +111,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 </body>
+
 </html>

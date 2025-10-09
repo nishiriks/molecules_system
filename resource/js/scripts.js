@@ -3,9 +3,9 @@ document.addEventListener('DOMContentLoaded', function () {
     if (editPopup) {
         // This is the standard Bootstrap 5 event listener for a modal
         editPopup.addEventListener('show.bs.modal', function (event) {
-            
+
             // Get the button that triggered the modal
-            const button = event.relatedTarget; 
+            const button = event.relatedTarget;
 
             // Extract the data from the button's data-* attributes
             const itemId = button.getAttribute('data-item-id');

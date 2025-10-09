@@ -22,14 +22,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign-up</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css"  href="resource/css/style.css">
+    <link rel="stylesheet" type="text/css" href="resource/css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -41,16 +42,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
 </head>
+
 <body class="signup-page">
     <!--pop-up-->
-   <div class="col-md-6">
-    <div id="successAlert" 
-         class="alert alert-success alert-dismissible fade d-none" 
-         role="alert">
-        We have sent a verification link to your email!
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <div class="col-md-6">
+        <div id="successAlert"
+            class="alert alert-success alert-dismissible fade d-none"
+            role="alert">
+            We have sent a verification link to your email!
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
     </div>
-</div>
 
     <section class="log-in d-flex justify-content-center align-items-center">
         <div class="container">
@@ -65,13 +67,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <div class="col-md-6 p-4">
                             <img src="resource/img/molecules-logo.png" class="logo-img mb-3">
                             <h2 class="greetings fw-bold mb-1">Sign up</h2>
-                                <?php
-                                    if (!empty($errors)) {
-                                        foreach ($errors as $error) {
-                                            $auth->showAlert($error);
-                                        }
-                                    }
-                                ?>
+                            <?php
+                            if (!empty($errors)) {
+                                foreach ($errors as $error) {
+                                    $auth->showAlert($error);
+                                }
+                            }
+                            ?>
                             <form method="POST" action="sign-up.php">
                                 <div class="row mb-3 mt-3">
                                     <div class="col-md-6">
@@ -121,12 +123,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 </body>
+
 </html>
 
 <script>
-function showAlert() {
-  const alertBox = document.getElementById("successAlert");
-  alertBox.classList.remove("d-none");
-  alertBox.classList.add("show");
-}
+    function showAlert() {
+        const alertBox = document.getElementById("successAlert");
+        alertBox.classList.remove("d-none");
+        alertBox.classList.add("show");
+    }
 </script>

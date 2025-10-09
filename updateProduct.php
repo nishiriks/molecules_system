@@ -25,11 +25,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             $sql = "UPDATE tbl_inventory SET name = ?, stock = ?, measure_unit = ? WHERE product_id = ?";
             $stmt = $pdo->prepare($sql);
-        
-            $stmt->execute([$name, $stock, $measureUnit, $productId]);
-            
-            $_SESSION['success_message'] = "Product updated successfully!";
 
+            $stmt->execute([$name, $stock, $measureUnit, $productId]);
+
+            $_SESSION['success_message'] = "Product updated successfully!";
         } catch (PDOException $e) {
             $_SESSION['error_message'] = "Error updating product: " . $e->getMessage();
         }
@@ -39,7 +38,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     header("Location: admin-search.php");
     exit();
-    
 } else {
     echo "Invalid request method.";
     header("Location: admin-search.php");

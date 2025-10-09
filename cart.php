@@ -16,14 +16,15 @@ $items_in_cart = $cart->getItems();
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cart</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css"  href="resource/css/home-admin.css">
+    <link rel="stylesheet" type="text/css" href="resource/css/home-admin.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -33,10 +34,11 @@ $items_in_cart = $cart->getItems();
     <script src="https://kit.fontawesome.com/6563a04357.js" crossorigin="anonymous"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
+
 <body>
     <nav class="navbar">
         <a class="navbar-brand" href="#">
-            <img class="ceu-logo img-fluid" src="./resource/img/ceu-molecules.png"/>
+            <img class="ceu-logo img-fluid" src="./resource/img/ceu-molecules.png" />
         </a>
         <div class="right-side-icons">
             <i class="fa-solid fa-cart-shopping cart-icon"></i>
@@ -102,12 +104,12 @@ $items_in_cart = $cart->getItems();
                                 <div class="item-details-right">
                                     <div class="item-amount">Amount: <?= htmlspecialchars($item['amount']) ?> <?= htmlspecialchars($item['measure_unit']) ?></div>
                                     <div class="item-actions">
-                                        <button class="edit-btn" 
-                                                data-bs-toggle="modal" 
-                                                data-bs-target="#edit-popup"
-                                                data-item-id="<?= $item['item_id'] ?>"
-                                                data-item-name="<?= htmlspecialchars($item['name']) ?>"
-                                                data-item-amount="<?= htmlspecialchars($item['amount']) ?>">
+                                        <button class="edit-btn"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#edit-popup"
+                                            data-item-id="<?= $item['item_id'] ?>"
+                                            data-item-name="<?= htmlspecialchars($item['name']) ?>"
+                                            data-item-amount="<?= htmlspecialchars($item['amount']) ?>">
                                             Edit
                                         </button>
 
@@ -123,7 +125,7 @@ $items_in_cart = $cart->getItems();
                     <?php endforeach; ?>
                 <?php endif; ?>
             </div>
-            
+
             <?php if (!empty($items_in_cart)): ?>
                 <div class="finalize-btn-container text-end mt-4">
                     <a href="equipment.php" class="finalize-request-btn" style="text-decoration: none;">Finalize Request</a>
@@ -143,7 +145,7 @@ $items_in_cart = $cart->getItems();
                     <form id="edit-form" action="cartAction.php" method="POST">
                         <input type="hidden" name="action" value="update">
                         <input type="hidden" id="edit-item-id" name="item_id" value="">
-                        
+
                         <div class="mb-3">
                             <label for="edit-item-name" class="form-label">Item Name:</label>
                             <input type="text" id="edit-item-name" class="form-control" readonly>
@@ -159,19 +161,20 @@ $items_in_cart = $cart->getItems();
         </div>
     </div>
 
-<!-- footer -->
-<footer>
-  <div class="container-fluid">
-    <p class="text-center text-white pt-2"><small>
-      CEU MALOLOS MOLECULES || <strong>Chemical Laboratory: sample@ceu.edu.ph</strong><br>
-      <i class="fa-regular fa-copyright"></i> 2025 Copyright <strong>CENTRO ESCOLAR UNIVERSITY MALOLOS, Chemical Laboratory</strong><br>
-      Developed by <strong>Renz Matthew Magsakay (official.renzmagsakay@gmail.com), Krizia Jane Lleva (lleva2234517@mls.ceu.edu.ph) & Angelique Mae Gabriel (gabriel2231439@mls.ceu.edu.ph)</strong>
-      </small>
-    </p>
-  </div>
-</footer>
+    <!-- footer -->
+    <footer>
+        <div class="container-fluid">
+            <p class="text-center text-white pt-2"><small>
+                    CEU MALOLOS MOLECULES || <strong>Chemical Laboratory: sample@ceu.edu.ph</strong><br>
+                    <i class="fa-regular fa-copyright"></i> 2025 Copyright <strong>CENTRO ESCOLAR UNIVERSITY MALOLOS, Chemical Laboratory</strong><br>
+                    Developed by <strong>Renz Matthew Magsakay (official.renzmagsakay@gmail.com), Krizia Jane Lleva (lleva2234517@mls.ceu.edu.ph) & Angelique Mae Gabriel (gabriel2231439@mls.ceu.edu.ph)</strong>
+                </small>
+            </p>
+        </div>
+    </footer>
 
 </body>
+
 </html>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
