@@ -146,7 +146,7 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         <span class="timestamp-text"><?= date('m/d/Y - g:ia', strtotime($request['request_date'])) ?></span>
                                     </div>
                                     <div class="view-button-container">
-                                        <button class="view-button-btn">View</button>
+                                        <a href="ad-order-details.php?id=<?= $request['request_id'] ?>" class="view-button-btn">View</a>
                                     </div>
                                 </div>
                             </div>
