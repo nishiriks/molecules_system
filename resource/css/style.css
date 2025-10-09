@@ -1,32 +1,36 @@
 * {
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
-html{
-	text-rendering: optimizeLegibility;
-	scroll-behavior: smooth;
+
+html {
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
 }
-body{
+
+body {
     height: 100%;
     background: linear-gradient(225.24deg, #7FF5FF 0.41%, #FF6BFC 100%);
     font-family: 'Montserrat', sans-serif;
 }
 
 /* form */
-.log-in{
-    min-height:100vh;
+.log-in {
+    min-height: 100vh;
 }
-.bg-img{
+
+.bg-img {
     height: 500px;
     width: 100%;
-    border-top-left-radius: 20px ;
+    border-top-left-radius: 20px;
     border-bottom-left-radius: 20px;
     object-fit: cover;
 }
-.custom-card{
-    width:900px; 
-    height:500px;
+
+.custom-card {
+    width: 900px;
+    height: 500px;
     border-radius: 20px;
     box-shadow: -4px 4px 4px 4px #00000040;
 
@@ -34,125 +38,137 @@ body{
     /* padding-bottom:50px; */
 }
 
-.log-form{
+.log-form {
     padding-top: 30px;
 }
-.logo-img{
-   width:200px;     
-   height:auto;    
-   display:block;
-   margin-left:auto;
-   margin-right:auto;
+
+.logo-img {
+    width: 200px;
+    height: auto;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
-.text-email{
-   color: #00000099;
+
+.text-email {
+    color: #00000099;
 }
-.greetings{
+
+.greetings {
     text-align: center;
     font-size: 30px;
-    background: linear-gradient(90deg,#6FA9FF,#8D5CCB);
+    background: linear-gradient(90deg, #6FA9FF, #8D5CCB);
     -webkit-background-clip: text;
     color: transparent;
 
 }
 
-.label-text{
+.label-text {
     font-size: 14px;
     letter-spacing: .5px;
 }
-.form-check-label{
+
+.form-check-label {
     font-size: 12px;
     letter-spacing: .5px;
 }
 
-.label-t{
+.label-t {
     font-size: 12px;
     color: #F55154;
     text-decoration: none;
 }
+
 .label-t:hover,
-.label-t:active{
+.label-t:active {
     text-decoration: underline;
     color: #FF7072;
 
 }
-.input-wrapper{
+
+.input-wrapper {
     padding-top: 0;
-    max-width:350px;
+    max-width: 350px;
     padding-right: 20px;
     padding-left: 20px;
 }
-.log-button{
+
+.log-button {
     max-width: fit-content;
     margin-left: 20px;
     font-size: 14px;
     background: linear-gradient(90deg, #6FA9FF 0%, #8D5CCB 100%);
-    border:none;
+    border: none;
     box-shadow: -4px 4px 4px 0px #00000040;
     font-weight: bold;
     font-weight: 700;
 }
 
 .log-button:hover,
-.log-button:active{
-  font-weight: bold;
-  background: linear-gradient(90deg, #8D5CCB 0%, #6FA9FF 100%);
-  transform: scale(1.1) translateY(-5px);
-  /* background-color: #6FA9FF; */
-  box-shadow: 0 0 6px #3c229b;
+.log-button:active {
+    font-weight: bold;
+    background: linear-gradient(90deg, #8D5CCB 0%, #6FA9FF 100%);
+    transform: scale(1.1) translateY(-5px);
+    /* background-color: #6FA9FF; */
+    box-shadow: 0 0 6px #3c229b;
 }
+
 .log-button:active:hover {
     background: linear-gradient(90deg, #8D5CCB 0%, #6FA9FF 100%);
     transition: all 0.3s ease;
 }
 
 
-.form-control{
+.form-control {
     font-size: 14px;
     border: 1px solid #1c1c1c;
     box-shadow: -4px 4px 4px 0px #00000040;
 
 }
-.form-check-input{
+
+.form-check-input {
     border: 1px solid #F55197;
 }
+
 .form-check-input:checked {
-    background-color: #F55197; 
-    border-color: #F55197;    
+    background-color: #F55197;
+    border-color: #F55197;
 }
 
-.log-footer{
+.log-footer {
     padding-left: 20px;
     font-size: 14px;
     padding-top: 10px;
 }
-.sign-footer{
+
+.sign-footer {
     text-decoration: none;
-    background: linear-gradient(90deg,#6FA9FF,#8D5CCB);
+    background: linear-gradient(90deg, #6FA9FF, #8D5CCB);
     -webkit-background-clip: text;
     color: transparent;
     font-weight: bold;
 }
 
 .sign-footer:hover,
-.sign-footer:active{
-  font-weight: bold;
-  background: linear-gradient(90deg, #8D5CCB 0%, #6FA9FF 100%);
-  -webkit-background-clip: text;
-  color: transparent;
+.sign-footer:active {
+    font-weight: bold;
+    background: linear-gradient(90deg, #8D5CCB 0%, #6FA9FF 100%);
+    -webkit-background-clip: text;
+    color: transparent;
 }
 
 /* sign-up */
 
-.signup-page .log-button{
+.signup-page .log-button {
     margin-top: 20px;
     margin-left: 0;
-    
+
 }
-.icon-i{
+
+.icon-i {
     position: absolute;
-    right: 20px;   
-    bottom: 20px;    
+    right: 20px;
+    bottom: 20px;
     font-size: 24px;
     cursor: pointer;
 }
@@ -201,46 +217,52 @@ body{
 
 
 @media (max-width: 768px) {
-    .bg-img{
-    width: 100%;
-    height: 200px;
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
-    border-bottom-left-radius: 0px;
-}
-    .log-in{
-    padding-top: 105px;
-    padding-left: 15px;
-    padding-right: 25px;
-    padding-bottom: 105px;
-}
-    .custom-card{
-    width:400px; 
-    height:900px;
-    border-radius: 20px;
-    padding-top:10px;     
-    padding-bottom:10px;
-    box-shadow: -4px 4px 4px 4px #00000040;
-}
-    .log-footer{
-    padding-left: 20px;
-    font-size: 14px;
-    padding-top: 20px;
-}
-    .log-button{
-    margin-top: 20px;
-    margin-left: 145px;
-    
-}
-    .signup-page .log-button{
-    margin-top: 20px;
-    margin-left: 110px;
-    
-}
+    .bg-img {
+        width: 100%;
+        height: 200px;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+        border-bottom-left-radius: 0px;
+    }
+
+    .log-in {
+        padding-top: 105px;
+        padding-left: 15px;
+        padding-right: 25px;
+        padding-bottom: 105px;
+    }
+
+    .custom-card {
+        width: 400px;
+        height: 900px;
+        border-radius: 20px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        box-shadow: -4px 4px 4px 4px #00000040;
+    }
+
+    .log-footer {
+        padding-left: 20px;
+        font-size: 14px;
+        padding-top: 20px;
+    }
+
+    .log-button {
+        margin-top: 20px;
+        margin-left: 145px;
+
+    }
+
+    .signup-page .log-button {
+        margin-top: 20px;
+        margin-left: 110px;
+
+    }
+
     #successAlert {
-    top: 10px;
-    right: 50px;
-    margin-left: 50px;
-}
+        top: 10px;
+        right: 50px;
+        margin-left: 50px;
+    }
 
 }

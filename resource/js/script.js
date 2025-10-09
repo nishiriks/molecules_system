@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const editButtons = document.querySelectorAll('.edit-button');
     const editEquipmentPopup = document.getElementById('edit-equipment-popup');
     const editChemicalPopup = document.getElementById('edit-chemical-popup');
-    
+
     const editEquipmentForm = document.getElementById('edit-equipment-form');
     const editEquipmentTitleInput = document.getElementById('edit-equipment-title');
     const editEquipmentStockInput = document.getElementById('edit-equipment-stock');
@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const editChemicalTitleInput = document.getElementById('edit-chemical-title');
     const editChemicalStockInput = document.getElementById('edit-chemical-stock');
     const editChemicalStockUnitSelect = document.getElementById('edit-chemical-stock-unit');
-    
+
     // CHANGE: These will now hold references to the main card's elements
     let activeCardTitleElement = null;
     let activeCardStockElement = null;
@@ -37,13 +37,13 @@ document.addEventListener('DOMContentLoaded', () => {
     viewButtons.forEach(button => {
         button.addEventListener('click', () => {
             const card = button.closest('.card'); // Get the parent card of the clicked button
-            
+
             // Get data directly from the elements within the card
             const productType = button.getAttribute('data-type');
             const productName = card.querySelector('.card-body .card-text:first-of-type').textContent;
             const productStock = card.querySelector('.stock-text').textContent.replace('Stock: ', '');
             const productImage = card.querySelector('.card-img-top').src;
-            
+
             // CHANGE: Store references to the actual card's elements
             activeCardTitleElement = card.querySelector('.card-body .card-text:first-of-type');
             activeCardStockElement = card.querySelector('.stock-text');
@@ -94,10 +94,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (activeCardTitleElement && activeCardStockElement) {
                 const currentTitle = activeCardTitleElement.textContent;
                 const fullStock = activeCardStockElement.textContent.replace('Stock: ', '');
-                
+
                 const allEditPopups = document.querySelectorAll('.edit-popup');
                 allEditPopups.forEach(p => p.style.display = 'none');
-                
+
                 if (activeProductType === 'equipment') {
                     editEquipmentTitleInput.value = currentTitle;
                     editEquipmentStockInput.value = fullStock;
@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         }
-        
+
         if (incrementBtn) {
             incrementBtn.addEventListener('click', () => {
                 let value = parseInt(quantityInput.value);
@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     };
-    
+
     setupQuantityControls(equipmentPopup, 'equipment');
     setupQuantityControls(chemicalPopup, 'chemical');
 });
