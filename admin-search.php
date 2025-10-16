@@ -286,7 +286,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </div>
 
 <div class="nav--small nav--btn-3">
-    <a href="#"><i class="fa-solid fa-rectangle-list"></i></a>
+    <a href="#"><i class="fa-solid fa-lock-open"></i></a>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
