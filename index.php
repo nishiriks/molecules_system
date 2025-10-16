@@ -83,7 +83,7 @@ if (!isset($_SESSION['user_id'])) {
 </nav>
 
 <!-- home -->
-<section class="home">
+<main class="home">
     <div class="container-fluid">
         <div class="row row-no-gutters align-items-center">
             <div class="col-12 col-md-6 col-lg-5">
@@ -167,7 +167,7 @@ if (!isset($_SESSION['user_id'])) {
 
         
     </div>
-</section>
+  </main>
     <!-- home -->
 
 <!-- footer -->
