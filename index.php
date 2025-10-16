@@ -43,9 +43,13 @@ if (!isset($_SESSION['user_id'])) {
   <a class="navbar-brand" href="#">
     <img class="ceu-logo img-fluid" src="./resource/img/ceu-molecules.png"/>
   </a>
-  <button class="navbar-toggler me-3 custom-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+  <div class="right-side-icons">
+    <i class="fa-solid fa-cart-shopping cart-icon"></i>
+      <button class="navbar-toggler me-3 custom-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
+  </div>
+
   <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
     <div class="offcanvas-header">
       <h5 class="offcanvas-title" id="offcanvasNavbarLabel">CEU Molecules</h5>

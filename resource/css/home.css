@@ -13,6 +13,17 @@ html{
 	text-rendering: optimizeLegibility;
 	scroll-behavior: smooth;
 }
+.right-side-icons {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* Spacing between icons */
+}
+
+.right-side-icons .cart-icon {
+  color: #F55197;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
 /* SCROLLBAR */
 ::-webkit-scrollbar{
 	width: 5px;
