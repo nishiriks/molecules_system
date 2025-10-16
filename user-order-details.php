@@ -77,43 +77,43 @@
                 <input type="text" class="form-control" id="name" name="prof_name" placeholder="Enter name" required>
               </div>
 
-              <div class="col-md-4">
-                <label for="subject" class="form-label">Subject:</label>
-                <input type="text" class="form-control" id="subject" name="subject" placeholder="Enter subject"
-                  required>
-              </div>
-              <div class="col-md-3">
-                <label for="room" class="form-label">Room:</label>
-                <input type="text" class="form-control" id="room" name="room" placeholder="Enter Room" required>
-              </div>
-            </div>
-
-            <div class="row mb-4 align-items-end">
-              <div class="col-md-3">
-                <label for="date-from" class="form-label">Date of Use (From):</label>
-                <input type="date" class="form-control" id="date-from" name="date_from" required>
-              </div>
-              <div class="col-md-3">
-                <label for="date-to" class="form-label">To (Disregard if one day use):</label>
-                <input type="date" class="form-control" id="date-to" name="date_to">
-              </div>
-              <div class="col-md-2">
-                <label for="time-from" class="form-label">Time (From):</label>
-                <input type="time" class="form-control" id="time-from" name="time_from" required>
-              </div>
-              <div class="col-md-2">
-                <label for="time-to" class="form-label">Time (To):</label>
-                <input type="time" class="form-control" id="time-to" name="time_to" required>
-              </div>
-            </div>
-            <h4 class="request-details-title mt-1 mb-3">Items:</h4>
-            <div id="request-list-container">
-              <div class="request-item-card d-flex align-items-center mb-3">
-                <div class="item-details-simple flex-grow-1">
-                  <h5 class="item-name mb-0"></h5>
+                <div class="col-md-4">
+                  <label for="subject" class="form-label">Subject:</label>
+                  <input type="text" class="form-control" id="subject" name="subject" placeholder="Enter subject"
+                    required>
+                </div>
+                <div class="col-md-3">
+                  <label for="room" class="form-label">Room:</label>
+                  <input type="text" class="form-control" id="room" name="room" placeholder="Enter Room" required>
                 </div>
               </div>
-            </div>
+
+              <div class="row mb-4 align-items-end">
+                <div class="col-md-3">
+                  <label for="date-from" class="form-label">Date of Use (From):</label>
+                  <input type="date" class="form-control" id="date-from" name="date_from" required>
+                </div>
+                <div class="col-md-3">
+                  <label for="date-to" class="form-label">To (Disregard if one day use):</label>
+                  <input type="date" class="form-control" id="date-to" name="date_to">
+                </div>
+                <div class="col-md-2">
+                  <label for="time-from" class="form-label">Time (From):</label>
+                  <input type="time" class="form-control" id="time-from" name="time_from" required>
+                </div>
+                <div class="col-md-2">
+                  <label for="time-to" class="form-label">Time (To):</label>
+                  <input type="time" class="form-control" id="time-to" name="time_to" required>
+                </div>
+              </div>
+              <h4 class="request-details-title mt-1 mb-3">Items:</h4>
+              <div id="request-list-container">
+                <div class="request-item-card d-flex align-items-center mb-3">
+                  <div class="item-details-simple flex-grow-1">
+                    <h5 class="item-name mb-0"></h5>
+                  </div>
+                </div>
+              </div>
 
             <div class="mb-4 mt-4">
               <label for="remarks" class="form-label request-details-title remarks">Remarks:</label>
@@ -123,35 +123,36 @@
               </div>
             </div>
 
-            <div class="d-flex justify-content-end mt-4">
-              <div class="status-container">
-                <button type="submit" class="btn finalize-btn" name="view-btn">View Form</button>
-                <button type="submit" class="btn finalize-btn ms-3" name="cancel-btn">Cancel</button>
+              <div class="d-flex justify-content-end mt-4">
+                <div class="status-container">
+                  <button type="submit" class="btn finalize-btn" name="view-btn">View Form</button>
+                  <button type="submit" class="btn finalize-btn ms-3" name="cancel-btn">Cancel</button>
+                </div>
               </div>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</main>
+  </main>
 
 
-<footer>
-  <div class="container-fluid">
-    <p class="text-center text-white pt-2">
-      <small>CEU MALOLOS MOLECULES || <strong>Chemical Laboratory: sample@ceu.edu.ph</strong><br>
-        <i class="fa-regular fa-copyright"></i> 2025 Copyright <strong>CENTRO ESCOLAR UNIVERSITY MALOLOS, Chemical
-          Laboratory</strong><br>
-        Developed by <strong>Renz Matthew Magsakay (official.renzmagsakay@gmail.com), Krizia Jane Lleva
-          (lleva2234517@mls.ceu.edu.ph) & Angelique Mae Gabriel (gabriel2231439@mls.ceu.edu.ph)</strong>
-      </small>
-    </p>
-  </div>
-</footer>
+  <footer>
+    <div class="container-fluid">
+      <p class="text-center text-white pt-2">
+        <small>CEU MALOLOS MOLECULES || <strong>Chemical Laboratory: sample@ceu.edu.ph</strong><br>
+          <i class="fa-regular fa-copyright"></i> 2025 Copyright <strong>CENTRO ESCOLAR UNIVERSITY MALOLOS, Chemical
+            Laboratory</strong><br>
+          Developed by <strong>Renz Matthew Magsakay (official.renzmagsakay@gmail.com), Krizia Jane Lleva
+            (lleva2234517@mls.ceu.edu.ph) & Angelique Mae Gabriel (gabriel2231439@mls.ceu.edu.ph)</strong>
+        </small>
+      </p>
+    </div>
+  </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
-  integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
+    crossorigin="anonymous"></script>
 </body>
 
 </html>
