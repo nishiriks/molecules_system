@@ -69,14 +69,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <img src="resource/img/molecules-logo.png" class="logo-img mb-3">
                             <h2 class="greetings fw-bold mb-1">Welcome Back!</h2>
                             <p class="text-email mb-4 d-flex flex-column align-items-center">Login with Email</p>
-                            <?php //logUserMsg()?>
-                             <?php
-                                if (!empty($errors)) {
-                                    foreach ($errors as $error) {
-                                        $auth->showAlert($error);
-                                    }
-                                }
-                            ?>
                             <form method="post">
                                 <div class="mb-3 text-start input-wrapper">
                                     <label class="label-text">Email:</label>
@@ -98,9 +90,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <button name="log-button" type="submit" class="log-button btn btn-primary w-100 mb-2">Log In</button>
                                 <p class="log-footer">Don’t Have an Account? <a href="sign-up.php" class="sign-footer">Sign up here</a></p>
                             </form>
+                            <?php //logUserMsg()?>
                         </div>
-
                     </div>
+                    <?php
+                            if (!empty($errors)) {
+                            foreach ($errors as $error) {
+                                $auth->showAlert($error);
+                            }
+                        }
+                    ?>
                 </div>
             </div>
         </div>
