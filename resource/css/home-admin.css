@@ -602,20 +602,17 @@ p,
   box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
 }
 
-/* --- NEW CSS FOR REMARKS SECTION --- */
+/* CSS FOR REMARKS SECTION */
 .remarks-container {
   position: relative;
-  /* This is needed to position the button inside */
 }
 
 textarea.form-control {
-  /* Add extra padding at the bottom so text doesn't hide behind the button */
   padding-bottom: 50px;
 }
 
 .edit-remarks-btn {
   position: absolute;
-  /* Position the button relative to the container */
   bottom: 10px;
   right: 10px;
   background-color: #f0f8ff;
@@ -633,8 +630,70 @@ textarea.form-control {
   color: #fff;
 }
 
-/* --- END OF NEW CSS --- */
 
+/* CSS FOR CHANGE PASSWORD */
+.change-pass-card {
+  background-color: #E3E3E3;
+  padding: 30px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  position: relative;
+
+}
+
+.text-password {
+  color: #F55197;
+  font-weight: bold;
+}
+
+.btn-update-password {
+  background-color: #f0f8ff;
+  color: #F55197;
+  border: 1px;
+  padding: 10px 30px;
+  border-radius: 15px;
+  font-weight: bold;
+  box-shadow: -4px 4px 4px 0px #00000040;
+  transition: all 0.3s ease;
+}
+
+
+.btn-update-password:hover,
+.btn-update-password:active {
+  background-color: #F55197;
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+.password-toggle-icon {
+  position: absolute;
+  top: 70%;
+  right: 15px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #888;
+}
+
+.form-control:focus {
+  border-color: #161542;
+  box-shadow: 0 0 0 0.25rem rgba(22, 21, 66, 0.25);
+}
+
+.back-arrow {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 1.2rem;
+  color: #161542;
+  text-decoration: none;
+  transition: transform 0.2s ease;
+}
+
+.back-arrow:hover {
+  color: #161542;
+  transform: scale(1.1);
+}
 
 
 @media (max-width: 768px) {
