@@ -306,9 +306,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <div class="form-text">Minimum 10 characters required.</div>
                         </div>
                         
-                        <div class="text-center">
+                        <div class="btn-div text-center">
                             <button type="submit" class="btn btn-contact btn-lg">
-                                <i class="fas fa-paper-plane me-2"></i>Send Message
+                                Send Message
                             </button>
                         </div>
                     </form>
