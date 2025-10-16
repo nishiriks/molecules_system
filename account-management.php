@@ -23,21 +23,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user_id = $_POST['user_id'];
         
         // Get user details for logging
-        $stmt = $pdo->prepare("SELECT first_name, last_name FROM tbl_users WHERE user_id = ?");
+        $stmt = $pdo->prepare("SELECT first_name, last_name, is_active FROM tbl_users WHERE user_id = ?");
         $stmt->execute([$user_id]);
         $target_user = $stmt->fetch(PDO::FETCH_ASSOC);
         $target_user_name = $target_user['first_name'] . ' ' . $target_user['last_name'];
         
-        $stmt = $pdo->prepare("DELETE FROM tbl_users WHERE user_id = ?");
-        $stmt->execute([$user_id]);
+        // Toggle active status
+        $new_status = $target_user['is_active'] ? 0 : 1;
+        $stmt = $pdo->prepare("UPDATE tbl_users SET is_active = ? WHERE user_id = ?");
+        $stmt->execute([$new_status, $user_id]);
         
         // Log the action
         $current_date = date('Y-m-d H:i:s');
-        $log_action = 'Delete User: ' . $target_user_name . ' (ID: ' . $user_id . ')';
+        $action = $new_status ? 'Activated' : 'Deactivated';
+        $log_action = $action . ' User: ' . $target_user_name . ' (ID: ' . $user_id . ')';
         $stmt = $pdo->prepare("INSERT INTO tbl_admin_log (user_id, log_date, log_action) VALUES (?, ?, ?)");
         $stmt->execute([$_SESSION['user_id'], $current_date, $log_action]);
         
-        $_SESSION['success_message'] = "User deleted successfully!";
+        $_SESSION['success_message'] = "User " . strtolower($action) . " successfully!";
         header('Location: account-management.php');
         exit();
     }
@@ -70,8 +73,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Search and filter functionality
 $search = $_GET['search'] ?? '';
 $account_type_filter = $_GET['account_type'] ?? '';
+$status_filter = $_GET['status'] ?? '';
 
-// Build query
+// Build query - Show all users (both active and inactive)
 $query = "SELECT * FROM tbl_users WHERE 1=1";
 $params = [];
 
@@ -86,6 +90,14 @@ if (!empty($search)) {
 if (!empty($account_type_filter)) {
     $query .= " AND account_type = ?";
     $params[] = $account_type_filter;
+}
+
+if (!empty($status_filter)) {
+    if ($status_filter === 'active') {
+        $query .= " AND is_active = 1";
+    } elseif ($status_filter === 'inactive') {
+        $query .= " AND is_active = 0";
+    }
 }
 
 $query .= " ORDER BY user_id DESC";
@@ -115,6 +127,15 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bona+Nova:ital,wght@0,400;0,700;1,400&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300..700&family=Roboto:ital,wght@0,100..900;1,100..900&family=Rubik:ital,wght@0,300..900;1,300..900&family=Ruda:wght@400..900&family=Tilt+Warp&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
   <script src="https://kit.fontawesome.com/6563a04357.js" crossorigin="anonymous"></script>
+  <style>
+    .user-inactive {
+        color: #6c757d !important;
+        text-decoration: line-through !important;
+    }
+    .status-badge {
+        font-size: 0.75em;
+    }
+  </style>
 </head>
 
 <body>
@@ -174,7 +195,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <div class="card-body">
                 <!-- Search and Filter Form -->
                 <form method="GET" class="row g-3 mb-4">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="input-group">
                             <input type="text" class="form-control" placeholder="Search by name or email..." name="search" value="<?= htmlspecialchars($search) ?>">
                             <button class="btn btn-primary-search" type="submit">
@@ -182,13 +203,20 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </button>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <select class="form-select" name="account_type">
                             <option value="">All Account Types</option>
                             <option value="Student" <?= $account_type_filter === 'Student' ? 'selected' : '' ?>>Student</option>
                             <option value="Faculty" <?= $account_type_filter === 'Faculty' ? 'selected' : '' ?>>Faculty</option>
                             <option value="Admin" <?= $account_type_filter === 'Admin' ? 'selected' : '' ?>>Admin</option>
                             <option value="Super Admin" <?= $account_type_filter === 'Super Admin' ? 'selected' : '' ?>>Super Admin</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" name="status">
+                            <option value="">All Status</option>
+                            <option value="active" <?= $status_filter === 'active' ? 'selected' : '' ?>>Active</option>
+                            <option value="inactive" <?= $status_filter === 'inactive' ? 'selected' : '' ?>>Inactive</option>
                         </select>
                     </div>
                     <div class="col-md-2">
@@ -200,17 +228,18 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <table class="table table-striped table-bordered table-hover">
                         <thead class="table-res">
                             <tr class="text-center align-middle">
-                                <th >User ID</th>
+                                <th>User ID</th>
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Account Type</th>
+                                <th>Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if (count($users) > 0): ?>
                                 <?php foreach ($users as $user): ?>
-                                    <tr class="text-center align-middle">
+                                    <tr class="text-center align-middle <?= !$user['is_active'] ? 'user-inactive' : '' ?>">
                                         <td><?= htmlspecialchars($user['user_id']) ?></td>
                                         <td><?= htmlspecialchars($user['first_name'] . ' ' . $user['last_name']) ?></td>
                                         <td><?= htmlspecialchars($user['email']) ?></td>
@@ -223,6 +252,11 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                             </span>
                                         </td>
                                         <td>
+                                            <span class="badge status-badge <?= $user['is_active'] ? 'bg-success' : 'bg-secondary' ?>">
+                                                <?= $user['is_active'] ? 'Active' : 'Inactive' ?>
+                                            </span>
+                                        </td>
+                                        <td>
                                             <div class="btn-group" role="group">
                                                 <!-- Change Account Type Button -->
                                                 <button type="button" class="btn btn-sm btn-outline-primary-account"
@@ -230,17 +264,20 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                         data-bs-target="#changeTypeModal"
                                                         data-user-id="<?= $user['user_id'] ?>"
                                                         data-current-type="<?= htmlspecialchars($user['account_type']) ?>"
-                                                        data-user-name="<?= htmlspecialchars($user['first_name'] . ' ' . $user['last_name']) ?>">
+                                                        data-user-name="<?= htmlspecialchars($user['first_name'] . ' ' . $user['last_name']) ?>"
+                                                        <?= !$user['is_active'] ? 'disabled' : '' ?>>
                                                     <i class="fas fa-user-cog"></i> Change Type
                                                 </button>
                                                 
-                                                <!-- Delete User Button -->
-                                                <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                <!-- Toggle Active Status Button -->
+                                                <button type="button" class="btn btn-sm <?= $user['is_active'] ? 'btn-outline-danger' : 'btn-outline-success' ?>" 
                                                         data-bs-toggle="modal" 
-                                                        data-bs-target="#deleteModal"
+                                                        data-bs-target="#toggleStatusModal"
                                                         data-user-id="<?= $user['user_id'] ?>"
-                                                        data-user-name="<?= htmlspecialchars($user['first_name'] . ' ' . $user['last_name']) ?>">
-                                                    <i class="fas fa-trash"></i> Delete
+                                                        data-user-name="<?= htmlspecialchars($user['first_name'] . ' ' . $user['last_name']) ?>"
+                                                        data-current-status="<?= $user['is_active'] ?>">
+                                                    <i class="fas <?= $user['is_active'] ? 'fa-user-slash' : 'fa-user-check' ?>"></i> 
+                                                    <?= $user['is_active'] ? 'Deactivate' : 'Activate' ?>
                                                 </button>
                                             </div>
                                         </td>
@@ -248,7 +285,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="6" class="text-center py-4">No users found</td>
+                                    <td colspan="7" class="text-center py-4">No users found</td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>
@@ -259,23 +296,23 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </section>
 </main>
 
-<!-- Delete Confirmation Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+<!-- Toggle Status Confirmation Modal -->
+<div class="modal fade" id="toggleStatusModal" tabindex="-1" aria-labelledby="toggleStatusModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <h5 class="modal-title" id="toggleStatusModalLabel">Confirm Status Change</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>Are you sure you want to delete user: <strong id="deleteUserName"></strong>?</p>
-                <p class="text-danger"><small>This action cannot be undone.</small></p>
+                <p>Are you sure you want to <strong><span id="statusAction"></span></strong> user: <strong id="toggleStatusUserName"></strong>?</p>
+                <p class="text-danger"><small id="statusMessage"></small></p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <form method="POST" style="display: inline;">
-                    <input type="hidden" name="user_id" id="deleteUserId">
-                    <button type="submit" name="delete_user" class="btn btn-danger">Delete User</button>
+                    <input type="hidden" name="user_id" id="toggleStatusUserId">
+                    <button type="submit" name="delete_user" class="btn" id="toggleStatusButton">Confirm</button>
                 </form>
             </div>
         </div>
