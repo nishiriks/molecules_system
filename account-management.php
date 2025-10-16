@@ -225,7 +225,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         <td>
                                             <div class="btn-group" role="group">
                                                 <!-- Change Account Type Button -->
-                                                <button type="button" class="btn btn-sm btn-outline-primary-account" 
+                                                <button type="button" class="btn btn-sm btn-outline-primary-account"
                                                         data-bs-toggle="modal" 
                                                         data-bs-target="#changeTypeModal"
                                                         data-user-id="<?= $user['user_id'] ?>"

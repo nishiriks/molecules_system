@@ -276,4 +276,21 @@ footer p, .fa-copyright{
     background-color: #F55197;
     color: white;
 }
+.btn-outline-primary-account{
+    color: #F55197;
+    border: 1px solid #F55197;
+}
+.btn-outline-primary-account:hover{
+    background-color: #F55197;
+    color: white;
+}
+.btn-primary-update{
+    background-color: #F55197;
+    color: white;
+
+}
+.btn-primary-update:hover{
+    color: #F55197;
+    border: 1px solid #F55197;
+}
 
