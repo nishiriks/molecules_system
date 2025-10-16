@@ -3,6 +3,14 @@ require_once './resource/php/class/Auth.php';
 $auth = new Auth();
 $errors = [];
 
+// Store data
+$stored_data = [
+    'first_name' => '',
+    'last_name' => '',
+    'email' => '',
+    'student_number' => ''
+];
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $fname = $_POST['first_name'];
     $lname = $_POST['last_name'];
@@ -11,11 +19,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $cpass = $_POST['confirm_password'];
     $snum  = $_POST['student_number'];
 
-    $errors = $auth->register($fname, $lname, $email, $pass, $cpass, $snum);
+    $stored_data = [
+        'first_name' => htmlspecialchars($fname),
+        'last_name' => htmlspecialchars($lname),
+        'email' => htmlspecialchars($email),
+        'student_number' => htmlspecialchars($snum)
+    ];
 
+    // Email domain validation
+    $valid_ceu_domains = ['@ceu.edu.ph', '@mls.ceu.edu.ph'];
+    $user_email_domain = strtolower(substr($email, strpos($email, '@')));
+    
+    if (!in_array($user_email_domain, $valid_ceu_domains)) {
+        $errors[] = "Registration is only for CEU Students and Staff.";
+    }
+
+    // Student number format validation (if provided)
+    if (!empty($snum)) {
+        if (!preg_match('/^\d{4}-\d{5}$/', $snum)) {
+            $errors[] = "Invalid student number format. Must be XXXX-XXXXX (e.g., 2022-12345)";
+        }
+    }
+
+    // Errors validation
     if (empty($errors)) {
-        header('Location: login.php?registered=success');
-        exit();
+        $errors = $auth->register($fname, $lname, $email, $pass, $cpass, $snum);
+
+        if (empty($errors)) {
+            header('Location: login.php?registered=success');
+            exit();
+        }
     }
 }
 ?>
@@ -35,10 +68,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bona+Nova:ital,wght@0,400;0,700;1,400&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300..700&family=Roboto:ital,wght@0,100..900;1,100..900&family=Rubik:ital,wght@0,300..900;1,300..900&family=Ruda:wght@400..900&family=Tilt+Warp&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
-
     <script src="https://kit.fontawesome.com/6563a04357.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
 
 </head>
 <body class="signup-page">
@@ -65,32 +96,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <div class="col-md-6 p-4">
                             <img src="resource/img/molecules-logo.png" class="logo-img mb-3">
                             <h2 class="greetings fw-bold mb-1">Sign up</h2>
-                                <?php
-                                    if (!empty($errors)) {
-                                        foreach ($errors as $error) {
-                                            $auth->showAlert($error);
-                                        }
-                                    }
-                                ?>
                             <form method="POST" action="sign-up.php">
                                 <div class="row mb-3 mt-3">
                                     <div class="col-md-6">
                                         <label class="label-text">First Name:</label>
-                                        <input type="text" class="form-control" name="first_name" placeholder="Enter your first name" required>
+                                        <input type="text" class="form-control" name="first_name" placeholder="Enter your first name" value="<?= $stored_data['first_name'] ?>" required>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="label-text">Last Name:</label>
-                                        <input type="text" class="form-control" name="last_name" placeholder="Enter your last name" required>
+                                        <input type="text" class="form-control" name="last_name" placeholder="Enter your last name" value="<?= $stored_data['last_name'] ?>" required>
                                     </div>
                                 </div>
                                 <div class="row mb-3">
                                     <div class="col-md-6">
-                                        <label class="label-text">Email:</label>
-                                        <input type="email" class="form-control" name="email" placeholder="Enter your email" required>
+                                        <label class="label-text">CEU Email:</label>
+                                        <input type="email" class="form-control" name="email" placeholder="Enter your email" value="<?= $stored_data['email'] ?>" required>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="label-text">Student Number:</label>
-                                        <input type="text" class="form-control" name="student_number" placeholder="Enter student number">
+                                        <input type="text" class="form-control" name="student_number" placeholder="XXXX-XXXXX" value="<?= $stored_data['student_number'] ?>">
                                     </div>
                                 </div>
 
@@ -105,15 +129,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     </div>
                                 </div>
 
-                                <!-- <div class="col-md-6 align-items-center">
-                                    <label class="label-text">Confirm Password:</label>
-                                    <input type="password" class="form-control" placeholder="Confirm password">
-                                </div> -->
                                 <button class="log-button btn btn-primary w-100 mb-2">Create Account</button>
                                 <a href="login.php"><i class=" icon-i fa-solid fa-arrow-right"></i></a>
                             </form>
                         </div>
                     </div>
+                    <?php
+                        if (!empty($errors)) {
+                            foreach ($errors as $error) {
+                                $auth->showAlert($error);
+                            }
+                        }
+                    ?>
                 </div>
             </div>
         </div>

@@ -90,19 +90,18 @@ if (!isset($_SESSION['user_id'])) {
                 <img src="./resource/img/bg.jpg" alt="ceu-building" class="img-fluid">
             </div>
             <div class="col-12 col-md-6 col-lg-7">
-                <h4 class="home-text text-center pt-2">CHEMICAL LABORATORY M.O.L.E.C.U.L.E.S</h4>
+                <h4 class="home-text text-center pt-2">SCIENCE LABORATORY M.O.L.E.C.U.L.E.S</h4>
                 <p class="text-dark ps-3 pe-3" style="font-size: 0.9rem;">The CEU Malolos MOLECULES is a system developed to make requisition of laboratory materials easier, faster
-                and more reliable. The system directly sends your requisition form to the CEU Malolos Chemical Laboratory
-                so you can request materials for your research or lessons anytime, anywhere.You can track your requests
+                and more reliable. The system directly sends your requisition form to the CEU Malolos Science Laboratory
+                so you can request materials for your research or lessons anytime, anywhere. You can track your requests
                 within the system, as well as view your requisition history. <br><br>
 
-                NOTE: <br>
-                1. Requests are subject to review by Chemical Laboratory Technicians. <br>
+                <strong>IMPORTANT NOTES:</strong> <br>
+                1. Requests are subject to review by Science Laboratory Technicians. <br>
                 2. Materials are subject to specific lead times in which materials must be requested: <br> &nbsp;&nbsp;&nbsp;&nbsp;Chemicals / Supplies / Models / Charts - 2 days before intended use<br> 
                 &nbsp;&nbsp;&nbsp;&nbsp;Equipment - On the day of use<br> &nbsp;&nbsp;&nbsp;&nbsp;Specimen for instruction - 1 month before its use<br> &nbsp;&nbsp;&nbsp;&nbsp;Specimen for research - 2 months before its use<br>
                 3. Any damage/lost material must be replaced or paid at the Cashier’s office before the end of the semester.<br>
-                4. Personal information, including e-signatures, will be requested by the system in accordance to the university’s policy regarding laboratory material requisition. Personal information will be securely stored by the system with access restricted to authorized personnel only and is governed by strict confidentiality obligations in compliance with the Data Privacy Act of 2012 (Republic Act No. 10173).<br>
-                5. For student requests, an  e-signature from your subject professor or program head will be required. A copy of your requisition will be sent to them as well.</p>
+                4. Once your request is finalized, the system will provide you with a downloadable pdf, which you will then have to print and sign (if you are a student you will also need your adviser's signature). Afterwhich, you have to present this to the science laboratory technicians in person. This is to comply with the requirements of the science laboratory.
             </div>
             <hr>
         </div>
