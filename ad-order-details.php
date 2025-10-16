@@ -77,7 +77,7 @@ $items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
           <a class="nav-link active text-white" aria-current="page" href="#">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="#">Profile</a>
+          <a class="nav-link text-white" href="#">Change Password</a>
         </li>
         <li class="nav-item">
           <a class="nav-link text-white" href="#">Search</a>
