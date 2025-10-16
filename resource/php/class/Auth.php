@@ -91,7 +91,9 @@ class Auth extends config {
                 // Add login log entry
                 $this->addLoginLog($user['user_id'], $user['account_type']);
 
-                if ($user['account_type'] == 'Admin' || $user['account_type'] == 'Super Admin') {
+                if ($user['account_type'] == 'Super Admin') {
+                header('Location: account-management.php');
+                } else if ($user['account_type'] == 'Admin') {
                     header('Location: home-admin.php');
                 } else {
                     header('Location: index.php');
