@@ -2,11 +2,10 @@
 session_start();
 require_once 'resource/php/init.php';
 
-if (!isset($_SESSION['user_id'])) { 
+if (!isset($_SESSION['user_id']) || $_SESSION['account_type'] !== 'Admin') {
     header('Location: login.php');
     exit();
 }
-
 
 $config = new config();
 $pdo = $config->con();
