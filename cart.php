@@ -20,15 +20,11 @@ $items_in_cart = $cart->getItems();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cart</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css"  href="resource/css/home-admin.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bona+Nova:ital,wght@0,400;0,700;1,400&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300..700&family=Roboto:ital,wght@0,100..900;1,100..900&family=Rubik:ital,wght@0,300..900;1,300..900&family=Ruda:wght@400..900&family=Tilt+Warp&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-
     <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://kit.fontawesome.com/6563a04357.js" crossorigin="anonymous"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
@@ -44,34 +40,20 @@ $items_in_cart = $cart->getItems();
                 <span class="navbar-toggler-icon"></span>
             </button>
         </div>
-        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar">
             <div class="offcanvas-header">
-                <h5 class="offcanvas-title" id="offcanvasNavbarLabel">CEU Molecules</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                <h5 class="offcanvas-title">CEU Molecules</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
             </div>
             <div class="offcanvas-body">
                 <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-                    <li class="nav-item">
-                        <a class="nav-link text-white" aria-current="page" href="index.php">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Profile</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="user-search.php">Search</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Requests</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="#">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Help</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="logout.php">Logout</a>
-                    </li>
+                    <li class="nav-item"><a class="nav-link text-white" href="index.php">Home</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="#">Profile</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="user-search.php">Search</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="#">Requests</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="#">About</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="#">Help</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="logout.php">Logout</a></li>
                 </ul>
             </div>
         </div>
@@ -90,24 +72,31 @@ $items_in_cart = $cart->getItems();
                     </div>
                 <?php else: ?>
                     <?php foreach ($items_in_cart as $item): ?>
+                        <?php 
+                        $img = $item['image_path'] ?? 'resource/img/default.png';
+                        $name = $item['name'] ?? 'Unnamed Item';
+                        $ptype = $item['product_type'] ?? 'No type';
+                        $amount = $item['amount'] ?? 0;
+                        $measure = $item['measure_unit'] ?? '';
+                        ?>
                         <div class="col-12 mb-3">
                             <div class="cart-card-item">
                                 <div class="item-details-left">
-                                    <img src="<?= htmlspecialchars($item['image_path']) ?>" alt="<?= htmlspecialchars($item['name']) ?>" class="item-img img-fluid">
+                                    <img src="<?= htmlspecialchars($img) ?>" alt="<?= htmlspecialchars($name) ?>" class="item-img img-fluid">
                                     <div class="item-info">
-                                        <h5 class="item-name"><?= htmlspecialchars($item['name']) ?></h5>
-                                        <p class="item-type"><?= htmlspecialchars($item['product_type']) ?></p>
+                                        <h5 class="item-name"><?= htmlspecialchars($name) ?></h5>
+                                        <p class="item-type"><?= htmlspecialchars($ptype) ?></p>
                                     </div>
                                 </div>
                                 <div class="item-details-right">
-                                    <div class="item-amount">Amount: <?= htmlspecialchars($item['amount']) ?> <?= htmlspecialchars($item['measure_unit']) ?></div>
+                                    <div class="item-amount">Amount: <?= htmlspecialchars($amount) ?> <?= htmlspecialchars($measure) ?></div>
                                     <div class="item-actions">
                                         <button class="edit-btn" 
                                                 data-bs-toggle="modal" 
                                                 data-bs-target="#edit-popup"
                                                 data-item-id="<?= $item['item_id'] ?>"
-                                                data-item-name="<?= htmlspecialchars($item['name']) ?>"
-                                                data-item-amount="<?= htmlspecialchars($item['amount']) ?>">
+                                                data-item-name="<?= htmlspecialchars($name) ?>"
+                                                data-item-amount="<?= htmlspecialchars($amount) ?>">
                                             Edit
                                         </button>
 
@@ -174,6 +163,5 @@ $items_in_cart = $cart->getItems();
 </body>
 </html>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 <script src="resource/js/scripts.js"></script>
