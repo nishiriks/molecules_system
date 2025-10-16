@@ -1,0 +1,225 @@
+/* Contact Form Styles */
+.contact-form-container {
+    background-color: #F0F8FF;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: -4px 4px 4px 0px rgba(110,110,110,0.57);
+    border: 1px solid #E3E3E3;
+}
+
+textarea.form-control {
+    resize: none;
+}
+
+.contact-form-container .form-control {
+    border: 1px solid #161542;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 20px;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.contact-form-container .form-control:focus {
+    border-color: #F55197;
+    box-shadow: 0 0 0 0.2rem rgba(245, 81, 151, 0.25);
+}
+
+.contact-form-container .form-label {
+    color: #161542;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.btn-contact {
+    background-color: #F55197;
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.btn-contact:hover {
+    background-color: #e04384;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.contact-info {
+    background-color: #161542;
+    color: white;
+    border-radius: 15px;
+    padding: 30px;
+    height: 100%;
+}
+
+.contact-info h4 {
+    color: #F55197;
+    font-weight: bold;
+}
+
+.contact-info h6 {
+    color: #F55197;
+    margin-bottom: 10px;
+}
+
+.contact-info ul {
+    padding-left: 20px;
+}
+
+.contact-info ul li {
+    margin-bottom: 5px;
+}
+
+.contact-info p {
+    margin-bottom: 0;
+    line-height: 1.5;
+}
+
+/* Alert Styles */
+.contact-alert {
+    border-radius: 8px;
+    border: none;
+}
+
+.contact-alert.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border-left: 4px solid #28a745;
+}
+
+.contact-alert.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-left: 4px solid #dc3545;
+}
+
+/* FAQ Section Styles */
+.faq-container {
+    background-color: #F0F8FF;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: -4px 4px 4px 0px rgba(110,110,110,0.57);
+    border: 1px solid #E3E3E3;
+    margin-bottom: 20px;
+}
+
+.faq-item {
+    margin-bottom: 15px;
+    border-bottom: 1px solid #E3E3E3;
+    padding-bottom: 12px;
+}
+
+.faq-question {
+    color: #161542;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95rem;
+}
+
+.faq-question i {
+    margin-right: 10px;
+    font-size: 1rem;
+    color: #F55197;
+}
+
+.faq-answer {
+    color: #333;
+    line-height: 1.6;
+    font-family: 'Montserrat', sans-serif;
+    padding-left: 26px;
+    font-size: 0.9rem;
+}
+
+/* Adjust icon sizes in contact info */
+.contact-info h6 i {
+    font-size: 1.1rem;
+}
+
+.contact-info h4 i {
+    font-size: 1.3rem;
+}
+
+/* Section headers styling to match home page */
+.section-header {
+    color: #F55197;
+    font-weight: bold;
+    margin-bottom: 15px;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.section-subtitle {
+    color: #666;
+    margin-bottom: 20px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95rem;
+}
+
+/* Help section spacing */
+.help {
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .contact-form-container {
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .contact-info {
+        padding: 20px;
+    }
+    
+    .btn-contact {
+        width: 100%;
+    }
+    
+    .faq-container {
+        padding: 20px;
+        margin-bottom: 15px;
+    }
+    
+    .faq-answer {
+        padding-left: 20px;
+    }
+    
+    .help {
+        padding-top: 1.5rem !important;
+        padding-bottom: 1.5rem !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .contact-form-container {
+        padding: 15px;
+    }
+    
+    .contact-info {
+        padding: 15px;
+    }
+    
+    .faq-container {
+        padding: 15px;
+        margin-bottom: 10px;
+    }
+    
+    .faq-answer {
+        padding-left: 15px;
+    }
+    
+    .section-header {
+        margin-bottom: 10px;
+    }
+    
+    .section-subtitle {
+        margin-bottom: 15px;
+    }
+}
