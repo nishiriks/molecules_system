@@ -180,7 +180,7 @@ if (!isset($_SESSION['user_id'])) {
             <div class="col-12 col-md-4 mb-4">
                 <div class="card dev-card h-100">
                     <div class="card-img-container">
-                        <img src="./resource/img/tech2-placeholder.jpg" alt="Krizia Lleva" class="card-img-top">
+                        <img src="./resource/img/kriz.jpg" alt="Krizia Lleva" class="card-img-top">
                     </div>
                     <div class="card-body">
                         <h5 class="card-title">Krizia Jane Lleva</h5>
