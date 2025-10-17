@@ -115,7 +115,7 @@ $items_in_cart = $cart->getItems();
             
             <?php if (!empty($items_in_cart)): ?>
                 <div class="finalize-btn-container text-end mt-4">
-                    <a href="equipment.php" class="finalize-request-btn" style="text-decoration: none;">Finalize Request</a>
+                    <a href="finalize.php" class="finalize-request-btn" style="text-decoration: none;">Finalize Request</a>
                 </div>
             <?php endif; ?>
         </div>
