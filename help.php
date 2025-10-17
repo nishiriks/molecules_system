@@ -56,14 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $mail = new PHPMailer(true);
             
             // Server settings for your proxy email
-            $mail->isSMTP();
-            $mail->Host       = 'smtp.gmail.com';  // Or your email provider
-            $mail->SMTPAuth   = true;
-            $mail->Username   = 'ceumolecules.system@gmail.com';
-            $mail->Password   = 'nkcdrtvwyxdnfqcv';
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port       = 587;
-            
+
             // Sender:
             $mail->setFrom('ceumolecules.system@gmail.com', 'CEU MOLECULES System');
             
