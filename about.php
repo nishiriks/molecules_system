@@ -15,6 +15,7 @@ if (!isset($_SESSION['user_id'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>About - CEU Molecules</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css"  href="resource/css/home.css">
   <link rel="stylesheet" type="text/css"  href="resource/css/about.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css"/>
@@ -68,6 +69,9 @@ if (!isset($_SESSION['user_id'])) {
         </li>
         <li class="nav-item">
           <a class="nav-link text-white" href="cart.php">Requests</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white" href="">Requests History</a>
         </li>
         <li class="nav-item">
           <a class="nav-link active text-white" aria-current="page" href="about.php">About</a>

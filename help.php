@@ -145,10 +145,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           <a class="nav-link text-white" href="cart.php">Requests</a>
         </li>
         <li class="nav-item">
+          <a class="nav-link text-white" href="">Requests History</a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link text-white" href="about.php">About</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active text-white" aria-current="page" href="#">Contact</a>
+          <a class="nav-link active text-white" aria-current="page" href="#">Help</a>
         </li>
         <li class="nav-item">
           <a class="nav-link text-white" href="logout.php">Logout</a>
