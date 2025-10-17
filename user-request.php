@@ -1,3 +1,52 @@
+<?php
+session_start();
+require_once 'resource/php/init.php';
+
+// Security check: Ensure user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php');
+    exit();
+}
+
+$config = new config();
+$pdo = $config->con();
+$current_user_id = $_SESSION['user_id'];
+
+$filter_status = $_GET['status'] ?? 'ALL';
+$page_title = $filter_status === 'ALL' ? 'All My Requests' : "Showing: " . htmlspecialchars($filter_status);
+
+// This query is similar to the admin's, but adds a WHERE clause for the specific user
+$sql = "SELECT 
+            r.request_id,
+            r.request_date,
+            c.cart_id,
+            c.cart_status, 
+            u.first_name, 
+            u.last_name, 
+            u.account_type,
+            GROUP_CONCAT(DISTINCT inv.product_type SEPARATOR ', ') AS product_types
+        FROM tbl_requests AS r
+        JOIN tbl_cart AS c ON r.cart_id = c.cart_id
+        JOIN tbl_users AS u ON c.user_id = u.user_id
+        LEFT JOIN tbl_cart_items AS items ON c.cart_id = items.cart_id
+        LEFT JOIN tbl_inventory AS inv ON items.product_id = inv.product_id
+        WHERE c.user_id = ? AND c.cart_status != 'active'"; // Filter by current user ID
+
+$params = [$current_user_id];
+
+if ($filter_status !== 'ALL') {
+    $sql .= " AND c.cart_status = ?";
+    $params[] = $filter_status;
+}
+
+$sql .= " GROUP BY r.request_id ORDER BY r.request_date DESC";
+
+$stmt = $pdo->prepare($sql);
+$stmt->execute($params);
+$requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -75,84 +124,53 @@
 
   <!-- main content -->
   <main class="faculty-history">
-    <div class="container">
-      <h2 class="requests-heading">Request History</h2>
-      <div class="filter-buttons">
-        <button class="filter-btn active">ALL</button>
-        <button class="filter-btn">Faculty Approved</button>
-        <button class="filter-btn">For Pick-up</button>
-        <button class="filter-btn">Completed</button>
-        <button class="filter-btn">Returned</button>
-        <button class="filter-btn">Canceled</button>
-        <button class="filter-btn">Disapproved</button>
-      </div>
-      <div class="row">
-        <div class="col-12 mb-3">
-          <div class="request-card">
-            <div class="request-details-container">
-              <div class="request-text">
-                <h5 class="request-title">Request Received!</h5>
-                <p class="request-info">From: Renz Magsakay (Student)</p>
-                <p class="request-info">Status: Faculty Approved</p>
-              </div>
+        <div class="container">
+            <h2 class="requests-heading">Request History</h2>
+            <div class="filter-buttons">
+                <a href="user-request.php" class="filter-btn <?= ($filter_status === 'ALL') ? 'active' : '' ?>">ALL</a>
+                <a href="user-request.php?status=approved" class="filter-btn <?= ($filter_status === 'approved') ? 'active' : '' ?>">Faculty Approved</a>
+                <a href="user-request.php?status=pickup" class="filter-btn <?= ($filter_status === 'pickup') ? 'active' : '' ?>">For Pick-up</a>
+                <a href="user-request.php?status=completed" class="filter-btn <?= ($filter_status === 'completed') ? 'active' : '' ?>">Completed</a>
+                <a href="user-request.php?status=returned" class="filter-btn <?= ($filter_status === 'returned') ? 'active' : '' ?>">Returned</a>
+                <a href="user-request.php?status=canceled" class="filter-btn <?= ($filter_status === 'canceled') ? 'active' : '' ?>">Canceled</a>
+                <a href="user-request.php?status=disapproved" class="filter-btn <?= ($filter_status === 'disapproved') ? 'active' : '' ?>">Disapproved</a>
             </div>
-            <div class="right-column-container">
-              <div class="request-timestamp">
-                <span class="timestamp-text">08/31/2025 - 7:00PM</span>
-              </div>
-              <div class="history-button-container">
-                <button class="cancel-button">Cancel</button>
-                <button class="view-button">View</button>
-              </div>
+            <div class="row">
+                <?php if (empty($requests)): ?>
+                    <div class="col-12"><p class="text-center fs-4 mt-5">You have no request history.</p></div>
+                <?php else: ?>
+                    <?php foreach ($requests as $request): ?>
+                        <div class="col-12 mb-3">
+                            <div class="request-card">
+                                <div class="request-details-container">
+                                    <div class="request-text">
+                                        <h5 class="request-title"><?= htmlspecialchars($request['product_types'] ?? 'General') ?> Request</h5>
+                                        <p class="request-info">Submitted By: <?=htmlspecialchars($request['first_name'] .' '. $request['last_name'])?></p>
+                                        <p class="request-info">Status: <?= htmlspecialchars($request['cart_status']) ?></p>
+                                    </div>
+                                </div>
+                                <div class="right-column-container">
+                                    <div class="request-timestamp">
+                                        <span class="timestamp-text"><?= date('m/d/Y - g:ia', strtotime($request['request_date'])) ?></span>
+                                    </div>
+                                    <div class="history-button-container">
+                                        <?php if ($request['cart_status'] === 'pending'): ?>
+                                            <form action="cartAction.php" method="POST" style="display:inline;">
+                                                <input type="hidden" name="action" value="cancel_request">
+                                                <input type="hidden" name="cart_id" value="<?= $request['cart_id'] ?>">
+                                                <button type="submit" class="cancel-button">Cancel</button>
+                                            </form>
+                                        <?php endif; ?>
+                                        <a href="user-order-details.php?id=<?= $request['request_id'] ?>" class="view-button">View</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </div>
-          </div>
         </div>
-
-        <div class="col-12 mb-3">
-          <div class="request-card">
-            <div class="request-details-container">
-              <div class="request-text">
-                <h5 class="request-title">Request Received!</h5>
-                <p class="request-info">From: Renz Magsakay (Student)</p>
-                <p class="request-info">Status: Faculty Approved</p>
-              </div>
-            </div>
-            <div class="right-column-container">
-              <div class="request-timestamp">
-                <span class="timestamp-text">08/31/2025 - 7:00PM</span>
-              </div>
-              <div class="view-button-container">
-                <button class="cancel-button">Cancel</button>
-                <button class="view-button">View</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-12 mb-3">
-          <div class="request-card">
-            <div class="request-details-container">
-              <div class="request-text">
-                <h5 class="request-title">Request Received!</h5>
-                <p class="request-info">From: Renz Magsakay (Student)</p>
-                <p class="request-info">Status: Faculty Approved</p>
-              </div>
-            </div>
-            <div class="right-column-container">
-              <div class="request-timestamp">
-                <span class="timestamp-text">08/31/2025 - 7:00PM</span>
-              </div>
-              <div class="view-button-container">
-                <button class="cancel-button">Cancel</button>
-                <button class="view-button">View</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </main>
+    </main>
 
   <!-- footer -->
   <footer>

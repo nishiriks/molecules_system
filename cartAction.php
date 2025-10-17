@@ -15,7 +15,9 @@ $cartController = new CartController($pdo, $_SESSION['user_id']);
 $cartController->handleAction($_POST);
 
 if ($_POST['action'] === 'add') {
-    header('Location: user-search.php'); 
+    header('Location: user-search.php');
+} else if ($_POST['action'] === 'cancel_request') {
+    header('Location: user-search.php');
 } else {
     header('Location: cart.php');
 }

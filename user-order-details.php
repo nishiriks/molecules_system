@@ -1,3 +1,46 @@
+<?php
+session_start();
+require_once 'resource/php/init.php';
+
+// Security check: Ensure user is logged in and an ID was provided
+if (!isset($_SESSION['user_id']) || !isset($_GET['id'])) {
+    header('Location: login.php');
+    exit();
+}
+
+$config = new config();
+$pdo = $config->con();
+$request_id = $_GET['id'];
+$current_user_id = $_SESSION['user_id'];
+
+// --- Query 1: Get the main request details with a security check ---
+// This query ensures the request being viewed belongs to the currently logged-in user
+$sql_request = "SELECT r.*, u.first_name, u.last_name, c.cart_status
+                FROM tbl_requests r
+                JOIN tbl_cart c ON r.cart_id = c.cart_id
+                JOIN tbl_users u ON c.user_id = u.user_id
+                WHERE r.request_id = ? AND c.user_id = ?"; // Security check here
+$stmt_request = $pdo->prepare($sql_request);
+$stmt_request->execute([$request_id, $current_user_id]);
+$details = $stmt_request->fetch(PDO::FETCH_ASSOC);
+
+// If no request was found (or it belongs to another user), redirect
+if (!$details) {
+    header('Location: user-request.php');
+    exit();
+}
+
+// --- Query 2: Get the list of items for that request ---
+$sql_items = "SELECT i.amount, inv.name, inv.measure_unit 
+              FROM tbl_cart_items i
+              JOIN tbl_inventory inv ON i.product_id = inv.product_id
+              WHERE i.cart_id = ?";
+$stmt_items = $pdo->prepare($sql_items);
+$stmt_items->execute([$details['cart_id']]);
+$items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -65,75 +108,60 @@
     </div>
 </nav>
 <main class="user-order-details-page">
-  <div class="container-fluid py-5">
-    <div class="row justify-content-center">
-      <div class="col-lg-8 col-md-10">
-        <div class="request-form-card">
-          <form method="post" action="">
-            <h4 class="request-details-title mt-1 mb-3 text-center">Request Details:</h4>
-            <div class="row mb-3 align-items-end">
-              <div class="col-md-5">
-                <label for="name" class="form-label">Name of Instructor or Graduate Student:</label>
-                <input type="text" class="form-control" id="name" name="prof_name" placeholder="Enter name" required>
-              </div>
+        <div class="container-fluid py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 col-md-10">
+                    <div class="request-form-card">
+                        <form>
+                            <h4 class="request-details-title mt-1 mb-3 text-center">Request Details: #<?= $details['request_id'] ?></h4>
+                            
+                            <div class="row mb-3 align-items-end">
+                                <div class="col-md-5">
+                                    <label class="form-label">Name of Instructor or Graduate Student:</label>
+                                    <input type="text" class="form-control" value="<?= htmlspecialchars($details['prof_name']) ?>" readonly>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Subject:</label>
+                                    <input type="text" class="form-control" value="<?= htmlspecialchars($details['subject']) ?>" readonly>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Room:</label>
+                                    <input type="text" class="form-control" value="<?= htmlspecialchars($details['room']) ?>" readonly>
+                                </div>
+                            </div>
+                            <div class="row mb-4 align-items-end">
+                                </div>
+                            
+                            <h4 class="request-details-title mt-1 mb-3">Items:</h4>
+                            <div id="request-list-container">
+                                <ul class="list-group">
+                                    <?php foreach ($items as $item): ?>
+                                        <li class="list-group-item">
+                                            <?= htmlspecialchars($item['name']) ?> - 
+                                            <strong>Amount:</strong> <?= htmlspecialchars($item['amount']) ?> <?= htmlspecialchars($item['measure_unit']) ?>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </div>
 
-                <div class="col-md-4">
-                  <label for="subject" class="form-label">Subject:</label>
-                  <input type="text" class="form-control" id="subject" name="subject" placeholder="Enter subject"
-                    required>
-                </div>
-                <div class="col-md-3">
-                  <label for="room" class="form-label">Room:</label>
-                  <input type="text" class="form-control" id="room" name="room" placeholder="Enter Room" required>
-                </div>
-              </div>
+                            <div class="mb-4 mt-4">
+                                <label class="form-label request-details-title remarks">Remarks:</label>
+                                <div class="remarks-container">
+                                    <textarea class="form-control" rows="4" readonly><?= htmlspecialchars($details['remarks'] ?? 'No remarks.') ?></textarea>
+                                </div>
+                            </div>
 
-              <div class="row mb-4 align-items-end">
-                <div class="col-md-3">
-                  <label for="date-from" class="form-label">Date of Use (From):</label>
-                  <input type="date" class="form-control" id="date-from" name="date_from" required>
+                            <div class="d-flex justify-content-end mt-4">
+                                <div class="status-container">
+                                  <button type="submit" class="btn finalize-btn" name="view-btn">View Form</button>
+                                  <a href="user-request.php" type="submit" class="btn finalize-btn ms-3">Cancel</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                <div class="col-md-3">
-                  <label for="date-to" class="form-label">To (Disregard if one day use):</label>
-                  <input type="date" class="form-control" id="date-to" name="date_to">
-                </div>
-                <div class="col-md-2">
-                  <label for="time-from" class="form-label">Time (From):</label>
-                  <input type="time" class="form-control" id="time-from" name="time_from" required>
-                </div>
-                <div class="col-md-2">
-                  <label for="time-to" class="form-label">Time (To):</label>
-                  <input type="time" class="form-control" id="time-to" name="time_to" required>
-                </div>
-              </div>
-              <h4 class="request-details-title mt-1 mb-3">Items:</h4>
-              <div id="request-list-container">
-                <div class="request-item-card d-flex align-items-center mb-3">
-                  <div class="item-details-simple flex-grow-1">
-                    <h5 class="item-name mb-0"></h5>
-                  </div>
-                </div>
-              </div>
-
-            <div class="mb-4 mt-4">
-              <label for="remarks" class="form-label request-details-title remarks">Remarks:</label>
-              <div class="remarks-container">
-                <textarea class="form-control" id="remarks" name="remarks" rows="4"
-                  placeholder="Add remarks here..."></textarea>
-              </div>
             </div>
-
-              <div class="d-flex justify-content-end mt-4">
-                <div class="status-container">
-                  <button type="submit" class="btn finalize-btn" name="view-btn">View Form</button>
-                  <button type="submit" class="btn finalize-btn ms-3" name="cancel-btn">Cancel</button>
-                </div>
-              </div>
-            </form>
-          </div>
         </div>
-      </div>
-    </div>
   </main>
 
 
