@@ -62,7 +62,8 @@ class Auth extends config {
 
         if (empty($errors)) {
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-            $sql = "INSERT INTO tbl_users (first_name, last_name, email, password, account_type) VALUES (?, ?, ?, ?, ?)";
+            // Set is_active = 1 for new registrations
+            $sql = "INSERT INTO tbl_users (first_name, last_name, email, password, account_type, is_active) VALUES (?, ?, ?, ?, ?, 1)";
             $this->query($sql, [$first_name, $last_name, $email, $hashed_password, $account_type]);
         }
         return $errors;
@@ -79,7 +80,8 @@ class Auth extends config {
         }
 
         if (empty($errors)) {
-            $user_data = $this->query("SELECT * FROM tbl_users WHERE email = ?", [$email]);
+            // Check for active user with this email
+            $user_data = $this->query("SELECT * FROM tbl_users WHERE email = ? AND is_active = 1", [$email]);
 
             if ($user_data && password_verify($password, $user_data[0]['password'])) {
                 $user = $user_data[0];
@@ -100,16 +102,21 @@ class Auth extends config {
                 }
                 exit();
             } else {
-                $errors[] = "Invalid email or password.";
+                // Check if the user exists but is inactive
+                $inactive_user = $this->query("SELECT user_id FROM tbl_users WHERE email = ? AND is_active = 0", [$email]);
+                if (!empty($inactive_user)) {
+                    $errors[] = "This account has been deactivated. Please contact an administrator.";
+                } else {
+                    $errors[] = "Invalid email or password.";
+                }
             }
         }
         
         return $errors; 
     }
 
-    /**
-     * Add login log entry based on account type
-     */
+    // Add login log entry based on account type
+
     private function addLoginLog($user_id, $account_type) {
         try {
             $current_date = date('Y-m-d H:i:s');
