@@ -9,11 +9,36 @@ class CartItems {
     }
 
     public function addItem($product_id, $amount) {
-        $cart_id = $this->getActiveCartId(true);
-        $stmt = $this->pdo->prepare(
-            "INSERT INTO tbl_cart_items (cart_id, product_id, amount) VALUES (?, ?, ?)"
+        $cart_id = $this->getActiveCartId(true); 
+
+        $stmt_check = $this->pdo->prepare(
+            "SELECT item_id, amount FROM tbl_cart_items WHERE cart_id = ? AND product_id = ?"
         );
-        return $stmt->execute([$cart_id, $product_id, $amount]);
+        $stmt_check->execute([$cart_id, $product_id]);
+        $existing_item = $stmt_check->fetch();
+
+        $success = false;
+        if ($existing_item) {
+            $new_amount = $existing_item['amount'] + $amount;
+            $stmt_update = $this->pdo->prepare(
+                "UPDATE tbl_cart_items SET amount = ? WHERE item_id = ?"
+            );
+            $success = $stmt_update->execute([$new_amount, $existing_item['item_id']]);
+        } else {
+            $stmt_insert = $this->pdo->prepare(
+                "INSERT INTO tbl_cart_items (cart_id, product_id, amount) VALUES (?, ?, ?)"
+            );
+            $success = $stmt_insert->execute([$cart_id, $product_id, $amount]);
+        }
+
+        if ($success) {
+            $stmt_stock = $this->pdo->prepare(
+                "UPDATE tbl_inventory SET stock = stock - ? WHERE product_id = ?"
+            );
+            $stmt_stock->execute([$amount, $product_id]);
+        }
+
+        return $success;
     }
 
     public function getItems() {
