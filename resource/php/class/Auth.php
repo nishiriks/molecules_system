@@ -122,13 +122,14 @@ class Auth extends config {
             $current_date = date('Y-m-d H:i:s');
             
             if ($account_type === 'Admin' || $account_type === 'Super Admin') {
-                // Insert into admin log table with 'Login' action
-                $stmt = $this->pdo->prepare("INSERT INTO tbl_admin_log (user_id, log_date, log_action) VALUES (?, ?, ?)");
-                $stmt->execute([$user_id, $current_date, 'Login']);
+                /// Insert into admin log table with 'Login' action
+                $stmt = $this->pdo->prepare("INSERT INTO tbl_admin_log (user_id, log_action) VALUES (?, ?)");
+                $stmt->execute([$user_id, 'Login']);
             } else {
-                // Insert into user log table (for Student and Faculty)
-                $stmt = $this->pdo->prepare("INSERT INTO tbl_user_log (user_id, log_date) VALUES (?, ?)");
-                $stmt->execute([$user_id, $current_date]);
+                
+            // Insert into user log table (for Student and Faculty)
+                $stmt = $this->pdo->prepare("INSERT INTO tbl_user_log (user_id) VALUES (?)");
+                $stmt->execute([$user_id]);
             }
             
         } catch (PDOException $e) {
