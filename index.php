@@ -70,9 +70,6 @@ if (!isset($_SESSION['user_id'])) {
           <a class="nav-link text-white" href="cart.php">Requests</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="">Requests History</a>
-        </li>
-        <li class="nav-item">
           <a class="nav-link text-white" href="about.php">About</a>
         </li>
         <li class="nav-item">

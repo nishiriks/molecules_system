@@ -51,7 +51,6 @@ $items_in_cart = $cart->getItems();
                     <li class="nav-item"><a class="nav-link text-white" href="change-pass.php">Change Password</a></li>
                     <li class="nav-item"><a class="nav-link text-white" href="user-search.php">Search</a></li>
                     <li class="nav-item"><a class="nav-link text-white" href="#">Requests</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="#">Requests History</a></li>
                     <li class="nav-item"><a class="nav-link text-white" href="about.php">About</a></li>
                     <li class="nav-item"><a class="nav-link text-white" href="help.php">Help</a></li>
                     <li class="nav-item"><a class="nav-link text-white" href="logout.php">Logout</a></li>

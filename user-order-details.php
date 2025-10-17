@@ -84,7 +84,7 @@ $items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
     <div class="offcanvas-body">
       <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
         <li class="nav-item">
-          <a class="nav-link active text-white" aria-current="page" href="#">Home</a>
+          <a class="nav-link text-white" aria-current="page" href="#">Home</a>
         </li>
         <li class="nav-item">
           <a class="nav-link text-white" href="#">Change Password</a>
@@ -93,7 +93,7 @@ $items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
           <a class="nav-link text-white" href="#">Search</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="#">Requests</a>
+          <a class="nav-link active text-white" href="#">Requests</a>
         </li>
         <li class="nav-item">
           <a class="nav-link text-white" href="#">About</a>
