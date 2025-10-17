@@ -136,7 +136,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           <a class="nav-link text-white" href="index.php">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="#">Change Password</a>
+          <a class="nav-link text-white" href="change-pass.php">Change Password</a>
         </li>
         <li class="nav-item">
           <a class="nav-link text-white" href="user-search.php">Search</a>
@@ -148,7 +148,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           <a class="nav-link text-white" href="about.php">About</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active text-white" aria-current="page" href="#">Contact</a>
+          <a class="nav-link active text-white" aria-current="page" href="help.php">Contact</a>
         </li>
         <li class="nav-item">
           <a class="nav-link text-white" href="logout.php">Logout</a>

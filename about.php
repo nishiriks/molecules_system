@@ -61,7 +61,7 @@ if (!isset($_SESSION['user_id'])) {
           <a class="nav-link text-white" href="index.php">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="#">Change Password</a>
+          <a class="nav-link text-white" href="change-pass.php">Change Password</a>
         </li>
         <li class="nav-item">
           <a class="nav-link text-white" href="user-search.php">Search</a>
@@ -70,10 +70,10 @@ if (!isset($_SESSION['user_id'])) {
           <a class="nav-link text-white" href="cart.php">Requests</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active text-white" aria-current="page" href="#">About</a>
+          <a class="nav-link active text-white" aria-current="page" href="about.php">About</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="#">Help</a>
+          <a class="nav-link text-white" href="help.php">Help</a>
         </li>
         <li class="nav-item">
           <a class="nav-link text-white" href="logout.php">Logout</a>

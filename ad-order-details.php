@@ -77,19 +77,13 @@ $items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
           <a class="nav-link active text-white" aria-current="page" href="home-admin.php">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="#">Change Password</a>
+          <a class="nav-link text-white" href="change-pass.php">Change Password</a>
         </li>
         <li class="nav-item">
           <a class="nav-link text-white" href="admin-search.php">Search</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="#">Requests</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="#">About</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="#">Help</a>
+          <a class="nav-link text-white" href="home-admin.php">Requests</a>
         </li>
         <li class="nav-item">
           <a class="nav-link text-white" href="logout.php">Logout</a>
