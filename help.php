@@ -113,6 +113,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 
 <body>
+<<<<<<< HEAD
     <!-- navbar -->
     <nav class="navbar">
         <a class="navbar-brand" href="index.php">
@@ -123,6 +124,60 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <button class="navbar-toggler me-3 custom-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
+=======
+<!-- navbar -->
+<nav class="navbar">
+  <a class="navbar-brand" href="index.php">
+    <img class="ceu-logo img-fluid" src="./resource/img/ceu-molecules.png"/>
+  </a>
+  <div class="right-side-icons">
+    <i class="fa-solid fa-cart-shopping cart-icon"></i>
+      <button class="navbar-toggler me-3 custom-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  </div>
+
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="offcanvasNavbarLabel">CEU Molecules</h5>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+      <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+        <li class="nav-item">
+          <a class="nav-link text-white" href="index.php">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white" href="change-pass.php">Change Password</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white" href="user-search.php">Search</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white" href="cart.php">Requests</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white" href="about.php">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active text-white" aria-current="page" href="help.php">Contact</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white" href="logout.php">Logout</a>
+        </li>
+      </ul>
+    </div>
+</nav>
+
+<!-- Help Section -->
+<section class="help py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-4">
+                <h2 class="section-header">Help Center</h2>
+                <p class="section-subtitle">Find answers to common questions or contact our laboratory technicians</p>
+            </div>
+>>>>>>> 0b9092006fc3db0de7426ebd5e3bb63290137a1f
         </div>
 
         <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
