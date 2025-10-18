@@ -78,38 +78,18 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <div class="d-none d-lg-block ms-auto">
       <ul class="navbar-nav pe-3">
         <li class="nav-item">
-          <a class="nav-link text-white" href="home-admin.php">Requests</a>
+          <a class="nav-link text-white active" href="a-home.php">Requests</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="admin-search.php">Inventory</a>
+          <a class="nav-link text-white" href="a-search.php">Inventory</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="#">Report</a>
+          <a class="nav-link text-white" href="change-pass.php">Change Password</a>
         </li>
         <li class="nav-item">
           <a class="nav-link text-white" href="logout.php">Logout</a>
         </li>
       </ul>
-  </div>
-
-  <div class="offcanvas offcanvas-end d-lg-none" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-    <div class="offcanvas-header">
-      <h5 class="offcanvas-title" id="offcanvasNavbarLabel">CEU Molecules</h5>
-      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body">
-      <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-        <li class="nav-item">
-          <a class="nav-link text-white" href="#">Requests</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="#">Inventory</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="#">Report</a>
-        </li>
-      </ul>
-    </div>
   </div>
 </nav>
 
@@ -119,14 +99,14 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div class="container">
       <h2 class="requests-heading">Requests</h2>
       <div class="filter-buttons">
-            <a href="home-admin.php" class="filter-btn <?= ($filter_status === 'ALL') ? 'active' : '' ?>">ALL</a>
-            <a href="home-admin.php?status=pending" class="filter-btn <?= ($filter_status === 'pending') ? 'active' : '' ?>">Submitted</a>
-            <a href="home-admin.php?status=approved" class="filter-btn <?= ($filter_status === 'approved') ? 'active' : '' ?>">Faculty Approved</a>
-            <a href="home-admin.php?status=pickup" class="filter-btn <?= ($filter_status === 'pickup') ? 'active' : '' ?>">For Pick-up</a>
-            <a href="home-admin.php?status=completed" class="filter-btn <?= ($filter_status === 'completed') ? 'active' : '' ?>">Completed</a>
-            <a href="home-admin.php?status=returned" class="filter-btn <?= ($filter_status === 'returned') ? 'active' : '' ?>">Returned</a>
-            <a href="home-admin.php?status=canceled" class="filter-btn <?= ($filter_status === 'canceled') ? 'active' : '' ?>">Canceled</a>
-            <a href="home-admin.php?status=disapproved" class="filter-btn <?= ($filter_status === 'disapproved') ? 'active' : '' ?>">Disapproved</a>
+            <a href="a-home.php" class="filter-btn <?= ($filter_status === 'ALL') ? 'active' : '' ?>">ALL</a>
+            <a href="a-home.php?status=pending" class="filter-btn <?= ($filter_status === 'pending') ? 'active' : '' ?>">Submitted</a>
+            <a href="a-home.php?status=approved" class="filter-btn <?= ($filter_status === 'Approved') ? 'active' : '' ?>">Faculty Approved</a>
+            <a href="a-home.php?status=pickup" class="filter-btn <?= ($filter_status === 'Pickup') ? 'active' : '' ?>">For Pick-up</a>
+            <a href="a-home.php?status=completed" class="filter-btn <?= ($filter_status === 'Completed') ? 'active' : '' ?>">Completed</a>
+            <a href="a-home.php?status=returned" class="filter-btn <?= ($filter_status === 'Returned') ? 'active' : '' ?>">Returned</a>
+            <a href="a-home.php?status=canceled" class="filter-btn <?= ($filter_status === 'Canceled') ? 'active' : '' ?>">Canceled</a>
+            <a href="a-home.php?status=disapproved" class="filter-btn <?= ($filter_status === 'Disapproved') ? 'active' : '' ?>">Disapproved</a>
 
             <div class="row">
                 <?php if (empty($requests)): ?>
@@ -149,7 +129,7 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         <span class="timestamp-text"><?= date('m/d/Y - g:ia', strtotime($request['request_date'])) ?></span>
                                     </div>
                                     <div class="view-button-container">
-                                        <a href="ad-order-details.php?id=<?= $request['request_id'] ?>" class="view-button-btn">View</a>
+                                        <a href="a-order-details.php?id=<?= $request['request_id'] ?>" class="view-button-btn">View</a>
                                     </div>
                                 </div>
                             </div>

@@ -82,7 +82,7 @@ $items_in_cart = $cart->getItems();
                     <div class="col-12">
                         <p class="text-center fs-4 mt-5">Your cart is empty.</p>
                         <div class="text-center">
-                            <a href="user-search.php" class="btn btn-primary">Browse Products</a>
+                            <a href="u-search.php" class="btn btn-primary">Browse Products</a>
                         </div>
                     </div>
                 <?php else: ?>
@@ -130,7 +130,7 @@ $items_in_cart = $cart->getItems();
             
             <?php if (!empty($items_in_cart)): ?>
                 <div class="finalize-btn-container text-end mt-4">
-                    <a href="finalize.php" class="finalize-request-btn" style="text-decoration: none;">Finalize Request</a>
+                    <a href="u-finalize.php" class="finalize-request-btn" style="text-decoration: none;">Finalize Request</a>
                 </div>
             <?php endif; ?>
         </div>

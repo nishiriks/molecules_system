@@ -1,0 +1,9 @@
+Pre-alpha
+v0.1
+- Initial Development of System
+- Working Front and Backend
+- Basic Functionalities
+
+v0.2
+- Updated Access Control
+- Modified File Names

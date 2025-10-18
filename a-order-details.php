@@ -22,7 +22,7 @@ $stmt_request->execute([$request_id]);
 $details = $stmt_request->fetch(PDO::FETCH_ASSOC);
 
 if (!$details) {
-    header('Location: home-admin.php');
+    header('Location: a-home.php');
     exit();
 }
 
@@ -59,39 +59,32 @@ $items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
   <script src="https://kit.fontawesome.com/6563a04357.js" crossorigin="anonymous"></script>
 
 </head>
-<nav class="navbar">
-  <a class="navbar-brand" href="#">
-    <img class="ceu-logo img-fluid" src="./resource/img/ceu-molecules.png" />
-  </a>
-  <button class="navbar-toggler me-3 custom-toggler" type="button" data-bs-toggle="offcanvas"
-    data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-    <div class="offcanvas-header">
-      <h5 class="offcanvas-title" id="offcanvasNavbarLabel">CEU Molecules</h5>
-      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="#">
+      <img class="ceu-logo img-fluid" src="./resource/img/ceu-molecules.png" alt="CEU Molecules Logo"/>
+    </a>
+    
+    <button class="navbar-toggler me-3 custom-toggler d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    
+    <div class="d-none d-lg-block ms-auto">
+        <ul class="navbar-nav pe-3">
+          <li class="nav-item">
+            <a class="nav-link text-white" href="a-home.php">Requests</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="a-search.php">Inventory</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="change-pass.php">Change Password</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="logout.php">Logout</a>
+          </li>
+        </ul>
     </div>
-    <div class="offcanvas-body">
-      <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-        <li class="nav-item">
-          <a class="nav-link active text-white" aria-current="page" href="home-admin.php">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="change-pass.php">Change Password</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="admin-search.php">Search</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="home-admin.php">Requests</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="logout.php">Logout</a>
-        </li>
-      </ul>
-    </div>
-</nav>
+  </nav>
 <main class="admin-order-details-page">
         <div class="container-fluid py-5">
             <div class="row justify-content-center">
@@ -157,7 +150,7 @@ $items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
                             <div class="d-flex justify-content-end mt-4">            
                               <div class="status-container">
                                   <button type="submit" class="btn finalize-btn" name="view-btn">View Form</button>
-                                  <a href="home-admin.php" type="submit" class="btn finalize-btn ms-3">Cancel</a>
+                                  <a href="a-home.php" type="submit" class="btn finalize-btn ms-3">Cancel</a>
                               </div>
                             </div>
                         </form>

@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([$_SESSION['user_id'], $current_date, $log_action]);
         
         $_SESSION['success_message'] = "User " . strtolower($action) . " successfully!";
-        header('Location: account-management.php');
+        header('Location: s-account-management.php');
         exit();
     }
     
@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([$_SESSION['user_id'], $current_date, $log_action]);
         
         $_SESSION['success_message'] = "Account type updated successfully!";
-        header('Location: account-management.php');
+        header('Location: s-account-management.php');
         exit();
     }
 }
@@ -149,19 +149,22 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div class="offcanvas-body">
       <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
         <li class="nav-item">
-          <a class="nav-link text-white" href="user-logs.php">User Logs</a>
+          <a class="nav-link active text-white" aria-current="page" href="s-account-management.php">Account Management</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="admin-logs.php">Admin Logs</a>
+          <a class="nav-link text-white" href="s-user-logs.php">User Logs</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active text-white" aria-current="page" href="#">Account Management</a>
+          <a class="nav-link text-white" href="s-admin-logs.php">Admin Logs</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="holiday-management.php">Holiday Management</a>
+          <a class="nav-link text-white" href="s-holiday-management.php">Holiday Management</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="ai.php">AI Report</a>
+          <a class="nav-link text-white" href="s-ai.php">AI Report</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link  text-white" href="change-pass.php">Change Password</a>
         </li>
         <li class="nav-item">
           <a class="nav-link  text-white" href="logout.php">Log out</a>

@@ -22,7 +22,7 @@ if (isset($_SESSION['previous_page']) && $_SESSION['previous_page'] !== 'change-
     if (isset($_SESSION['user_role'])) {
         $back_url = ($_SESSION['user_role'] === 'admin') ? 'home-admin.php' : 'home-user.php';
     } else {
-        $back_url = 'index.php'; // Final fallback
+        $back_url = 'index.php';
     }
 }
 

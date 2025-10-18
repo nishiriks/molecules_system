@@ -81,9 +81,9 @@ class Auth extends config {
     // Redirect to account-type home page
     public static function redirectToHomePage() {
         if (self::isSuperAdmin()) {
-            header('Location: account-management.php');
+            header('Location: s-account-management.php');
         } else if (self::isAdmin()) {
-            header('Location: home-admin.php');
+            header('Location: a-home.php');
         } else if (self::isUser()) {
             header('Location: index.php');
         } else {
@@ -164,9 +164,9 @@ class Auth extends config {
                 $this->addLoginLog($user['user_id'], $user['account_type']);
 
                 if ($user['account_type'] == 'Super Admin') {
-                header('Location: account-management.php');
+                header('Location: s-account-management.php');
                 } else if ($user['account_type'] == 'Admin') {
-                    header('Location: home-admin.php');
+                    header('Location: a-home.php');
                 } else {
                     header('Location: index.php');
                 }
