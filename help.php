@@ -29,7 +29,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $subject = trim($_POST['subject']);
     $message = trim($_POST['message']);
 
-    // Preserve form data
     $preserved_data = [
         'name' => htmlspecialchars($name),
         'email' => htmlspecialchars($email),
@@ -55,18 +54,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         try {
             $mail = new PHPMailer(true);
             
-            // Server settings for your proxy email
-
-            // Sender:
+            // Server settings proxy email
+            $mail->isSMTP();
+            $mail->Host       = ''; 
+            $mail->SMTPAuth   = true;
+            $mail->Username   = '';
+            $mail->Password   = '';
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port       = 587;
+            
             $mail->setFrom('ceumolecules.system@gmail.com', 'CEU MOLECULES System');
             
-            // Recipient: Lab technician
             $mail->addAddress('magsakay2233884@mls.ceu.edu.ph', 'Lab Technician');
             
-            // Reply-to:
             $mail->addReplyTo($email, $name);
             
-            // Content - Include user info for context
+            // Content
             $mail->isHTML(false);
             $mail->Subject = "CEU Molecules Contact: " . $subject;
             $mail->Body    = "You have received a new contact form message:\n\n"
@@ -86,8 +89,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
         } catch (Exception $e) {
             $errors[] = "Sorry, there was an error sending your message. Please try again later.";
-            // For debugging:
-            // $errors[] = "Error details: " . $mail->ErrorInfo;
         }
     }
 }
@@ -358,7 +359,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 
 <script>
-    // Add rotation to FAQ chevron icons when toggled
     document.querySelectorAll('.faq-question').forEach(question => {
         question.addEventListener('click', function() {
             const icon = this.querySelector('i');
