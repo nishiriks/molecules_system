@@ -13,8 +13,6 @@ $pdo = $config->con();
 $request_id = $_GET['id'];
 $current_user_id = $_SESSION['user_id'];
 
-// --- Query 1: Get the main request details with a security check ---
-// This query ensures the request being viewed belongs to the currently logged-in user
 $sql_request = "SELECT r.*, u.first_name, u.last_name, c.cart_status
                 FROM tbl_requests r
                 JOIN tbl_cart c ON r.cart_id = c.cart_id
@@ -26,18 +24,25 @@ $details = $stmt_request->fetch(PDO::FETCH_ASSOC);
 
 // If no request was found (or it belongs to another user), redirect
 if (!$details) {
-    header('Location: user-request.php');
+    header('Location: u-request.php');
     exit();
 }
 
-// --- Query 2: Get the list of items for that request ---
-$sql_items = "SELECT i.amount, inv.name, inv.measure_unit 
+$sql_items = "SELECT i.amount, inv.name, inv.measure_unit, inv.product_type
               FROM tbl_cart_items i
               JOIN tbl_inventory inv ON i.product_id = inv.product_id
               WHERE i.cart_id = ?";
 $stmt_items = $pdo->prepare($sql_items);
 $stmt_items->execute([$details['cart_id']]);
 $items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
+
+$date_from = date('m/d/Y', strtotime($details['date_from']));
+$date_to = date('m/d/Y', strtotime($details['date_to']));
+$date_display = ($date_from === $date_to) ? $date_from : $date_from . ' - ' . $date_to;
+
+$time_from = date('g:ia', strtotime($details['time_from']));
+$time_to = date('g:ia', strtotime($details['time_to']));
+$time_display = ($time_from === $time_to) ? $time_from : $time_from . ' - ' . $time_to;
 
 ?>
 
@@ -59,7 +64,6 @@ $items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
   <link
     href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bona+Nova:ital,wght@0,400;0,700;1,400&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300..700&family=Roboto:ital,wght@0,100..900;1,100..900&family=Rubik:ital,wght@0,300..900;1,300..900&family=Ruda:wght@400..900&family=Tilt+Warp&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap"
     rel="stylesheet">
-
 
   <script src="https://kit.fontawesome.com/6563a04357.js" crossorigin="anonymous"></script>
 
@@ -112,12 +116,12 @@ $items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
                 <div class="col-lg-8 col-md-10">
                     <div class="request-form-card">
                         <form>
-                            <h4 class="request-details-title mt-1 mb-3 text-center">Request Details: #<?= $details['request_id'] ?></h4>
+                            <h4 class="request-details-title mt-1 mb-3 text-center">Request Details <p><?= date('m/d/Y - g:ia', strtotime($details['request_date'])) ?></p></h4>
                             
                             <div class="row mb-3 align-items-end">
                                 <div class="col-md-5">
-                                    <label class="form-label">Name of Instructor or Graduate Student:</label>
-                                    <input type="text" class="form-control" value="<?= htmlspecialchars($details['prof_name']) ?>" readonly>
+                                    <label class="form-label">Name of Requester:</label>
+                                    <input type="text" class="form-control" value="<?= htmlspecialchars($details['first_name'] . ' ' . $details['last_name']) ?>" readonly>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Subject:</label>
@@ -128,15 +132,24 @@ $items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
                                     <input type="text" class="form-control" value="<?= htmlspecialchars($details['room']) ?>" readonly>
                                 </div>
                             </div>
+
                             <div class="row mb-4 align-items-end">
+                                <div class="col-md-6">
+                                    <label class="form-label">Date of Use:</label>
+                                    <input type="text" class="form-control" value="<?= htmlspecialchars($date_display) ?>" readonly>
                                 </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Time:</label>
+                                    <input type="text" class="form-control" value="<?= htmlspecialchars($time_display) ?>" readonly>
+                                </div>
+                            </div>
                             
                             <h4 class="request-details-title mt-1 mb-3">Items:</h4>
                             <div id="request-list-container">
                                 <ul class="list-group">
                                     <?php foreach ($items as $item): ?>
                                         <li class="list-group-item">
-                                            <?= htmlspecialchars($item['name']) ?> - 
+                                            <?= htmlspecialchars($item['name']) ?> (<?= htmlspecialchars($item['product_type']) ?>) - 
                                             <strong>Amount:</strong> <?= htmlspecialchars($item['amount']) ?> <?= htmlspecialchars($item['measure_unit']) ?>
                                         </li>
                                     <?php endforeach; ?>
@@ -144,16 +157,25 @@ $items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
                             </div>
 
                             <div class="mb-4 mt-4">
-                                <label class="form-label request-details-title remarks">Remarks:</label>
-                                <div class="remarks-container">
-                                    <textarea class="form-control" rows="4" readonly><?= htmlspecialchars($details['remarks'] ?? 'No remarks.') ?></textarea>
+                                <label class="form-label request-details-title">Status:</label>
+                                <div class="row align-items-end">
+                                    <div class="col-md-6">
+                                        <input type="text" class="form-control" value="<?= htmlspecialchars($details['status']) ?>" readonly>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="d-flex justify-content-end mt-4">
+                            <div class="mb-4 mt-4">
+                                <label for="remarks" class="form-label request-details-title remarks">Remarks:</label>
+                                <div class="remarks-container">
+                                    <textarea class="form-control" id="remarks" name="remarks" rows="4" readonly><?= htmlspecialchars($details['remarks'] ?? 'No remarks.') ?></textarea>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-end mt-4">            
                                 <div class="status-container">
-                                  <button type="submit" class="btn finalize-btn" name="view-btn">View Form</button>
-                                  <a href="user-request.php" type="submit" class="btn finalize-btn ms-3">Cancel</a>
+                                    <button type="submit" class="btn finalize-btn" name="view-btn">View Form</button>
+                                    <a href="u-request.php" type="submit" class="btn finalize-btn ms-3">Back</a>
                                 </div>
                             </div>
                         </form>
@@ -162,7 +184,6 @@ $items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
             </div>
         </div>
   </main>
-
 
   <footer>
     <div class="container-fluid">

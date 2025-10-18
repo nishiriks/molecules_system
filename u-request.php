@@ -13,14 +13,12 @@ $pdo = $config->con();
 $current_user_id = $_SESSION['user_id'];
 
 $filter_status = $_GET['status'] ?? 'ALL';
-$page_title = $filter_status === 'ALL' ? 'All My Requests' : "Showing: " . htmlspecialchars($filter_status);
 
-// This query is similar to the admin's, but adds a WHERE clause for the specific user
 $sql = "SELECT 
             r.request_id,
             r.request_date,
+            r.status,
             c.cart_id,
-            c.cart_status, 
             u.first_name, 
             u.last_name, 
             u.account_type,
@@ -29,16 +27,17 @@ $sql = "SELECT
         JOIN tbl_cart AS c ON r.cart_id = c.cart_id
         JOIN tbl_users AS u ON c.user_id = u.user_id
         LEFT JOIN tbl_cart_items AS items ON c.cart_id = items.cart_id
-        LEFT JOIN tbl_inventory AS inv ON items.product_id = inv.product_id
-        WHERE c.user_id = ? AND c.cart_status != 'active'"; // Filter by current user ID
+        LEFT JOIN tbl_inventory AS inv ON items.product_id = inv.product_id";
 
+$where_conditions = ["c.user_id = ?", "c.cart_status != 'active'"];
 $params = [$current_user_id];
 
 if ($filter_status !== 'ALL') {
-    $sql .= " AND c.cart_status = ?";
+    $where_conditions[] = "r.status = ?";
     $params[] = $filter_status;
 }
 
+$sql .= " WHERE " . implode(" AND ", $where_conditions);
 $sql .= " GROUP BY r.request_id ORDER BY r.request_date DESC";
 
 $stmt = $pdo->prepare($sql);
@@ -125,13 +124,17 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <h2 class="requests-heading">Request History</h2>
             <div class="filter-buttons">
                 <a href="u-request.php" class="filter-btn <?= ($filter_status === 'ALL') ? 'active' : '' ?>">ALL</a>
-                <a href="u-request.php?status=approved" class="filter-btn <?= ($filter_status === 'pending') ? 'active' : '' ?>">Submitted</a>
-                <a href="u-request.php?status=pickup" class="filter-btn <?= ($filter_status === 'Pickup') ? 'active' : '' ?>">For Pick-up</a>
-                <a href="u-request.php?status=completed" class="filter-btn <?= ($filter_status === 'Completed') ? 'active' : '' ?>">Completed</a>
-                <a href="u-request.php?status=returned" class="filter-btn <?= ($filter_status === 'Returned') ? 'active' : '' ?>">Returned</a>
-                <a href="u-request.php?status=canceled" class="filter-btn <?= ($filter_status === 'Canceled') ? 'active' : '' ?>">Canceled</a>
-                <a href="u-request.php?status=disapproved" class="filter-btn <?= ($filter_status === 'Disapproved') ? 'active' : '' ?>">Disapproved</a>
+                <a href="u-request.php?status=Pending" class="filter-btn <?= ($filter_status === 'Pending') ? 'active' : '' ?>">Pending</a>
+                <a href="u-request.php?status=Submitted" class="filter-btn <?= ($filter_status === 'Submitted') ? 'active' : '' ?>">Submitted</a>
+                <a href="u-request.php?status=Pickup" class="filter-btn <?= ($filter_status === 'Pickup') ? 'active' : '' ?>">For Pick-up</a>
+                <a href="u-request.php?status=Received" class="filter-btn <?= ($filter_status === 'Received') ? 'active' : '' ?>">Received</a>
+                <a href="u-request.php?status=Returned" class="filter-btn <?= ($filter_status === 'Returned') ? 'active' : '' ?>">Returned</a>
+                <a href="u-request.php?status=Broken" class="filter-btn <?= ($filter_status === 'Broken') ? 'active' : '' ?>">Broken</a>
+                <a href="u-request.php?status=Lost" class="filter-btn <?= ($filter_status === 'Lost') ? 'active' : '' ?>">Lost</a>
+                <a href="u-request.php?status=Canceled" class="filter-btn <?= ($filter_status === 'Canceled') ? 'active' : '' ?>">Canceled</a>
+                <a href="u-request.php?status=Disapproved" class="filter-btn <?= ($filter_status === 'Disapproved') ? 'active' : '' ?>">Disapproved</a>
             </div>
+
             <div class="row">
                 <?php if (empty($requests)): ?>
                     <div class="col-12"><p class="text-center fs-4 mt-5">You have no request history.</p></div>
@@ -143,7 +146,7 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <div class="request-text">
                                         <h5 class="request-title"><?= htmlspecialchars($request['product_types'] ?? 'General') ?> Request</h5>
                                         <p class="request-info">Submitted By: <?=htmlspecialchars($request['first_name'] .' '. $request['last_name'])?></p>
-                                        <p class="request-info">Status: <?= htmlspecialchars($request['cart_status']) ?></p>
+                                        <p class="request-info">Status: <?= htmlspecialchars($request['status']) ?></p>
                                     </div>
                                 </div>
                                 <div class="right-column-container">
@@ -151,7 +154,7 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         <span class="timestamp-text"><?= date('m/d/Y - g:ia', strtotime($request['request_date'])) ?></span>
                                     </div>
                                     <div class="history-button-container">
-                                        <?php if ($request['cart_status'] === 'pending'): ?>
+                                        <?php if ($request['status'] === 'Pending'): ?>
                                             <form action="cartAction.php" method="POST" style="display:inline;">
                                                 <input type="hidden" name="action" value="cancel_request">
                                                 <input type="hidden" name="cart_id" value="<?= $request['cart_id'] ?>">
