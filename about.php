@@ -15,6 +15,7 @@ if (!isset($_SESSION['user_id'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>About - CEU Molecules</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css"  href="resource/css/home.css">
   <link rel="stylesheet" type="text/css"  href="resource/css/about.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css"/>
@@ -61,7 +62,7 @@ if (!isset($_SESSION['user_id'])) {
           <a class="nav-link text-white" href="index.php">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="#">Change Password</a>
+          <a class="nav-link text-white" href="change-pass.php">Change Password</a>
         </li>
         <li class="nav-item">
           <a class="nav-link text-white" href="user-search.php">Search</a>
@@ -70,10 +71,10 @@ if (!isset($_SESSION['user_id'])) {
           <a class="nav-link text-white" href="cart.php">Requests</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active text-white" aria-current="page" href="#">About</a>
+          <a class="nav-link active text-white" aria-current="page" href="about.php">About</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="#">Help</a>
+          <a class="nav-link text-white" href="help.php">Help</a>
         </li>
         <li class="nav-item">
           <a class="nav-link text-white" href="logout.php">Logout</a>
@@ -180,7 +181,7 @@ if (!isset($_SESSION['user_id'])) {
             <div class="col-12 col-md-4 mb-4">
                 <div class="card dev-card h-100">
                     <div class="card-img-container">
-                        <img src="./resource/img/tech2-placeholder.jpg" alt="Krizia Lleva" class="card-img-top">
+                        <img src="./resource/img/kriz.jpg" alt="Krizia Lleva" class="card-img-top">
                     </div>
                     <div class="card-body">
                         <h5 class="card-title">Krizia Jane Lleva</h5>

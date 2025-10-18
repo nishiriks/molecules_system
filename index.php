@@ -44,7 +44,7 @@ if (!isset($_SESSION['user_id'])) {
     <img class="ceu-logo img-fluid" src="./resource/img/ceu-molecules.png"/>
   </a>
   <div class="right-side-icons">
-    <i class="fa-solid fa-cart-shopping cart-icon"></i>
+    <a href="cart.php"><i class="fa-solid fa-cart-shopping cart-icon"></i></a>
       <button class="navbar-toggler me-3 custom-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -61,7 +61,7 @@ if (!isset($_SESSION['user_id'])) {
           <a class="nav-link active text-white" aria-current="page" href="#">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="#">Change Password</a>
+          <a class="nav-link text-white" href="change-pass.php">Change Password</a>
         </li>
         <li class="nav-item">
           <a class="nav-link text-white" href="user-search.php">Search</a>
@@ -70,10 +70,10 @@ if (!isset($_SESSION['user_id'])) {
           <a class="nav-link text-white" href="cart.php">Requests</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="#">About</a>
+          <a class="nav-link text-white" href="about.php">About</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="#">Help</a>
+          <a class="nav-link text-white" href="help.php">Help</a>
         </li>
         <li class="nav-item">
           <a class="nav-link text-white" href="logout.php">Logout</a>

@@ -1,3 +1,37 @@
+<?php
+session_start();
+require_once 'resource/php/init.php';
+require_once 'resource/php/class/Auth.php';
+
+// Security: Redirect user if they are not logged in
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php');
+    exit();
+}
+
+$auth = new Auth();
+$errors = [];
+$success_message = '';
+
+// Handle the form submission
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $current_password = $_POST['current_password'] ?? null;
+    $new_password = $_POST['new_password'] ?? null;
+    $confirm_password = $_POST['confirm_password'] ?? null;
+
+    $errors = $auth->changePassword(
+        $_SESSION['user_id'],
+        $current_password,
+        $new_password,
+        $confirm_password
+    );
+
+    if (empty($errors)) {
+        $success_message = "Password updated successfully!";
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -32,30 +66,36 @@
             <div class="row justify-content-center">
                 <div class="col-lg-5 col-md-6">
                     <div class="change-pass-card">
-                        <a href="#" class="back-arrow"><i class="fas fa-arrow-left"></i></a>
+                        <a href="javascript:history.back()" class="back-arrow"><i class="fas fa-arrow-left"></i></a>
                         <div class="card-header text-center">
                             <h3 class="text-password mt-1 mb-3">Change Password</h3>
                         </div>
                         <div class="card-body">
-                            <form>
+                            <?php if (!empty($success_message)): ?>
+                                <div class="alert alert-success"><?= $success_message ?></div>
+                            <?php endif; ?>
+                            <?php if (!empty($errors)): ?>
+                                <?php foreach ($errors as $error): ?>
+                                    <div class="alert alert-danger"><?= $error ?></div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+
+                            <form method="POST" action="">
                                 <div class="mb-4 position-relative">
                                     <label for="currentPassword" class="form-label">Current Password</label>
-                                    <input type="password" class="form-control" id="currentPassword" required>
+                                    <input type="password" class="form-control" name="current_password" id="currentPassword" required>
                                     <i class="fa-solid fa-eye password-toggle-icon"></i>
                                 </div>
-
                                 <div class="mb-4 position-relative">
                                     <label for="newPassword" class="form-label">New Password</label>
-                                    <input type="password" class="form-control" id="newPassword" required>
+                                    <input type="password" class="form-control" name="new_password" id="newPassword" required>
                                     <i class="fa-solid fa-eye password-toggle-icon"></i>
                                 </div>
-
                                 <div class="mb-4 position-relative">
                                     <label for="confirmPassword" class="form-label">Confirm New Password</label>
-                                    <input type="password" class="form-control" id="confirmPassword" required>
+                                    <input type="password" class="form-control" name="confirm_password" id="confirmPassword" required>
                                     <i class="fa-solid fa-eye password-toggle-icon"></i>
                                 </div>
-
                                 <div class="d-flex justify-content-center mt-4">
                                     <button type="submit" class="btn btn-update-password">Update Password</button>
                                 </div>

@@ -115,6 +115,39 @@ class Auth extends config {
         return $errors; 
     }
 
+    // Add this new method anywhere inside your Auth class
+    public function changePassword($user_id, $current_password, $new_password, $confirm_password) {
+        $errors = [];
+
+        // 1. Validate inputs
+        if (empty($current_password) || empty($new_password) || empty($confirm_password)) {
+            $errors[] = "All fields are required.";
+        }
+        if ($new_password !== $confirm_password) {
+            $errors[] = "New passwords do not match.";
+        }
+        if (strlen($new_password) < 8) {
+            $errors[] = "New password must be at least 8 characters long.";
+        }
+
+        // 2. Verify the current password
+        if (empty($errors)) {
+            $user_data = $this->query("SELECT password FROM tbl_users WHERE user_id = ?", [$user_id]);
+            
+            if (!$user_data || !password_verify($current_password, $user_data[0]['password'])) {
+                $errors[] = "Incorrect current password.";
+            }
+        }
+
+        // 3. If all checks pass, update the database
+        if (empty($errors)) {
+            $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+            $this->query("UPDATE tbl_users SET password = ? WHERE user_id = ?", [$hashed_password, $user_id]);
+        }
+
+        return $errors;
+    }
+
     // Add login log entry based on account type
 
     private function addLoginLog($user_id, $account_type) {
@@ -122,7 +155,14 @@ class Auth extends config {
             $current_date = date('Y-m-d H:i:s');
             
             if ($account_type === 'Admin' || $account_type === 'Super Admin') {
+<<<<<<< HEAD
                 // Insert into admin log table with 'Login' action
+=======
+                /// Insert into admin log table with 'Login' action
+                $stmt = $this->pdo->prepare("INSERT INTO tbl_admin_log (user_id, log_action) VALUES (?, ?)");
+                $stmt->execute([$user_id, 'Login']);
+                /// Insert into admin log table with 'Login' action
+>>>>>>> 0bfac09c9d282b9d54fee51c32999f7d512ac098
                 $stmt = $this->pdo->prepare("INSERT INTO tbl_admin_log (user_id, log_action) VALUES (?, ?)");
                 $stmt->execute([$user_id, 'Login']);
             } else {
@@ -137,4 +177,5 @@ class Auth extends config {
         }
     }
 }
+
 ?>

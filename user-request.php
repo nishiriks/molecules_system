@@ -1,0 +1,191 @@
+<?php
+session_start();
+require_once 'resource/php/init.php';
+
+// Security check: Ensure user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php');
+    exit();
+}
+
+$config = new config();
+$pdo = $config->con();
+$current_user_id = $_SESSION['user_id'];
+
+$filter_status = $_GET['status'] ?? 'ALL';
+$page_title = $filter_status === 'ALL' ? 'All My Requests' : "Showing: " . htmlspecialchars($filter_status);
+
+// This query is similar to the admin's, but adds a WHERE clause for the specific user
+$sql = "SELECT 
+            r.request_id,
+            r.request_date,
+            c.cart_id,
+            c.cart_status, 
+            u.first_name, 
+            u.last_name, 
+            u.account_type,
+            GROUP_CONCAT(DISTINCT inv.product_type SEPARATOR ', ') AS product_types
+        FROM tbl_requests AS r
+        JOIN tbl_cart AS c ON r.cart_id = c.cart_id
+        JOIN tbl_users AS u ON c.user_id = u.user_id
+        LEFT JOIN tbl_cart_items AS items ON c.cart_id = items.cart_id
+        LEFT JOIN tbl_inventory AS inv ON items.product_id = inv.product_id
+        WHERE c.user_id = ? AND c.cart_status != 'active'"; // Filter by current user ID
+
+$params = [$current_user_id];
+
+if ($filter_status !== 'ALL') {
+    $sql .= " AND c.cart_status = ?";
+    $params[] = $filter_status;
+}
+
+$sql .= " GROUP BY r.request_id ORDER BY r.request_date DESC";
+
+$stmt = $pdo->prepare($sql);
+$stmt->execute($params);
+$requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Request History</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="resource/css/home-admin.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bona+Nova:ital,wght@0,400;0,700;1,400&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300..700&family=Roboto:ital,wght@0,100..900;1,100..900&family=Rubik:ital,wght@0,300..900;1,300..900&family=Ruda:wght@400..900&family=Tilt+Warp&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap"
+    rel="stylesheet">
+
+  <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://kit.fontawesome.com/6563a04357.js" crossorigin="anonymous"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+  <!-- 1st nav -->
+  <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="#">
+      <img class="ceu-logo img-fluid" src="./resource/img/ceu-molecules.png" alt="CEU Molecules Logo" />
+    </a>
+
+    <button class="navbar-toggler me-3 custom-toggler d-lg-none" type="button" data-bs-toggle="offcanvas"
+      data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="d-none d-lg-block ms-auto">
+      <ul class="navbar-nav pe-3">
+        <li class="nav-item">
+          <a class="nav-link text-white" href="#">Requests</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white" href="#">Inventory</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white" href="#">Report</a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="offcanvas offcanvas-end d-lg-none" tabindex="-1" id="offcanvasNavbar"
+      aria-labelledby="offcanvasNavbarLabel">
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasNavbarLabel">CEU Molecules</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      </div>
+      <div class="offcanvas-body">
+        <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+          <li class="nav-item">
+            <a class="nav-link text-white" href="#">Requests</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="#">Inventory</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="#">Report</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+
+  <!-- main content -->
+  <main class="faculty-history">
+        <div class="container">
+            <h2 class="requests-heading">Request History</h2>
+            <div class="filter-buttons">
+                <a href="user-request.php" class="filter-btn <?= ($filter_status === 'ALL') ? 'active' : '' ?>">ALL</a>
+                <a href="user-request.php?status=approved" class="filter-btn <?= ($filter_status === 'approved') ? 'active' : '' ?>">Faculty Approved</a>
+                <a href="user-request.php?status=pickup" class="filter-btn <?= ($filter_status === 'pickup') ? 'active' : '' ?>">For Pick-up</a>
+                <a href="user-request.php?status=completed" class="filter-btn <?= ($filter_status === 'completed') ? 'active' : '' ?>">Completed</a>
+                <a href="user-request.php?status=returned" class="filter-btn <?= ($filter_status === 'returned') ? 'active' : '' ?>">Returned</a>
+                <a href="user-request.php?status=canceled" class="filter-btn <?= ($filter_status === 'canceled') ? 'active' : '' ?>">Canceled</a>
+                <a href="user-request.php?status=disapproved" class="filter-btn <?= ($filter_status === 'disapproved') ? 'active' : '' ?>">Disapproved</a>
+            </div>
+            <div class="row">
+                <?php if (empty($requests)): ?>
+                    <div class="col-12"><p class="text-center fs-4 mt-5">You have no request history.</p></div>
+                <?php else: ?>
+                    <?php foreach ($requests as $request): ?>
+                        <div class="col-12 mb-3">
+                            <div class="request-card">
+                                <div class="request-details-container">
+                                    <div class="request-text">
+                                        <h5 class="request-title"><?= htmlspecialchars($request['product_types'] ?? 'General') ?> Request</h5>
+                                        <p class="request-info">Submitted By: <?=htmlspecialchars($request['first_name'] .' '. $request['last_name'])?></p>
+                                        <p class="request-info">Status: <?= htmlspecialchars($request['cart_status']) ?></p>
+                                    </div>
+                                </div>
+                                <div class="right-column-container">
+                                    <div class="request-timestamp">
+                                        <span class="timestamp-text"><?= date('m/d/Y - g:ia', strtotime($request['request_date'])) ?></span>
+                                    </div>
+                                    <div class="history-button-container">
+                                        <?php if ($request['cart_status'] === 'pending'): ?>
+                                            <form action="cartAction.php" method="POST" style="display:inline;">
+                                                <input type="hidden" name="action" value="cancel_request">
+                                                <input type="hidden" name="cart_id" value="<?= $request['cart_id'] ?>">
+                                                <button type="submit" class="cancel-button">Cancel</button>
+                                            </form>
+                                        <?php endif; ?>
+                                        <a href="user-order-details.php?id=<?= $request['request_id'] ?>" class="view-button">View</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+        </div>
+    </main>
+
+  <!-- footer -->
+  <footer>
+    <div class="container-fluid">
+      <p class="text-center text-white pt-2"><small>
+          CEU MALOLOS MOLECULES || <strong>Chemical Laboratory: sample@ceu.edu.ph</strong><br>
+          <i class="fa-regular fa-copyright"></i> 2025 Copyright <strong>CENTRO ESCOLAR UNIVERSITY MALOLOS, Chemical
+            Laboratory</strong><br>
+          Developed by <strong>Renz Matthew Magsakay (official.renzmagsakay@gmail.com), Krizia Jane Lleva
+            (lleva2234517@mls.ceu.edu.ph) & Angelique Mae Gabriel (gabriel2231439@mls.ceu.edu.ph)</strong>
+        </small>
+      </p>
+    </div>
+  </footer>
+
+</body>
+
+</html>

@@ -84,6 +84,9 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <li class="nav-item">
           <a class="nav-link text-white" href="#">Report</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link text-white" href="logout.php">Logout</a>
+        </li>
       </ul>
   </div>
 
