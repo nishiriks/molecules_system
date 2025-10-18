@@ -90,6 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (quantityInput) {
                     quantityInput.value = 1;
                     quantityInput.max = productStockValue;
+                    quantityInput.setAttribute('min', '1');
                 }
                 
                 popupToShow.classList.add('show');
@@ -187,6 +188,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (quantityBtn.id.includes('increment')) {
                 if (currentValue < maxStock) {
                     currentValue++;
+                } else {
+                    alert(`Cannot exceed maximum available stock of ${maxStock} units`);
                 }
             } else if (quantityBtn.id.includes('decrement')) {
                 currentValue = Math.max(1, currentValue - 1);
@@ -195,4 +198,90 @@ document.addEventListener('DOMContentLoaded', () => {
             input.value = currentValue;
         }
     });
+
+    // --- CART FUNCTIONALITY ---
+    initializeCartFunctionality();
 });
+
+// Cart-specific functionality
+function initializeCartFunctionality() {
+    // Edit modal show event
+    const editModal = document.getElementById('edit-popup');
+    if (editModal) {
+        editModal.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            const itemId = button.getAttribute('data-item-id');
+            const itemName = button.getAttribute('data-item-name');
+            const currentAmount = button.getAttribute('data-item-amount');
+            const maxStock = button.getAttribute('data-max-stock');
+            
+            // Set the form values
+            document.getElementById('edit-item-id').value = itemId;
+            document.getElementById('edit-item-name').value = itemName;
+            document.getElementById('edit-item-amount').value = currentAmount;
+            document.getElementById('max-stock-display').textContent = maxStock;
+            
+            // Set validation constraints
+            const amountInput = document.getElementById('edit-item-amount');
+            amountInput.setAttribute('min', '1');
+            amountInput.setAttribute('max', maxStock);
+            
+            // Add input event listener for real-time validation
+            amountInput.addEventListener('input', function() {
+                validateCartAmount(this);
+            });
+        });
+    }
+    
+    // Form validation for edit form
+    const editForm = document.getElementById('edit-form');
+    if (editForm) {
+        editForm.addEventListener('submit', function(event) {
+            const amountInput = document.getElementById('edit-item-amount');
+            const amount = parseInt(amountInput.value);
+            const maxStock = parseInt(amountInput.getAttribute('max'));
+            
+            if (amount < 1) {
+                event.preventDefault();
+                alert('Amount cannot be less than 1');
+                amountInput.focus();
+                return false;
+            }
+            
+            if (amount > maxStock) {
+                event.preventDefault();
+                alert(`Cannot exceed maximum available stock of ${maxStock} units`);
+                amountInput.focus();
+                return false;
+            }
+            
+            if (isNaN(amount)) {
+                event.preventDefault();
+                alert('Please enter a valid number');
+                amountInput.focus();
+                return false;
+            }
+        });
+    }
+}
+
+function validateCartAmount(input) {
+    const value = parseInt(input.value);
+    const maxStock = parseInt(input.getAttribute('max'));
+    const feedback = document.getElementById('amount-feedback');
+    
+    if (isNaN(value)) {
+        input.classList.add('is-invalid');
+        feedback.textContent = 'Please enter a valid number';
+    } else if (value < 1) {
+        input.classList.add('is-invalid');
+        feedback.textContent = 'Amount must be at least 1';
+    } else if (value > maxStock) {
+        input.classList.add('is-invalid');
+        feedback.textContent = `Cannot exceed maximum available stock of ${maxStock} units`;
+    } else {
+        input.classList.remove('is-invalid');
+        input.classList.add('is-valid');
+        feedback.textContent = '';
+    }
+}

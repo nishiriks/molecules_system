@@ -22,3 +22,4 @@ if ($_POST['action'] === 'add') {
     header('Location: u-cart.php');
 }
 exit();
+?>

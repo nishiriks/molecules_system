@@ -93,6 +93,7 @@ $items_in_cart = $cart->getItems();
                         $ptype = $item['product_type'] ?? 'No type';
                         $amount = $item['amount'] ?? 0;
                         $measure = $item['measure_unit'] ?? '';
+                        $current_stock = $item['stock'] ?? 0;
                         ?>
                         <div class="col-12 mb-3">
                             <div class="cart-card-item">
@@ -101,6 +102,7 @@ $items_in_cart = $cart->getItems();
                                     <div class="item-info">
                                         <h5 class="item-name"><?= htmlspecialchars($name) ?></h5>
                                         <p class="item-type"><?= htmlspecialchars($ptype) ?></p>
+                                        <small class="text-muted">Available Stock: <?= $current_stock + $amount ?></small>
                                     </div>
                                 </div>
                                 <div class="item-details-right">
@@ -111,7 +113,8 @@ $items_in_cart = $cart->getItems();
                                                 data-bs-target="#edit-popup"
                                                 data-item-id="<?= $item['item_id'] ?>"
                                                 data-item-name="<?= htmlspecialchars($name) ?>"
-                                                data-item-amount="<?= htmlspecialchars($amount) ?>">
+                                                data-item-amount="<?= htmlspecialchars($amount) ?>"
+                                                data-max-stock="<?= $current_stock + $amount ?>">
                                             Edit
                                         </button>
 
@@ -127,10 +130,20 @@ $items_in_cart = $cart->getItems();
                     <?php endforeach; ?>
                 <?php endif; ?>
             </div>
-            
+            <!-- Display Messages -->
+            <?php if (isset($_SESSION['error'])): ?>
+                <div class="alert alert-danger alert-dismissible fade show m-3" role="alert">
+                    <?= $_SESSION['error'] ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                <?php unset($_SESSION['error']); ?>
+            <?php endif; ?>
             <?php if (!empty($items_in_cart)): ?>
                 <div class="finalize-btn-container text-end mt-4">
                     <a href="u-finalize.php" class="finalize-request-btn" style="text-decoration: none;">Finalize Request</a>
+                </div>
+                <div class="finalize-btn-container text-end mt-4">
+                    <a href="u-search.php" class="finalize-request-btn" style="text-decoration: none;">Browse Items</a>
                 </div>
             <?php endif; ?>
         </div>
@@ -154,7 +167,14 @@ $items_in_cart = $cart->getItems();
                         </div>
                         <div class="mb-3">
                             <label for="edit-item-amount" class="form-label">Amount:</label>
-                            <input type="number" id="edit-item-amount" name="amount" class="form-control" required>
+                            <input type="number" 
+                                   id="edit-item-amount" 
+                                   name="amount" 
+                                   class="form-control" 
+                                   min="1" 
+                                   required>
+                            <div class="form-text">Maximum available: <span id="max-stock-display"><?= $current_stock + $amount ?></span> units</div>
+                            <div id="amount-feedback" class="invalid-feedback"></div>
                         </div>
                         <button type="submit" class="btn btn-primary w-100 save-btn">Save Changes</button>
                     </form>
@@ -175,8 +195,7 @@ $items_in_cart = $cart->getItems();
   </div>
 </footer>
 
-</body>
-</html>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 <script src="resource/js/scripts.js"></script>
+</body>
+</html>
