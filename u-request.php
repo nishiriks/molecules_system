@@ -125,12 +125,12 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <h2 class="requests-heading">Request History</h2>
             <div class="filter-buttons">
                 <a href="u-request.php" class="filter-btn <?= ($filter_status === 'ALL') ? 'active' : '' ?>">ALL</a>
-                <a href="u-request.php?status=approved" class="filter-btn <?= ($filter_status === 'approved') ? 'active' : '' ?>">Faculty Approved</a>
-                <a href="u-request.php?status=pickup" class="filter-btn <?= ($filter_status === 'pickup') ? 'active' : '' ?>">For Pick-up</a>
-                <a href="u-request.php?status=completed" class="filter-btn <?= ($filter_status === 'completed') ? 'active' : '' ?>">Completed</a>
-                <a href="u-request.php?status=returned" class="filter-btn <?= ($filter_status === 'returned') ? 'active' : '' ?>">Returned</a>
-                <a href="u-request.php?status=canceled" class="filter-btn <?= ($filter_status === 'canceled') ? 'active' : '' ?>">Canceled</a>
-                <a href="u-request.php?status=disapproved" class="filter-btn <?= ($filter_status === 'disapproved') ? 'active' : '' ?>">Disapproved</a>
+                <a href="u-request.php?status=approved" class="filter-btn <?= ($filter_status === 'pending') ? 'active' : '' ?>">Submitted</a>
+                <a href="u-request.php?status=pickup" class="filter-btn <?= ($filter_status === 'Pickup') ? 'active' : '' ?>">For Pick-up</a>
+                <a href="u-request.php?status=completed" class="filter-btn <?= ($filter_status === 'Completed') ? 'active' : '' ?>">Completed</a>
+                <a href="u-request.php?status=returned" class="filter-btn <?= ($filter_status === 'Returned') ? 'active' : '' ?>">Returned</a>
+                <a href="u-request.php?status=canceled" class="filter-btn <?= ($filter_status === 'Canceled') ? 'active' : '' ?>">Canceled</a>
+                <a href="u-request.php?status=disapproved" class="filter-btn <?= ($filter_status === 'Disapproved') ? 'active' : '' ?>">Disapproved</a>
             </div>
             <div class="row">
                 <?php if (empty($requests)): ?>

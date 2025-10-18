@@ -625,6 +625,7 @@ footer,p,.fa-copyright{
 
 textarea.form-control {
   padding-bottom: 50px;
+  resize: none;
 }
 
 .edit-remarks-btn {
