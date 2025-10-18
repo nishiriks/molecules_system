@@ -91,7 +91,30 @@ body {
   cursor: pointer;
 }
 
+.back-arrow {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  color: #6c757d;
+  font-size: 1.2rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
 
+.back-arrow:hover {
+  color: #007bff;
+  transform: translateX(-3px);
+}
+
+.change-pass-card {
+  position: relative;
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+  background: white;
+  margin-top: 2rem;
+}
 
 /* main css */
 main {

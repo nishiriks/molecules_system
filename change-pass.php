@@ -9,6 +9,23 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+// Store current page as previous page (except for change password page itself)
+if (basename($_SERVER['PHP_SELF']) !== 'change-pass.php') {
+    $_SESSION['previous_page'] = $_SERVER['REQUEST_URI'];
+}
+
+// Determine back URL based on user role and session history
+if (isset($_SESSION['previous_page']) && $_SESSION['previous_page'] !== 'change-pass.php') {
+    $back_url = $_SESSION['previous_page'];
+} else {
+    // Fallback based on user role
+    if (isset($_SESSION['user_role'])) {
+        $back_url = ($_SESSION['user_role'] === 'admin') ? 'home-admin.php' : 'home-user.php';
+    } else {
+        $back_url = 'index.php'; // Final fallback
+    }
+}
+
 $auth = new Auth();
 $errors = [];
 $success_message = '';
@@ -51,7 +68,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bona+Nova:ital,wght@0,400;0,700;1,400&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300..700&family=Roboto:ital,wght@0,100..900;1,100..900&family=Rubik:ital,wght@0,300..900;1,300..900&family=Ruda:wght@400..900&family=Tilt+Warp&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap"
         rel="stylesheet">
 
-
     <script src="https://kit.fontawesome.com/6563a04357.js" crossorigin="anonymous"></script>
 </head>
 
@@ -66,7 +82,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="row justify-content-center">
                 <div class="col-lg-5 col-md-6">
                     <div class="change-pass-card">
-                        <a href="javascript:history.back()" class="back-arrow"><i class="fas fa-arrow-left"></i></a>
+                        <a href="<?php echo htmlspecialchars($back_url); ?>" class="back-arrow">
+                            <i class="fas fa-arrow-left"></i>
+                        </a>
                         <div class="card-header text-center">
                             <h3 class="text-password mt-1 mb-3">Change Password</h3>
                         </div>

@@ -2,7 +2,10 @@
 session_start();
 require_once 'resource/php/init.php';
 
-// Security check: Ensure user is logged in and an ID was provided
+if (basename($_SERVER['PHP_SELF']) !== 'change-pass.php') {
+    $_SESSION['previous_page'] = $_SERVER['REQUEST_URI'];
+}
+
 if (!isset($_SESSION['user_id']) || !isset($_GET['id'])) {
     header('Location: login.php');
     exit();

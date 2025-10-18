@@ -4,6 +4,10 @@ require_once './resource/php/init.php';
 require_once './resource/php/class/cartItems.php';
 require_once './resource/php/class/requestForm.php';
 
+if (basename($_SERVER['PHP_SELF']) !== 'change-pass.php') {
+    $_SESSION['previous_page'] = $_SERVER['REQUEST_URI'];
+}
+
 $showAlert = false;
 if (isset($_SESSION['show_finalized_alert']) && $_SESSION['show_finalized_alert'] === true) {
     $showAlert = true;

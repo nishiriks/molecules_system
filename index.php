@@ -1,6 +1,10 @@
 <?php
 session_start();
 
+if (basename($_SERVER['PHP_SELF']) !== 'change-pass.php') {
+    $_SESSION['previous_page'] = $_SERVER['REQUEST_URI'];
+}
+
 $is_logged_in = isset($_SESSION['user_id']);
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
