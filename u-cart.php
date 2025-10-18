@@ -31,31 +31,45 @@ $items_in_cart = $cart->getItems();
 </head>
 <body>
     <nav class="navbar">
-        <a class="navbar-brand" href="#">
-            <img class="ceu-logo img-fluid" src="./resource/img/ceu-molecules.png"/>
-        </a>
-        <div class="right-side-icons">
-            <a href="cart.php"><i class="fa-solid fa-cart-shopping cart-icon"></i></a>
-            <button class="navbar-toggler custom-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+    <a class="navbar-brand" href="index.php">
+        <img class="ceu-logo img-fluid" src="./resource/img/ceu-molecules.png"/>
+    </a>
+    <div class="right-side-icons">
+        <a href="u-cart.php"><i class="fa-solid fa-cart-shopping cart-icon"></i></a>
+        <button class="navbar-toggler me-3 custom-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    </div>
+
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+        <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasNavbarLabel">CEU Molecules</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
-        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title">CEU Molecules</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
-            </div>
-            <div class="offcanvas-body">
-                <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-                    <li class="nav-item"><a class="nav-link text-white" href="index.php">Home</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="change-pass.php">Change Password</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="user-search.php">Search</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="#">Requests</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="about.php">About</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="help.php">Help</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="logout.php">Logout</a></li>
-                </ul>
-            </div>
+        <div class="offcanvas-body">
+        <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+            <li class="nav-item">
+            <a class="nav-link text-white" href="index.php">Home</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link text-white" href="change-pass.php">Change Password</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link text-white" href="u-search.php">Search</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link text-white" href="u-request.php">Requests</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link active text-white" aria-current="page" href="u-about.php">About</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link text-white" href="u-help.php">Help</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link text-white" href="logout.php">Logout</a>
+            </li>
+        </ul>
         </div>
     </nav>
 

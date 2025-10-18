@@ -65,15 +65,14 @@ $items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
 
 </head>
 <nav class="navbar">
-  <a class="navbar-brand" href="#">
-    <img class="ceu-logo img-fluid" src="./resource/img/ceu-molecules.png" />
+  <a class="navbar-brand" href="index.php">
+    <img class="ceu-logo img-fluid" src="./resource/img/ceu-molecules.png"/>
   </a>
   <div class="right-side-icons">
-    <i class="fa-solid fa-cart-shopping cart-icon"></i>
-    <button class="navbar-toggler me-3 custom-toggler" type="button" data-bs-toggle="offcanvas"
-      data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+    <a href="u-cart.php"><i class="fa-solid fa-cart-shopping cart-icon"></i></a>
+      <button class="navbar-toggler me-3 custom-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
   </div>
 
   <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
@@ -84,25 +83,25 @@ $items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
     <div class="offcanvas-body">
       <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
         <li class="nav-item">
-          <a class="nav-link text-white" aria-current="page" href="#">Home</a>
+          <a class="nav-link text-white" href="index.php">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="#">Change Password</a>
+          <a class="nav-link text-white" href="change-pass.php">Change Password</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="#">Search</a>
+          <a class="nav-link text-white" href="u-search.php">Search</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active text-white" href="#">Requests</a>
+          <a class="nav-link text-white" href="u-request.php">Requests</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="#">About</a>
+          <a class="nav-link text-white" href="u-about.php">About</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="#">Help</a>
+          <a class="nav-link text-white" href="u-help.php">Help</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="#">Logout</a>
+          <a class="nav-link text-white" href="logout.php">Logout</a>
         </li>
       </ul>
     </div>

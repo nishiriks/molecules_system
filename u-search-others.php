@@ -45,37 +45,37 @@ if (!isset($_SESSION['user_id'])) {
           <input type="search" placeholder=" Search..." class="search-input">
       </li>
       <li class="nav-links chemicals-btn">
-        <a href="user-search.php?type=Chemical">
+        <a href="u-search.php?type=Chemical">
           <i class="fa-solid fa-flask icon"></i>
           <span class="text nav-text">Chemicals</span>
         </a>
       </li>
       <li class="nav-links chemicals-btn">
-        <a href="user-search.php?type=Supplies">
+        <a href="u-search.php?type=Supplies">
           <i class="fa-solid fa-prescription-bottle icon"></i>
           <span class="text nav-text">Supplies</span>
         </a>
       </li>
       <li class="nav-links chemicals-btn">
-        <a href="user-search.php?type=Models">
+        <a href="u-search.php?type=Models">
           <i class="fa-solid fa-diagram-project  icon"></i>
           <span class="text nav-text">Model/Charts</span>
         </a>
       </li>
       <li class="nav-links chemicals-btn">
-        <a href="user-search.php?type=Equipment">
+        <a href="u-search.php?type=Equipment">
           <i class="fa-solid fa-microscope icon"></i>
           <span class="text nav-text">Equipments</span>
         </a>
       </li>
       <li class="nav-links chemicals-btn">
-        <a href="user-search.php?type=Specimen">
+        <a href="u-search.php?type=Specimen">
           <i class="fa-solid fa-vial icon"></i>
           <span class="text nav-text">Specimens</span>
         </a>
       </li>
       <li class="nav-links chemicals-btn">
-        <a href="user-search-others.php">
+        <a href="u-search-others.php">
           <i class="fa-solid fa-ellipsis icon"></i>
           <span class="text nav-text">Others</span>
         </a>
@@ -156,7 +156,7 @@ if (!isset($_SESSION['user_id'])) {
 </label>
 
 <div class="nav--small nav--btn-1">
-    <a href="cart.php"><i class="fa-solid fa-cart-shopping cart-icon"></i></a>
+    <a href="u-cart.php"><i class="fa-solid fa-cart-shopping cart-icon"></i></a>
 </div>
 
 <div class="nav--small nav--btn-2">
@@ -164,7 +164,7 @@ if (!isset($_SESSION['user_id'])) {
 </div>
 
 <div class="nav--small nav--btn-3">
-    <a href="#"><i class="fa-solid fa-user user-icon"></i></a>
+    <a href="change-pass.php"><i class="fa-solid fa-lock-open"></i></a>
 </div>
     
 </body>

@@ -75,32 +75,18 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <body>
 
   <!-- 1st nav -->
-  <nav class="navbar navbar-expand-lg">
-    <a class="navbar-brand" href="#">
-      <img class="ceu-logo img-fluid" src="./resource/img/ceu-molecules.png" alt="CEU Molecules Logo" />
+  <nav class="navbar">
+    <a class="navbar-brand" href="index.php">
+      <img class="ceu-logo img-fluid" src="./resource/img/ceu-molecules.png"/>
     </a>
-
-    <button class="navbar-toggler me-3 custom-toggler d-lg-none" type="button" data-bs-toggle="offcanvas"
-      data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+    <div class="right-side-icons">
+      <a href="u-cart.php"><i class="fa-solid fa-cart-shopping cart-icon"></i></a>
+        <button class="navbar-toggler me-3 custom-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-
-    <div class="d-none d-lg-block ms-auto">
-      <ul class="navbar-nav pe-3">
-        <li class="nav-item">
-          <a class="nav-link text-white" href="#">Requests</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="#">Inventory</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="#">Report</a>
-        </li>
-      </ul>
     </div>
 
-    <div class="offcanvas offcanvas-end d-lg-none" tabindex="-1" id="offcanvasNavbar"
-      aria-labelledby="offcanvasNavbarLabel">
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
       <div class="offcanvas-header">
         <h5 class="offcanvas-title" id="offcanvasNavbarLabel">CEU Molecules</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -108,17 +94,28 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
       <div class="offcanvas-body">
         <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
           <li class="nav-item">
-            <a class="nav-link text-white" href="#">Requests</a>
+            <a class="nav-link text-white" href="index.php">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link text-white" href="#">Inventory</a>
+            <a class="nav-link text-white" href="change-pass.php">Change Password</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link text-white" href="#">Report</a>
+            <a class="nav-link text-white" href="u-search.php">Search</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white active" aria-current="page" href="u-request.php">Requests</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="u-about.php">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="u-help.php">Help</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="logout.php">Logout</a>
           </li>
         </ul>
       </div>
-    </div>
   </nav>
 
 
@@ -127,13 +124,13 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="container">
             <h2 class="requests-heading">Request History</h2>
             <div class="filter-buttons">
-                <a href="user-request.php" class="filter-btn <?= ($filter_status === 'ALL') ? 'active' : '' ?>">ALL</a>
-                <a href="user-request.php?status=approved" class="filter-btn <?= ($filter_status === 'approved') ? 'active' : '' ?>">Faculty Approved</a>
-                <a href="user-request.php?status=pickup" class="filter-btn <?= ($filter_status === 'pickup') ? 'active' : '' ?>">For Pick-up</a>
-                <a href="user-request.php?status=completed" class="filter-btn <?= ($filter_status === 'completed') ? 'active' : '' ?>">Completed</a>
-                <a href="user-request.php?status=returned" class="filter-btn <?= ($filter_status === 'returned') ? 'active' : '' ?>">Returned</a>
-                <a href="user-request.php?status=canceled" class="filter-btn <?= ($filter_status === 'canceled') ? 'active' : '' ?>">Canceled</a>
-                <a href="user-request.php?status=disapproved" class="filter-btn <?= ($filter_status === 'disapproved') ? 'active' : '' ?>">Disapproved</a>
+                <a href="u-request.php" class="filter-btn <?= ($filter_status === 'ALL') ? 'active' : '' ?>">ALL</a>
+                <a href="u-request.php?status=approved" class="filter-btn <?= ($filter_status === 'approved') ? 'active' : '' ?>">Faculty Approved</a>
+                <a href="u-request.php?status=pickup" class="filter-btn <?= ($filter_status === 'pickup') ? 'active' : '' ?>">For Pick-up</a>
+                <a href="u-request.php?status=completed" class="filter-btn <?= ($filter_status === 'completed') ? 'active' : '' ?>">Completed</a>
+                <a href="u-request.php?status=returned" class="filter-btn <?= ($filter_status === 'returned') ? 'active' : '' ?>">Returned</a>
+                <a href="u-request.php?status=canceled" class="filter-btn <?= ($filter_status === 'canceled') ? 'active' : '' ?>">Canceled</a>
+                <a href="u-request.php?status=disapproved" class="filter-btn <?= ($filter_status === 'disapproved') ? 'active' : '' ?>">Disapproved</a>
             </div>
             <div class="row">
                 <?php if (empty($requests)): ?>
@@ -161,7 +158,7 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                 <button type="submit" class="cancel-button">Cancel</button>
                                             </form>
                                         <?php endif; ?>
-                                        <a href="user-order-details.php?id=<?= $request['request_id'] ?>" class="view-button">View</a>
+                                        <a href="u-order-details.php?id=<?= $request['request_id'] ?>" class="view-button">View</a>
                                     </div>
                                 </div>
                             </div>

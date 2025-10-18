@@ -40,11 +40,11 @@ if (!isset($_SESSION['user_id'])) {
 
 <!-- navbar -->
 <nav class="navbar">
-  <a class="navbar-brand" href="#">
+  <a class="navbar-brand" href="index.php">
     <img class="ceu-logo img-fluid" src="./resource/img/ceu-molecules.png"/>
   </a>
   <div class="right-side-icons">
-    <a href="cart.php"><i class="fa-solid fa-cart-shopping cart-icon"></i></a>
+    <a href="u-cart.php"><i class="fa-solid fa-cart-shopping cart-icon"></i></a>
       <button class="navbar-toggler me-3 custom-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -58,22 +58,22 @@ if (!isset($_SESSION['user_id'])) {
     <div class="offcanvas-body">
       <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
         <li class="nav-item">
-          <a class="nav-link active text-white" aria-current="page" href="#">Home</a>
+          <a class="nav-link text-white active" aria-current="page" href="index.php">Home</a>
         </li>
         <li class="nav-item">
           <a class="nav-link text-white" href="change-pass.php">Change Password</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="user-search.php">Search</a>
+          <a class="nav-link text-white" href="u-search.php">Search</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="cart.php">Requests</a>
+          <a class="nav-link text-white" href="u-request.php">Requests</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="about.php">About</a>
+          <a class="nav-link text-white" href="u-about.php">About</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="help.php">Help</a>
+          <a class="nav-link text-white" href="u-help.php">Help</a>
         </li>
         <li class="nav-item">
           <a class="nav-link text-white" href="logout.php">Logout</a>
@@ -109,7 +109,7 @@ if (!isset($_SESSION['user_id'])) {
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4"> 
                 <div class="col">
                     <div class="card home-card">
-                      <a class="card-link" href="user-search.php?type=Chemical">
+                      <a class="card-link" href="u-search.php?type=Chemical">
                         <div class="card-body text-center d-flex flex-column justify-content-center">
                           <div class="card-title gradient-text"><i class="fa-solid fa-flask"></i></div>
                           <div class="card-text pt-2">CHEMICALS</div>
@@ -120,7 +120,7 @@ if (!isset($_SESSION['user_id'])) {
 
                 <div class="col">
                     <div class="card home-card">
-                      <a class="card-link" href="user-search.php?type=Supplies">
+                      <a class="card-link" href="u-search.php?type=Supplies">
                         <div class="card-body text-center d-flex flex-column justify-content-center">                       
                           <div class="card-title gradient-text"><i class="fa-solid fa-prescription-bottle"></i></div>
                           <div class="card-text pt-2">SUPPLIES</div>                       
@@ -131,7 +131,7 @@ if (!isset($_SESSION['user_id'])) {
 
                 <div class="col">
                     <div class="card home-card">
-                      <a class="card-link" href="user-search.php?type=Models">
+                      <a class="card-link" href="u-search.php?type=Models">
                         <div class="card-body text-center d-flex flex-column justify-content-center">                   
                           <div class="card-title gradient-text"><i class="fa-solid fa-diagram-project"></i></div> 
                           <div class="card-text pt-2">MODELS/CHARTS</div>                  
@@ -142,7 +142,7 @@ if (!isset($_SESSION['user_id'])) {
 
                 <div class="col">
                     <div class="card home-card">
-                      <a class="card-link" href="user-search.php?type=Equipment">
+                      <a class="card-link" href="u-search.php?type=Equipment">
                         <div class="card-body text-center d-flex flex-column justify-content-center">
                           <div class="card-title gradient-text"><i class="fa-solid fa-microscope"></i></div>
                           <div class="card-text pt-2">EQUIPMENT</div>
@@ -153,7 +153,7 @@ if (!isset($_SESSION['user_id'])) {
 
                 <div class="col">
                     <div class="card home-card">
-                      <a class="card-link" href="user-search.php?type=Specimen">
+                      <a class="card-link" href="u-search.php?type=Specimen">
                         <div class="card-body text-center d-flex flex-column justify-content-center">                       
                           <div class="card-title gradient-text"><i class="fa-solid fa-vial"></i></div>
                           <div class="card-text pt-2">SPECIMENS</div>
