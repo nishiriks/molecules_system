@@ -123,12 +123,12 @@ class Auth extends config {
             
             if ($account_type === 'Admin' || $account_type === 'Super Admin') {
                 // Insert into admin log table with 'Login' action
-                $stmt = $this->pdo->prepare("INSERT INTO tbl_admin_log (user_id, log_date, log_action) VALUES (?, ?, ?)");
-                $stmt->execute([$user_id, $current_date, 'Login']);
+                $stmt = $this->pdo->prepare("INSERT INTO tbl_admin_log (user_id, log_action) VALUES (?, ?)");
+                $stmt->execute([$user_id, 'Login']);
             } else {
                 // Insert into user log table (for Student and Faculty)
-                $stmt = $this->pdo->prepare("INSERT INTO tbl_user_log (user_id, log_date) VALUES (?, ?)");
-                $stmt->execute([$user_id, $current_date]);
+                $stmt = $this->pdo->prepare("INSERT INTO tbl_user_log (user_id) VALUES (?)");
+                $stmt->execute([$user_id]);
             }
             
         } catch (PDOException $e) {
