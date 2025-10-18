@@ -36,12 +36,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $new_password = $_POST['new_password'] ?? null;
     $confirm_password = $_POST['confirm_password'] ?? null;
 
-    $errors = $auth->changePassword(
-        $_SESSION['user_id'],
-        $current_password,
-        $new_password,
-        $confirm_password
-    );
+    // Check if new password is the same as current password
+    if ($current_password === $new_password) {
+        $errors[] = "New password cannot be the same as your current password.";
+        exit();
+    } else {
+        $errors = $auth->changePassword(
+            $_SESSION['user_id'],
+            $current_password,
+            $new_password,
+            $confirm_password
+        );
+    }
 
     if (empty($errors)) {
         $success_message = "Password updated successfully!";
