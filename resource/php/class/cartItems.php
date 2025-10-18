@@ -92,7 +92,7 @@ class CartItems {
             }
 
             $cart_status_stmt = $this->pdo->prepare(
-                "UPDATE tbl_cart SET cart_status = 'pending' WHERE cart_id = ?"
+                "UPDATE tbl_cart SET cart_status = 'Used' WHERE cart_id = ?"
             );
             $cart_status_stmt->execute([$cart_id]);
 

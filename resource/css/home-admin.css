@@ -556,7 +556,6 @@ footer,p,.fa-copyright{
 }
 
 /* request history css */
-
 .history-button-container {
   margin-left: 20px;
   display: flex;
@@ -576,6 +575,37 @@ footer,p,.fa-copyright{
   transition: background-color 0.3s, color 0.3s;
   white-space: nowrap;
   text-decoration: none;
+}
+
+.search-input {
+    height: 45px;
+    border-radius: 8px 0 0 8px;
+    border: 1px solid #ddd;
+    padding: 0 15px;
+    font-size: 16px;
+}
+
+.search-btn, .clear-btn {
+    height: 45px;
+    border: 1px solid #ddd;
+    background: #f8f9fa;
+    color: #333;
+    padding: 0 15px;
+}
+
+.search-btn {
+    border-radius: 0 8px 8px 0;
+    border-left: none;
+}
+
+.clear-btn {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+}
+
+.search-btn:hover, .clear-btn:hover {
+    background: #e9ecef;
 }
 
 /* CSS for approval-details */

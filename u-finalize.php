@@ -175,7 +175,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['finalize-btn'])) {
             $_POST['time_from'],
             $_POST['time_to'],
             $_POST['room'],
-            'pending'
+            'Pending'
         );
 
         $request->reqOrder($active_cart_id);
