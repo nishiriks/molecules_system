@@ -9,23 +9,93 @@ class Auth extends config {
     }
 
     private function query($sql, $params = []) {
-    $stmt = $this->pdo->prepare($sql);
-    $stmt->execute($params);
-    
-    if (str_starts_with(strtoupper(trim($sql)), 'SELECT')) {
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        
+        if (str_starts_with(strtoupper(trim($sql)), 'SELECT')) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return true; 
     }
-    return true; 
-}
 
-    public function showAlert($message, $type = 'danger') {
-    echo "
-    <div class='alert alert-{$type} alert-dismissible fade show' role='alert'>
-        {$message}
-        <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-    </div>
-    ";
-}
+        public function showAlert($message, $type = 'danger') {
+        echo "
+        <div class='alert alert-{$type} alert-dismissible fade show' role='alert'>
+            {$message}
+            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+        </div>
+        ";
+    }
+
+    // ACCESS CONTROL METHODS
+    public static function requireAuth() {
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: login.php');
+            exit();
+        }
+    }
+
+    public static function requireAccountType($allowed_types) {
+        self::requireAuth();
+        
+        if (!isset($_SESSION['account_type']) || !in_array($_SESSION['account_type'], (array)$allowed_types)) {
+            self::redirectToHomePage();
+        }
+    }
+
+    public static function isSuperAdmin() {
+        return isset($_SESSION['account_type']) && $_SESSION['account_type'] === 'Super Admin';
+    }
+
+    public static function isAdmin() {
+        return isset($_SESSION['account_type']) && $_SESSION['account_type'] === 'Admin';
+    }
+
+    public static function isStudent() {
+        return isset($_SESSION['account_type']) && $_SESSION['account_type'] === 'Student';
+    }
+
+    public static function isFaculty() {
+        return isset($_SESSION['account_type']) && $_SESSION['account_type'] === 'Faculty';
+    }
+
+    public static function isUser() {
+        return self::isStudent() || self::isFaculty();
+    }
+
+    // Redirect method for login page
+    public static function requireAuthRedirect() {
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        
+        if (isset($_SESSION['user_id'])) {
+            self::redirectToHomePage();
+        }
+    }
+
+    // Redirect to account-type home page
+    public static function redirectToHomePage() {
+        if (self::isSuperAdmin()) {
+            header('Location: account-management.php');
+        } else if (self::isAdmin()) {
+            header('Location: home-admin.php');
+        } else if (self::isUser()) {
+            header('Location: index.php');
+        } else {
+            header('Location: index.php');
+        }
+        exit();
+    }
+
+    // Convenience method for Student/Faculty access
+    public static function requireUserAccess() {
+        self::requireAccountType(['Student', 'Faculty']);
+    }
 
     public function register($first_name, $last_name, $email, $password, $confirm_password, $student_number) {
         $errors = [];
@@ -115,7 +185,6 @@ class Auth extends config {
         return $errors; 
     }
 
-    // Add this new method anywhere inside your Auth class
     public function changePassword($user_id, $current_password, $new_password, $confirm_password) {
         $errors = [];
 
@@ -149,7 +218,6 @@ class Auth extends config {
     }
 
     // Add login log entry based on account type
-
     private function addLoginLog($user_id, $account_type) {
         try {
             $current_date = date('Y-m-d H:i:s');
@@ -168,7 +236,6 @@ class Auth extends config {
             }
             
         } catch (PDOException $e) {
-            // Log the error but don't interrupt the process
             error_log("Log error: " . $e->getMessage());
         }
     }

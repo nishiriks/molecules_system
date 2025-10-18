@@ -1,6 +1,8 @@
 <?php
 session_start();
 require_once 'resource/php/init.php';
+require_once 'resource/php/class/Auth.php';
+Auth::requireUserAccess();
 
 require_once 'vendor/phpmailer/src/Exception.php';
 require_once 'vendor/phpmailer/src/PHPMailer.php';
@@ -12,11 +14,6 @@ use PHPMailer\PHPMailer\Exception;
 
 if (basename($_SERVER['PHP_SELF']) !== 'change-pass.php') {
     $_SESSION['previous_page'] = $_SERVER['REQUEST_URI'];
-}
-
-if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
-    exit();
 }
 
 $errors = [];

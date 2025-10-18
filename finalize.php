@@ -1,6 +1,9 @@
 <?php
 session_start();
-require_once './resource/php/init.php';
+require_once 'resource/php/init.php';
+require_once 'resource/php/class/Auth.php';
+Auth::requireUserAccess();
+
 require_once './resource/php/class/cartItems.php';
 require_once './resource/php/class/requestForm.php';
 
@@ -12,11 +15,6 @@ $showAlert = false;
 if (isset($_SESSION['show_finalized_alert']) && $_SESSION['show_finalized_alert'] === true) {
     $showAlert = true;
     unset($_SESSION['show_finalized_alert']);
-}
-
-if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
-    exit();
 }
 
 $config = new config();

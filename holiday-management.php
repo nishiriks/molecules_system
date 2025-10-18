@@ -1,21 +1,11 @@
 <?php
 session_start();
 require_once 'resource/php/init.php';
+require_once 'resource/php/class/Auth.php';
+Auth::requireAccountType('Super Admin');
 
 if (basename($_SERVER['PHP_SELF']) !== 'change-pass.php') {
     $_SESSION['previous_page'] = $_SERVER['REQUEST_URI'];
-}
-
-$is_logged_in = isset($_SESSION['user_id']);
-if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
-    exit();
-}
-
-// Check if user is Super Admin
-if ($_SESSION['account_type'] !== 'Super Admin') {
-    header('Location: index.php');
-    exit();
 }
 
 $config = new config();
