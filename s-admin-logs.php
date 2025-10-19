@@ -1,21 +1,15 @@
 <?php
 session_start();
 require_once 'resource/php/init.php';
-$is_logged_in = isset($_SESSION['user_id']);
-if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
-    exit();
-}
+require_once 'resource/php/class/Auth.php';
+Auth::requireAccountType('Super Admin');
 
-// Check if user is Super Admin
-if ($_SESSION['account_type'] !== 'Super Admin') {
-    header('Location: index.php'); // Redirect to home page or unauthorized page
-    exit();
+if (basename($_SERVER['PHP_SELF']) !== 'change-pass.php') {
+    $_SESSION['previous_page'] = $_SERVER['REQUEST_URI'];
 }
 
 $config = new config();
 $pdo = $config->con();
-
 ?>
 
 <!DOCTYPE html>
@@ -23,7 +17,7 @@ $pdo = $config->con();
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>User Logs</title>
+  <title>Admin Logs</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
   <link rel="stylesheet" type="text/css"  href="resource/css/logs.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -64,20 +58,22 @@ $pdo = $config->con();
     <div class="offcanvas-body">
       <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
         <li class="nav-item">
-          <a class="nav-link active text-white" aria-current="page" href="#">User Logs</a>
+          <a class="nav-link text-white" href="s-account-management.php">Account Management</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link  text-white" href="admin-logs.php">Admin Logs</a>
+          <a class="nav-link text-white" href="s-user-logs.php">User Logs</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link  text-white" href="account-management.php">Account Management</a>
-        </li>
-
-        <li class="nav-item">
-          <a class="nav-link  text-white" href="holiday-management.php">Holiday Management</a>
+          <a class="nav-link text-white active" aria-current="page" href="s-admin-logs.php">Admin Logs</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link  text-white" href="ai.php">AI Report</a>
+          <a class="nav-link text-white" href="s-holiday-management.php">Holiday Management</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white" href="s-ai.php">AI Report</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link  text-white" href="change-pass.php">Change Password</a>
         </li>
         <li class="nav-item">
           <a class="nav-link  text-white" href="logout.php">Log out</a>
@@ -90,18 +86,18 @@ $pdo = $config->con();
 <section class="logs container my-5">
     <div class="card shadow">
         <div class="logs-header card-header text-white">
-          <h3 class="card-title mb-0"><i class="fas fa-history me-2"></i>User Activity Logs</h3>
+            <h3 class="card-title mb-0"><i class="fas fa-history me-2"></i>Admin Activity Logs</h3>
         </div>
         <div class="card-body">
             <div class="table-responsive text-center align-middle">
                 <table class="table table-striped table-bordered table-hover">
                     <thead class="table-res">
                         <tr class="text-center align-middle">
-                            <th>Log ID</th>
                             <th>User ID</th>
                             <th>Name</th>
                             <th>Email</th>
                             <th>Account Type</th>
+                            <th>Log Action</th>
                             <th>Log Date</th>
                         </tr>
                     </thead>
@@ -110,26 +106,26 @@ $pdo = $config->con();
                          try {
                                 // Query to fetch user logs with user details
                                 $query = "SELECT 
-                                            ul.log_id, 
-                                            ul.user_id, 
-                                            ul.log_date, 
+                                            al.user_id,
+                                            al.log_action, 
+                                            al.log_date, 
                                             u.first_name, 
                                             u.last_name,
                                             u.account_type,
                                             u.email 
-                                          FROM tbl_user_log ul 
-                                          INNER JOIN tbl_users u ON ul.user_id = u.user_id 
-                                          ORDER BY ul.log_date DESC";
+                                          FROM tbl_admin_log al 
+                                          INNER JOIN tbl_users u ON al.user_id = u.user_id 
+                                          ORDER BY al.log_date DESC";
                                 $stmt = $pdo->query($query);
                                 
                                 if ($stmt->rowCount() > 0) {
                                     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                                         echo "<tr>";
-                                        echo "<td>" . htmlspecialchars($row['log_id']) . "</td>";
                                         echo "<td>" . htmlspecialchars($row['user_id']) . "</td>";
                                         echo "<td>" . htmlspecialchars($row['first_name'] . ' ' . $row['last_name']) . "</td>";
                                         echo "<td>" . htmlspecialchars($row['email']) . "</td>";
                                         echo "<td>" . htmlspecialchars($row['account_type']) . "</td>";
+                                        echo "<td>" . htmlspecialchars($row['log_action']) . "</td>";
                                         echo "<td>" . htmlspecialchars($row['log_date']) . "</td>";
                                         echo "</tr>";
                                     }

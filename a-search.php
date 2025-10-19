@@ -1,10 +1,11 @@
 <?php
 session_start();
 require_once 'resource/php/init.php';
+require_once 'resource/php/class/Auth.php';
+Auth::requireAccountType('Admin');
 
-if (!isset($_SESSION['user_id']) || $_SESSION['account_type'] !== 'Admin') {
-    header('Location: login.php');
-    exit();
+if (basename($_SERVER['PHP_SELF']) !== 'change-pass.php') {
+    $_SESSION['previous_page'] = $_SERVER['REQUEST_URI'];
 }
 
 $config = new config();
@@ -70,39 +71,33 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
           <input type="search" placeholder=" Search..." class="search-input">
       </li>
       <li class="nav-links chemicals-btn">
-        <a href="admin-search.php?type=Chemical">
+        <a href="a-search.php?type=Chemical">
           <i class="fa-solid fa-flask icon"></i>
           <span class="text nav-text">Chemicals</span>
         </a>
       </li>
       <li class="nav-links chemicals-btn">
-        <a href="admin-search.php?type=Supplies">
+        <a href="a-search.php?type=Supplies">
           <i class="fa-solid fa-prescription-bottle icon"></i>
           <span class="text nav-text">Supplies</span>
         </a>
       </li>
       <li class="nav-links chemicals-btn">
-        <a href="admin-search.php?type=Models">
+        <a href="a-search.php?type=Models">
           <i class="fa-solid fa-diagram-project  icon"></i>
           <span class="text nav-text">Model/Charts</span>
         </a>
       </li>
       <li class="nav-links chemicals-btn">
-        <a href="admin-search.php?type=Equipment">
+        <a href="a-search.php?type=Equipment">
           <i class="fa-solid fa-microscope icon"></i>
           <span class="text nav-text">Equipments</span>
         </a>
       </li>
       <li class="nav-links chemicals-btn">
-        <a href="admin-search.php?type=Specimen">
+        <a href="a-search.php?type=Specimen">
           <i class="fa-solid fa-vial icon"></i>
           <span class="text nav-text">Specimens</span>
-        </a>
-      </li>
-      <li class="nav-links chemicals-btn">
-        <a href="addItem.php">
-          <i class="fa-solid fa-ellipsis icon"></i>
-          <span class="text nav-text">Add Item</span>
         </a>
       </li>
     </ul>
@@ -276,11 +271,11 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </label>
 
 <div class="nav--small nav--btn-1">
-    <a href="#"><i class="fa-solid fa-file-pen"></i></a>
+    <a href="a-add-item.php"><i class="fa-solid fa-plus"></i></a>
 </div>
 
 <div class="nav--small nav--btn-2">
-    <a href="home-admin.php"><i class="fa-solid fa-house house-icon"></i></a>
+    <a href="a-home.php"><i class="fa-solid fa-house house-icon"></i></a>
 </div>
 
 <div class="nav--small nav--btn-3">

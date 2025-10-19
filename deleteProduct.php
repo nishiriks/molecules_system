@@ -25,6 +25,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_id'])) {
     }
 }
 
-header('Location: admin-search.php');
+header('Location: a-search.php');
 exit();
 ?>

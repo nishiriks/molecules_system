@@ -1,10 +1,11 @@
 <?php
 session_start();
 require_once 'resource/php/init.php';
+require_once 'resource/php/class/Auth.php';
+Auth::requireAccountType('Admin');
 
-if (!isset($_SESSION['user_id']) || $_SESSION['account_type'] !== 'Admin' || !isset($_GET['id'])) {
-    header('Location: login.php');
-    exit();
+if (basename($_SERVER['PHP_SELF']) !== 'change-pass.php') {
+    $_SESSION['previous_page'] = $_SERVER['REQUEST_URI'];
 }
 
 $config = new config();
@@ -21,17 +22,47 @@ $stmt_request->execute([$request_id]);
 $details = $stmt_request->fetch(PDO::FETCH_ASSOC);
 
 if (!$details) {
-    header('Location: home-admin.php');
+    header('Location: a-home.php');
     exit();
 }
 
-$sql_items = "SELECT i.amount, inv.name, inv.measure_unit 
+$sql_items = "SELECT i.amount, inv.name, inv.measure_unit, inv.product_type
               FROM tbl_cart_items i
               JOIN tbl_inventory inv ON i.product_id = inv.product_id
               WHERE i.cart_id = ?";
 $stmt_items = $pdo->prepare($sql_items);
 $stmt_items->execute([$details['cart_id']]);
 $items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_status'])) {
+    $new_status = $_POST['status'] ?? '';
+    if (!empty($new_status)) {
+        $sql_update = "UPDATE tbl_requests SET status = ? WHERE request_id = ?";
+        $stmt_update = $pdo->prepare($sql_update);
+        $stmt_update->execute([$new_status, $request_id]);
+        
+        $stmt_request->execute([$request_id]);
+        $details = $stmt_request->fetch(PDO::FETCH_ASSOC);
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_remarks'])) {
+    $new_remarks = $_POST['remarks'] ?? '';
+    $sql_update_remarks = "UPDATE tbl_requests SET remarks = ? WHERE request_id = ?";
+    $stmt_update_remarks = $pdo->prepare($sql_update_remarks);
+    $stmt_update_remarks->execute([$new_remarks, $request_id]);
+    
+    $stmt_request->execute([$request_id]);
+    $details = $stmt_request->fetch(PDO::FETCH_ASSOC);
+}
+
+$date_from = date('m/d/Y', strtotime($details['date_from']));
+$date_to = date('m/d/Y', strtotime($details['date_to']));
+$date_display = ($date_from === $date_to) ? $date_from : $date_from . ' - ' . $date_to;
+
+$time_from = date('g:ia', strtotime($details['time_from']));
+$time_to = date('g:ia', strtotime($details['time_to']));
+$time_display = ($time_from === $time_to) ? $time_from : $time_from . ' - ' . $time_to;
 
 ?>
 
@@ -58,46 +89,39 @@ $items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
   <script src="https://kit.fontawesome.com/6563a04357.js" crossorigin="anonymous"></script>
 
 </head>
-<nav class="navbar">
-  <a class="navbar-brand" href="#">
-    <img class="ceu-logo img-fluid" src="./resource/img/ceu-molecules.png" />
-  </a>
-  <button class="navbar-toggler me-3 custom-toggler" type="button" data-bs-toggle="offcanvas"
-    data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-    <div class="offcanvas-header">
-      <h5 class="offcanvas-title" id="offcanvasNavbarLabel">CEU Molecules</h5>
-      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="#">
+      <img class="ceu-logo img-fluid" src="./resource/img/ceu-molecules.png" alt="CEU Molecules Logo"/>
+    </a>
+    
+    <button class="navbar-toggler me-3 custom-toggler d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    
+    <div class="d-none d-lg-block ms-auto">
+        <ul class="navbar-nav pe-3">
+          <li class="nav-item">
+            <a class="nav-link text-white" href="a-home.php">Requests</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="a-search.php">Inventory</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="change-pass.php">Change Password</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="logout.php">Logout</a>
+          </li>
+        </ul>
     </div>
-    <div class="offcanvas-body">
-      <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-        <li class="nav-item">
-          <a class="nav-link active text-white" aria-current="page" href="home-admin.php">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="change-pass.php">Change Password</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="admin-search.php">Search</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="home-admin.php">Requests</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="logout.php">Logout</a>
-        </li>
-      </ul>
-    </div>
-</nav>
+  </nav>
 <main class="admin-order-details-page">
         <div class="container-fluid py-5">
             <div class="row justify-content-center">
                 <div class="col-lg-8 col-md-10">
                     <div class="request-form-card">
                         <form method="post" action="">
-                            <h4 class="request-details-title mt-1 mb-3 text-center">Request Details</h4>
+                            <h4 class="request-details-title mt-1 mb-3 text-center">Request Details <p><?= date('m/d/Y - g:ia', strtotime($details['request_date'])) ?></p></h4>
                             
                             <div class="row mb-3 align-items-end">
                                 <div class="col-md-5">
@@ -115,21 +139,13 @@ $items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
                             </div>
 
                             <div class="row mb-4 align-items-end">
-                                <div class="col-md-3">
-                                    <label class="form-label">Date of Use (From):</label>
-                                    <input type="date" class="form-control" value="<?= date('Y-m-d', strtotime($details['date_from'])) ?>" readonly>
+                                <div class="col-md-6">
+                                    <label class="form-label">Date of Use:</label>
+                                    <input type="text" class="form-control" value="<?= htmlspecialchars($date_display) ?>" readonly>
                                 </div>
-                                <div class="col-md-3">
-                                    <label class="form-label">To:</label>
-                                    <input type="date" class="form-control" value="<?= date('Y-m-d', strtotime($details['date_to'])) ?>" readonly>
-                                </div>
-                                <div class="col-md-2">
-                                    <label class="form-label">Time (From):</label>
-                                    <input type="time" class="form-control" value="<?= htmlspecialchars($details['time_from']) ?>" readonly>
-                                </div>
-                                <div class="col-md-2">
-                                    <label class="form-label">Time (To):</label>
-                                    <input type="time" class="form-control" value="<?= htmlspecialchars($details['time_to']) ?>" readonly>
+                                <div class="col-md-6">
+                                    <label class="form-label">Time:</label>
+                                    <input type="text" class="form-control" value="<?= htmlspecialchars($time_display) ?>" readonly>
                                 </div>
                             </div>
                             
@@ -138,7 +154,7 @@ $items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
                                 <ul class="list-group">
                                     <?php foreach ($items as $item): ?>
                                         <li class="list-group-item">
-                                            <?= htmlspecialchars($item['name']) ?> - 
+                                            <?= htmlspecialchars($item['name']) ?> (<?= htmlspecialchars($item['product_type']) ?>) - 
                                             <strong>Amount:</strong> <?= htmlspecialchars($item['amount']) ?> <?= htmlspecialchars($item['measure_unit']) ?>
                                         </li>
                                     <?php endforeach; ?>
@@ -146,17 +162,36 @@ $items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
                             </div>
 
                             <div class="mb-4 mt-4">
+                              <label class="form-label request-details-title">Status:</label>
+                              <div class="row align-items-end">
+                                  <div class="col-md-6">
+                                      <select class="form-select" name="status">
+                                          <option value="Pending" <?= $details['status'] == 'Pending' ? 'selected' : '' ?>>Pending</option>
+                                          <option value="Submitted" <?= $details['status'] == 'Submitted' ? 'selected' : '' ?>>Submitted</option>
+                                          <option value="Pickup" <?= $details['status'] == 'Pickup' ? 'selected' : '' ?>>For Pickup</option>
+                                          <option value="Received" <?= $details['status'] == 'Received' ? 'selected' : '' ?>>Received</option>
+                                          <option value="Returned" <?= $details['status'] == 'Returned' ? 'selected' : '' ?>>Returned</option>
+                                          <option value="Canceled" <?= $details['status'] == 'Canceled' ? 'selected' : '' ?>>Canceled</option>
+                                      </select>
+                                  </div>
+                                  <div class="col-md-6">
+                                      <button type="submit" class="btn finalize-btn" name="update_status">Update Status</button>
+                                  </div>
+                              </div>
+                          </div>
+
+                            <div class="mb-4 mt-4">
                                 <label for="remarks" class="form-label request-details-title remarks">Remarks:</label>
                                 <div class="remarks-container">
-                                    <textarea class="form-control" id="remarks" name="remarks" rows="4" placeholder="Add remarks here..."></textarea>
-                                    <button type="button" class="btn edit-remarks-btn">Edit Remarks</button>
+                                    <textarea class="form-control" id="remarks" name="remarks" rows="4" placeholder="Add remarks here..."><?= htmlspecialchars($details['remarks'] ?? '') ?></textarea>
+                                    <button type="submit" class="btn edit-remarks-btn" name="update_remarks">Save Remarks</button>
                                 </div>
                             </div>
 
                             <div class="d-flex justify-content-end mt-4">            
                               <div class="status-container">
                                   <button type="submit" class="btn finalize-btn" name="view-btn">View Form</button>
-                                  <a href="home-admin.php" type="submit" class="btn finalize-btn ms-3">Cancel</a>
+                                  <a href="a-home.php" type="submit" class="btn finalize-btn ms-3">Back</a>
                               </div>
                             </div>
                         </form>

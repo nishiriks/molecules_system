@@ -1,11 +1,11 @@
 <?php
 session_start();
 require_once 'resource/php/init.php';
+require_once 'resource/php/class/Auth.php';
+Auth::requireUserAccess();
 
-// Security check: Ensure user is logged in
-if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
-    exit();
+if (basename($_SERVER['PHP_SELF']) !== 'change-pass.php') {
+    $_SESSION['previous_page'] = $_SERVER['REQUEST_URI'];
 }
 
 $config = new config();
@@ -13,14 +13,12 @@ $pdo = $config->con();
 $current_user_id = $_SESSION['user_id'];
 
 $filter_status = $_GET['status'] ?? 'ALL';
-$page_title = $filter_status === 'ALL' ? 'All My Requests' : "Showing: " . htmlspecialchars($filter_status);
 
-// This query is similar to the admin's, but adds a WHERE clause for the specific user
 $sql = "SELECT 
             r.request_id,
             r.request_date,
+            r.status,
             c.cart_id,
-            c.cart_status, 
             u.first_name, 
             u.last_name, 
             u.account_type,
@@ -29,16 +27,17 @@ $sql = "SELECT
         JOIN tbl_cart AS c ON r.cart_id = c.cart_id
         JOIN tbl_users AS u ON c.user_id = u.user_id
         LEFT JOIN tbl_cart_items AS items ON c.cart_id = items.cart_id
-        LEFT JOIN tbl_inventory AS inv ON items.product_id = inv.product_id
-        WHERE c.user_id = ? AND c.cart_status != 'active'"; // Filter by current user ID
+        LEFT JOIN tbl_inventory AS inv ON items.product_id = inv.product_id";
 
+$where_conditions = ["c.user_id = ?", "c.cart_status != 'active'"];
 $params = [$current_user_id];
 
 if ($filter_status !== 'ALL') {
-    $sql .= " AND c.cart_status = ?";
+    $where_conditions[] = "r.status = ?";
     $params[] = $filter_status;
 }
 
+$sql .= " WHERE " . implode(" AND ", $where_conditions);
 $sql .= " GROUP BY r.request_id ORDER BY r.request_date DESC";
 
 $stmt = $pdo->prepare($sql);
@@ -75,32 +74,18 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <body>
 
   <!-- 1st nav -->
-  <nav class="navbar navbar-expand-lg">
-    <a class="navbar-brand" href="#">
-      <img class="ceu-logo img-fluid" src="./resource/img/ceu-molecules.png" alt="CEU Molecules Logo" />
+  <nav class="navbar">
+    <a class="navbar-brand" href="index.php">
+      <img class="ceu-logo img-fluid" src="./resource/img/ceu-molecules.png"/>
     </a>
-
-    <button class="navbar-toggler me-3 custom-toggler d-lg-none" type="button" data-bs-toggle="offcanvas"
-      data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+    <div class="right-side-icons">
+      <a href="u-cart.php"><i class="fa-solid fa-cart-shopping cart-icon"></i></a>
+        <button class="navbar-toggler me-3 custom-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-
-    <div class="d-none d-lg-block ms-auto">
-      <ul class="navbar-nav pe-3">
-        <li class="nav-item">
-          <a class="nav-link text-white" href="#">Requests</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="#">Inventory</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="#">Report</a>
-        </li>
-      </ul>
     </div>
 
-    <div class="offcanvas offcanvas-end d-lg-none" tabindex="-1" id="offcanvasNavbar"
-      aria-labelledby="offcanvasNavbarLabel">
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
       <div class="offcanvas-header">
         <h5 class="offcanvas-title" id="offcanvasNavbarLabel">CEU Molecules</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -108,17 +93,28 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
       <div class="offcanvas-body">
         <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
           <li class="nav-item">
-            <a class="nav-link text-white" href="#">Requests</a>
+            <a class="nav-link text-white" href="index.php">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link text-white" href="#">Inventory</a>
+            <a class="nav-link text-white" href="change-pass.php">Change Password</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link text-white" href="#">Report</a>
+            <a class="nav-link text-white" href="u-search.php">Search</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white active" aria-current="page" href="u-request.php">Requests</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="u-about.php">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="u-help.php">Help</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="logout.php">Logout</a>
           </li>
         </ul>
       </div>
-    </div>
   </nav>
 
 
@@ -127,14 +123,18 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="container">
             <h2 class="requests-heading">Request History</h2>
             <div class="filter-buttons">
-                <a href="user-request.php" class="filter-btn <?= ($filter_status === 'ALL') ? 'active' : '' ?>">ALL</a>
-                <a href="user-request.php?status=approved" class="filter-btn <?= ($filter_status === 'approved') ? 'active' : '' ?>">Faculty Approved</a>
-                <a href="user-request.php?status=pickup" class="filter-btn <?= ($filter_status === 'pickup') ? 'active' : '' ?>">For Pick-up</a>
-                <a href="user-request.php?status=completed" class="filter-btn <?= ($filter_status === 'completed') ? 'active' : '' ?>">Completed</a>
-                <a href="user-request.php?status=returned" class="filter-btn <?= ($filter_status === 'returned') ? 'active' : '' ?>">Returned</a>
-                <a href="user-request.php?status=canceled" class="filter-btn <?= ($filter_status === 'canceled') ? 'active' : '' ?>">Canceled</a>
-                <a href="user-request.php?status=disapproved" class="filter-btn <?= ($filter_status === 'disapproved') ? 'active' : '' ?>">Disapproved</a>
+                <a href="u-request.php" class="filter-btn <?= ($filter_status === 'ALL') ? 'active' : '' ?>">ALL</a>
+                <a href="u-request.php?status=Pending" class="filter-btn <?= ($filter_status === 'Pending') ? 'active' : '' ?>">Pending</a>
+                <a href="u-request.php?status=Submitted" class="filter-btn <?= ($filter_status === 'Submitted') ? 'active' : '' ?>">Submitted</a>
+                <a href="u-request.php?status=Pickup" class="filter-btn <?= ($filter_status === 'Pickup') ? 'active' : '' ?>">For Pick-up</a>
+                <a href="u-request.php?status=Received" class="filter-btn <?= ($filter_status === 'Received') ? 'active' : '' ?>">Received</a>
+                <a href="u-request.php?status=Returned" class="filter-btn <?= ($filter_status === 'Returned') ? 'active' : '' ?>">Returned</a>
+                <a href="u-request.php?status=Broken" class="filter-btn <?= ($filter_status === 'Broken') ? 'active' : '' ?>">Broken</a>
+                <a href="u-request.php?status=Lost" class="filter-btn <?= ($filter_status === 'Lost') ? 'active' : '' ?>">Lost</a>
+                <a href="u-request.php?status=Canceled" class="filter-btn <?= ($filter_status === 'Canceled') ? 'active' : '' ?>">Canceled</a>
+                <a href="u-request.php?status=Disapproved" class="filter-btn <?= ($filter_status === 'Disapproved') ? 'active' : '' ?>">Disapproved</a>
             </div>
+
             <div class="row">
                 <?php if (empty($requests)): ?>
                     <div class="col-12"><p class="text-center fs-4 mt-5">You have no request history.</p></div>
@@ -146,7 +146,7 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <div class="request-text">
                                         <h5 class="request-title"><?= htmlspecialchars($request['product_types'] ?? 'General') ?> Request</h5>
                                         <p class="request-info">Submitted By: <?=htmlspecialchars($request['first_name'] .' '. $request['last_name'])?></p>
-                                        <p class="request-info">Status: <?= htmlspecialchars($request['cart_status']) ?></p>
+                                        <p class="request-info">Status: <?= htmlspecialchars($request['status']) ?></p>
                                     </div>
                                 </div>
                                 <div class="right-column-container">
@@ -154,14 +154,14 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         <span class="timestamp-text"><?= date('m/d/Y - g:ia', strtotime($request['request_date'])) ?></span>
                                     </div>
                                     <div class="history-button-container">
-                                        <?php if ($request['cart_status'] === 'pending'): ?>
+                                        <?php if ($request['status'] === 'Pending'): ?>
                                             <form action="cartAction.php" method="POST" style="display:inline;">
                                                 <input type="hidden" name="action" value="cancel_request">
                                                 <input type="hidden" name="cart_id" value="<?= $request['cart_id'] ?>">
                                                 <button type="submit" class="cancel-button">Cancel</button>
                                             </form>
                                         <?php endif; ?>
-                                        <a href="user-order-details.php?id=<?= $request['request_id'] ?>" class="view-button">View</a>
+                                        <a href="u-order-details.php?id=<?= $request['request_id'] ?>" class="view-button">View</a>
                                     </div>
                                 </div>
                             </div>

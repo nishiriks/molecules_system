@@ -2,10 +2,11 @@
 session_start();
 require_once 'resource/php/init.php';
 require_once 'resource/php/class/cartItems.php';
+require_once 'resource/php/class/Auth.php';
+Auth::requireUserAccess();
 
-if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
-    exit();
+if (basename($_SERVER['PHP_SELF']) !== 'change-pass.php') {
+    $_SESSION['previous_page'] = $_SERVER['REQUEST_URI'];
 }
 
 $config = new config();
@@ -31,31 +32,45 @@ $items_in_cart = $cart->getItems();
 </head>
 <body>
     <nav class="navbar">
-        <a class="navbar-brand" href="#">
-            <img class="ceu-logo img-fluid" src="./resource/img/ceu-molecules.png"/>
-        </a>
-        <div class="right-side-icons">
-            <a href="cart.php"><i class="fa-solid fa-cart-shopping cart-icon"></i></a>
-            <button class="navbar-toggler custom-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+    <a class="navbar-brand" href="index.php">
+        <img class="ceu-logo img-fluid" src="./resource/img/ceu-molecules.png"/>
+    </a>
+    <div class="right-side-icons">
+        <a href="u-cart.php"><i class="fa-solid fa-cart-shopping cart-icon"></i></a>
+        <button class="navbar-toggler me-3 custom-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    </div>
+
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+        <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasNavbarLabel">CEU Molecules</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
-        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title">CEU Molecules</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
-            </div>
-            <div class="offcanvas-body">
-                <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-                    <li class="nav-item"><a class="nav-link text-white" href="index.php">Home</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="change-pass.php">Change Password</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="user-search.php">Search</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="#">Requests</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="about.php">About</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="help.php">Help</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="logout.php">Logout</a></li>
-                </ul>
-            </div>
+        <div class="offcanvas-body">
+        <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+            <li class="nav-item">
+            <a class="nav-link text-white" href="index.php">Home</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link text-white" href="change-pass.php">Change Password</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link text-white" href="u-search.php">Search</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link text-white" href="u-request.php">Requests</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link active text-white" aria-current="page" href="u-about.php">About</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link text-white" href="u-help.php">Help</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link text-white" href="logout.php">Logout</a>
+            </li>
+        </ul>
         </div>
     </nav>
 
@@ -67,7 +82,7 @@ $items_in_cart = $cart->getItems();
                     <div class="col-12">
                         <p class="text-center fs-4 mt-5">Your cart is empty.</p>
                         <div class="text-center">
-                            <a href="user-search.php" class="btn btn-primary">Browse Products</a>
+                            <a href="u-search.php" class="btn btn-primary">Browse Products</a>
                         </div>
                     </div>
                 <?php else: ?>
@@ -78,6 +93,7 @@ $items_in_cart = $cart->getItems();
                         $ptype = $item['product_type'] ?? 'No type';
                         $amount = $item['amount'] ?? 0;
                         $measure = $item['measure_unit'] ?? '';
+                        $current_stock = $item['stock'] ?? 0;
                         ?>
                         <div class="col-12 mb-3">
                             <div class="cart-card-item">
@@ -86,6 +102,7 @@ $items_in_cart = $cart->getItems();
                                     <div class="item-info">
                                         <h5 class="item-name"><?= htmlspecialchars($name) ?></h5>
                                         <p class="item-type"><?= htmlspecialchars($ptype) ?></p>
+                                        <small class="text-muted">Available Stock: <?= $current_stock + $amount ?></small>
                                     </div>
                                 </div>
                                 <div class="item-details-right">
@@ -96,7 +113,8 @@ $items_in_cart = $cart->getItems();
                                                 data-bs-target="#edit-popup"
                                                 data-item-id="<?= $item['item_id'] ?>"
                                                 data-item-name="<?= htmlspecialchars($name) ?>"
-                                                data-item-amount="<?= htmlspecialchars($amount) ?>">
+                                                data-item-amount="<?= htmlspecialchars($amount) ?>"
+                                                data-max-stock="<?= $current_stock + $amount ?>">
                                             Edit
                                         </button>
 
@@ -112,10 +130,20 @@ $items_in_cart = $cart->getItems();
                     <?php endforeach; ?>
                 <?php endif; ?>
             </div>
-            
+            <!-- Display Messages -->
+            <?php if (isset($_SESSION['error'])): ?>
+                <div class="alert alert-danger alert-dismissible fade show m-3" role="alert">
+                    <?= $_SESSION['error'] ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                <?php unset($_SESSION['error']); ?>
+            <?php endif; ?>
             <?php if (!empty($items_in_cart)): ?>
                 <div class="finalize-btn-container text-end mt-4">
-                    <a href="finalize.php" class="finalize-request-btn" style="text-decoration: none;">Finalize Request</a>
+                    <a href="u-finalize.php" class="finalize-request-btn" style="text-decoration: none;">Finalize Request</a>
+                </div>
+                <div class="finalize-btn-container text-end mt-4">
+                    <a href="u-search.php" class="finalize-request-btn" style="text-decoration: none;">Browse Items</a>
                 </div>
             <?php endif; ?>
         </div>
@@ -139,7 +167,14 @@ $items_in_cart = $cart->getItems();
                         </div>
                         <div class="mb-3">
                             <label for="edit-item-amount" class="form-label">Amount:</label>
-                            <input type="number" id="edit-item-amount" name="amount" class="form-control" required>
+                            <input type="number" 
+                                   id="edit-item-amount" 
+                                   name="amount" 
+                                   class="form-control" 
+                                   min="1" 
+                                   required>
+                            <div class="form-text">Maximum available: <span id="max-stock-display"><?= $current_stock + $amount ?></span> units</div>
+                            <div id="amount-feedback" class="invalid-feedback"></div>
                         </div>
                         <button type="submit" class="btn btn-primary w-100 save-btn">Save Changes</button>
                     </form>
@@ -160,8 +195,7 @@ $items_in_cart = $cart->getItems();
   </div>
 </footer>
 
-</body>
-</html>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 <script src="resource/js/scripts.js"></script>
+</body>
+</html>

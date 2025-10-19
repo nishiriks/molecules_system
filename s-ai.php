@@ -1,17 +1,11 @@
 <?php
 session_start();
 require_once 'resource/php/init.php';
+require_once 'resource/php/class/Auth.php';
+Auth::requireAccountType('Super Admin');
 
-$is_logged_in = isset($_SESSION['user_id']);
-if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
-    exit();
-}
-
-// Check if user is Super Admin
-if ($_SESSION['account_type'] !== 'Super Admin') {
-    header('Location: index.php');
-    exit();
+if (basename($_SERVER['PHP_SELF']) !== 'change-pass.php') {
+    $_SESSION['previous_page'] = $_SERVER['REQUEST_URI'];
 }
 
 $config = new config();
@@ -244,27 +238,29 @@ Here is the data:\n\n".$invText."\n".$salesText;
     <div class="offcanvas-body">
       <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
         <li class="nav-item">
-          <a class="nav-link text-white" href="user-logs.php">User Logs</a>
+          <a class="nav-link text-white" href="s-account-management.php">Account Management</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="admin-logs.php">Admin Logs</a>
+          <a class="nav-link text-white" href="s-user-logs.php">User Logs</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="account-management.php">Account Management</a>
+          <a class="nav-link text-white" href="s-admin-logs.php">Admin Logs</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="holiday-management.php">Holiday Management</a>
+          <a class="nav-link text-white" href="s-holiday-management.php">Holiday Management</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active text-white" aria-current="page" href="ai.php">AI Report</a>
-          <li class="nav-item">
+          <a class="nav-link text-white active" aria-current="page"  href="s-ai.php">AI Report</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link  text-white" href="change-pass.php">Change Password</a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link  text-white" href="logout.php">Log out</a>
-        </li>
         </li>
       </ul>
     </div>
 </nav>
-
 <main>
     <!-- AI Report Section -->
     <section class="container my-5">

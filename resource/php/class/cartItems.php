@@ -9,6 +9,17 @@ class CartItems {
     }
 
     public function addItem($product_id, $amount) {
+        // Validate amount
+        if ($amount < 1) {
+            return false;
+        }
+
+        // Check stock availability
+        $available_stock = $this->getAvailableStock($product_id);
+        if ($available_stock < $amount) {
+            return false;
+        }
+
         $cart_id = $this->getActiveCartId(true); 
 
         $stmt_check = $this->pdo->prepare(
@@ -20,6 +31,12 @@ class CartItems {
         $success = false;
         if ($existing_item) {
             $new_amount = $existing_item['amount'] + $amount;
+            
+            // Check stock again for the new total
+            if ($available_stock < $new_amount) {
+                return false;
+            }
+            
             $stmt_update = $this->pdo->prepare(
                 "UPDATE tbl_cart_items SET amount = ? WHERE item_id = ?"
             );
@@ -58,16 +75,64 @@ class CartItems {
     }
 
     public function updateItemAmount($item_id, $amount) {
+        // Validate amount
+        if ($amount < 1) {
+            return false;
+        }
+
+        // Get product_id and current amount
+        $current_data = $this->getItemData($item_id);
+        if (!$current_data) {
+            return false;
+        }
+
+        $product_id = $current_data['product_id'];
+        $current_amount = $current_data['amount'];
+
+        // Calculate the difference
+        $difference = $amount - $current_amount;
+
+        // Check if we have enough stock for the increase
+        if ($difference > 0) {
+            $available_stock = $this->getAvailableStock($product_id);
+            if ($available_stock < $difference) {
+                return false;
+            }
+        }
+
         $sql = "UPDATE tbl_cart_items SET amount = ? 
                 WHERE item_id = ? AND cart_id = ?";
         $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute([$amount, $item_id, $this->getActiveCartId()]);
+        $success = $stmt->execute([$amount, $item_id, $this->getActiveCartId()]);
+
+        if ($success && $difference != 0) {
+            // Update stock accordingly
+            $stmt_stock = $this->pdo->prepare(
+                "UPDATE tbl_inventory SET stock = stock - ? WHERE product_id = ?"
+            );
+            $stmt_stock->execute([$difference, $product_id]);
+        }
+
+        return $success;
     }
 
     public function removeItem($item_id) {
+        // Get item data before removal to restore stock
+        $item_data = $this->getItemData($item_id);
+        
         $sql = "DELETE FROM tbl_cart_items WHERE item_id = ? AND cart_id = ?";
         $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute([$item_id, $this->getActiveCartId()]);
+        $success = $stmt->execute([$item_id, $this->getActiveCartId()]);
+
+        if ($success && $item_data) {
+            // Restore stock
+            $stmt_stock = $this->pdo->prepare(
+                "UPDATE tbl_inventory SET stock = stock + ? WHERE product_id = ?"
+            );
+            $stmt_stock->execute([$item_data['amount'], $item_data['product_id']]);
+        }
+
+        return $success;
     }
 
     public function finalizeRequest($requestData) {
@@ -84,15 +149,11 @@ class CartItems {
         try {
             $this->pdo->beginTransaction();
 
-            $stock_update_stmt = $this->pdo->prepare(
-                "UPDATE tbl_inventory SET stock = stock - ? WHERE product_id = ?"
-            );
-            foreach ($items as $item) {
-                $stock_update_stmt->execute([$item['amount'], $item['product_id']]);
-            }
+            // Stock is already reduced when items are added to cart
+            // So we don't need to reduce it again here
 
             $cart_status_stmt = $this->pdo->prepare(
-                "UPDATE tbl_cart SET cart_status = 'pending' WHERE cart_id = ?"
+                "UPDATE tbl_cart SET cart_status = 'Used' WHERE cart_id = ?"
             );
             $cart_status_stmt->execute([$cart_id]);
 
@@ -105,7 +166,6 @@ class CartItems {
         }
     }
     
-    // MODIFIED: Changed from private to public
     public function getActiveCartId($create_if_not_exists = false) {
         $stmt = $this->pdo->prepare("SELECT cart_id FROM tbl_cart WHERE user_id = ? AND cart_status = 'active'");
         $stmt->execute([$this->user_id]);
@@ -121,4 +181,20 @@ class CartItems {
         
         return null;
     }
+
+    private function getAvailableStock($product_id) {
+        $stmt = $this->pdo->prepare("SELECT stock FROM tbl_inventory WHERE product_id = ?");
+        $stmt->execute([$product_id]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result ? (int)$result['stock'] : 0;
+    }
+
+    private function getItemData($item_id) {
+        $stmt = $this->pdo->prepare(
+            "SELECT product_id, amount FROM tbl_cart_items WHERE item_id = ?"
+        );
+        $stmt->execute([$item_id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }
+?>

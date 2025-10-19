@@ -1,6 +1,8 @@
 <?php
 session_start();
 require_once 'resource/php/init.php';
+require_once 'resource/php/class/Auth.php';
+Auth::requireUserAccess();
 
 require_once 'vendor/phpmailer/src/Exception.php';
 require_once 'vendor/phpmailer/src/PHPMailer.php';
@@ -10,9 +12,8 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
-if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
-    exit();
+if (basename($_SERVER['PHP_SELF']) !== 'change-pass.php') {
+    $_SESSION['previous_page'] = $_SERVER['REQUEST_URI'];
 }
 
 $errors = [];
@@ -29,7 +30,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $subject = trim($_POST['subject']);
     $message = trim($_POST['message']);
 
-    // Preserve form data
     $preserved_data = [
         'name' => htmlspecialchars($name),
         'email' => htmlspecialchars($email),
@@ -55,18 +55,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         try {
             $mail = new PHPMailer(true);
             
-            // Server settings for your proxy email
-
-            // Sender:
+            // Server settings proxy email
+            $mail->isSMTP();
+            $mail->Host       = ''; 
+            $mail->SMTPAuth   = true;
+            $mail->Username   = '';
+            $mail->Password   = '';
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port       = 587;
+            
             $mail->setFrom('ceumolecules.system@gmail.com', 'CEU MOLECULES System');
             
-            // Recipient: Lab technician
             $mail->addAddress('magsakay2233884@mls.ceu.edu.ph', 'Lab Technician');
             
-            // Reply-to:
             $mail->addReplyTo($email, $name);
             
-            // Content - Include user info for context
+            // Content
             $mail->isHTML(false);
             $mail->Subject = "CEU Molecules Contact: " . $subject;
             $mail->Body    = "You have received a new contact form message:\n\n"
@@ -86,8 +90,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
         } catch (Exception $e) {
             $errors[] = "Sorry, there was an error sending your message. Please try again later.";
-            // For debugging:
-            // $errors[] = "Error details: " . $mail->ErrorInfo;
         }
     }
 }
@@ -119,7 +121,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <img class="ceu-logo img-fluid" src="./resource/img/ceu-molecules.png"/>
   </a>
   <div class="right-side-icons">
-    <i class="fa-solid fa-cart-shopping cart-icon"></i>
+    <a href="u-cart.php"><i class="fa-solid fa-cart-shopping cart-icon"></i></a>
       <button class="navbar-toggler me-3 custom-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -136,19 +138,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           <a class="nav-link text-white" href="index.php">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="#">Change Password</a>
+          <a class="nav-link text-white" href="change-pass.php">Change Password</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="user-search.php">Search</a>
+          <a class="nav-link text-white" href="u-search.php">Search</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="cart.php">Requests</a>
+          <a class="nav-link text-white" href="u-request.php">Requests</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="about.php">About</a>
+          <a class="nav-link text-white" href="u-about.php">About</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active text-white" aria-current="page" href="help.php">Help</a>
+          <a class="nav-link text-white active" aria-current="page" href="u-help.php">Help</a>
         </li>
         <li class="nav-item">
           <a class="nav-link text-white" href="logout.php">Logout</a>
@@ -315,7 +317,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     
                     <div class="mb-4">
                         <h6><i class="fas fa-envelope me-2"></i>Email</h6>
-                        <p>magsakay2233884@mls.ceu.edu.ph</p>
+                        <p>sample@mls.ceu.edu.ph</p>
                     </div>
                     
                     <div class="mb-4">
@@ -358,7 +360,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 
 <script>
-    // Add rotation to FAQ chevron icons when toggled
     document.querySelectorAll('.faq-question').forEach(question => {
         question.addEventListener('click', function() {
             const icon = this.querySelector('i');

@@ -1,18 +1,30 @@
 <?php
 session_start();
-require_once './resource/php/init.php';
+require_once 'resource/php/init.php';
+require_once 'resource/php/class/Auth.php';
+Auth::requireUserAccess();
+
 require_once './resource/php/class/cartItems.php';
 require_once './resource/php/class/requestForm.php';
 
+if (basename($_SERVER['PHP_SELF']) !== 'change-pass.php') {
+    $_SESSION['previous_page'] = $_SERVER['REQUEST_URI'];
+}
+
 $showAlert = false;
+$redirectToOrderDetails = false;
+$newRequestId = null;
+
 if (isset($_SESSION['show_finalized_alert']) && $_SESSION['show_finalized_alert'] === true) {
     $showAlert = true;
     unset($_SESSION['show_finalized_alert']);
-}
-
-if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
-    exit();
+    
+    // Check if we have a new request ID to redirect to
+    if (isset($_SESSION['new_request_id'])) {
+        $redirectToOrderDetails = true;
+        $newRequestId = $_SESSION['new_request_id'];
+        unset($_SESSION['new_request_id']);
+    }
 }
 
 $config = new config();
@@ -173,15 +185,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['finalize-btn'])) {
             $_POST['time_from'],
             $_POST['time_to'],
             $_POST['room'],
-            'pending'
+            'Pending'
         );
 
         $request->reqOrder($active_cart_id);
         $cart->finalizeRequest($_POST);
-        $_SESSION['show_finalized_alert'] = true;
+        
+        // Get the newly created request_id to redirect to order details
+        $stmt = $pdo->prepare("SELECT request_id FROM tbl_requests WHERE cart_id = ? ORDER BY request_date DESC LIMIT 1");
+        $stmt->execute([$active_cart_id]);
+        $new_request = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($new_request && isset($new_request['request_id'])) {
+            $_SESSION['new_request_id'] = $new_request['request_id'];
+            $_SESSION['show_finalized_alert'] = true;
+            header('Location: u-finalize.php');
+            exit();
+        } else {
+            // Fallback if request_id couldn't be retrieved
+            $_SESSION['show_finalized_alert'] = true;
+            header('Location: u-finalize.php');
+            exit();
+        }
     }
 
-    header('Location: equipment.php');
+    header('Location: u-finalize.php');
     exit();
 }
 ?>
@@ -201,30 +229,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['finalize-btn'])) {
 </head>
 
 <body>
-    <nav class="navbar">
-        <a class="navbar-brand" href="#">
-            <img class="ceu-logo img-fluid" src="./resource/img/ceu-molecules.png" />
-        </a>
-        <button class="navbar-toggler me-3 custom-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title">CEU Molecules</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
-            </div>
-            <div class="offcanvas-body">
-                <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-                    <li class="nav-item"><a class="nav-link text-white" href="index.php">Home</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="#">Change Password</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="user-search.php">Search</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="cart.php">Requests</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="#">About</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="#">Help</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="logout.php">Logout</a></li>
-                </ul>
-            </div>
-    </nav>
+<nav class="navbar">
+  <a class="navbar-brand" href="index.php">
+    <img class="ceu-logo img-fluid" src="./resource/img/ceu-molecules.png"/>
+  </a>
+  <div class="right-side-icons">
+    <a href="u-cart.php"><i class="fa-solid fa-cart-shopping cart-icon"></i></a>
+      <button class="navbar-toggler me-3 custom-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  </div>
+
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="offcanvasNavbarLabel">CEU Molecules</h5>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+      <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+        <li class="nav-item">
+          <a class="nav-link text-white active" aria-current="page" href="index.php">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white" href="change-pass.php">Change Password</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white" href="u-search.php">Search</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white" href="u-request.php">Requests</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white" href="u-about.php">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white" href="u-help.php">Help</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white" href="logout.php">Logout</a>
+        </li>
+      </ul>
+    </div>
+</nav>
 
     <main class="equipment-page">
         <div class="container-fluid py-5">
@@ -305,14 +351,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['finalize-btn'])) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 
     <script>
-        // pass blocked dates and other data to JS
         window.blockedDates = <?php echo json_encode($blockedDates); ?>;
         window.earliestAllowedDate = '<?php echo $earliestAllowedDate; ?>';
         window.leadDays = <?php echo $leadDays; ?>;
         window.itemsInCart = <?php echo json_encode($items_in_cart); ?>;
         window.accountType = '<?php echo $account_type; ?>';
 
-        // Debug
         console.log('PHP Blocked Dates:', <?php echo json_encode($blockedDates); ?>);
         console.log('User Account Type:', '<?php echo $account_type; ?>');
         console.log('Calculated Lead Days:', <?php echo $leadDays; ?>);
@@ -320,7 +364,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['finalize-btn'])) {
     </script>
     <script src="resource/js/finalize.js"></script>
 
-    <?php if ($showAlert): ?>
+    <?php if ($showAlert && $redirectToOrderDetails && $newRequestId): ?>
+        <script type="text/javascript">
+            alert('Request submitted for approval');
+            window.location.href = 'u-order-details.php?id=<?php echo $newRequestId; ?>';
+        </script>
+    <?php elseif ($showAlert): ?>
         <script type="text/javascript">
             alert('Request submitted for approval');
             window.location.href = 'index.php';
