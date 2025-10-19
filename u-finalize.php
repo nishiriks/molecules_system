@@ -12,9 +12,19 @@ if (basename($_SERVER['PHP_SELF']) !== 'change-pass.php') {
 }
 
 $showAlert = false;
+$redirectToOrderDetails = false;
+$newRequestId = null;
+
 if (isset($_SESSION['show_finalized_alert']) && $_SESSION['show_finalized_alert'] === true) {
     $showAlert = true;
     unset($_SESSION['show_finalized_alert']);
+    
+    // Check if we have a new request ID to redirect to
+    if (isset($_SESSION['new_request_id'])) {
+        $redirectToOrderDetails = true;
+        $newRequestId = $_SESSION['new_request_id'];
+        unset($_SESSION['new_request_id']);
+    }
 }
 
 $config = new config();
@@ -180,7 +190,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['finalize-btn'])) {
 
         $request->reqOrder($active_cart_id);
         $cart->finalizeRequest($_POST);
-        $_SESSION['show_finalized_alert'] = true;
+        
+        // Get the newly created request_id to redirect to order details
+        $stmt = $pdo->prepare("SELECT request_id FROM tbl_requests WHERE cart_id = ? ORDER BY request_date DESC LIMIT 1");
+        $stmt->execute([$active_cart_id]);
+        $new_request = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($new_request && isset($new_request['request_id'])) {
+            $_SESSION['new_request_id'] = $new_request['request_id'];
+            $_SESSION['show_finalized_alert'] = true;
+            header('Location: u-finalize.php');
+            exit();
+        } else {
+            // Fallback if request_id couldn't be retrieved
+            $_SESSION['show_finalized_alert'] = true;
+            header('Location: u-finalize.php');
+            exit();
+        }
     }
 
     header('Location: u-finalize.php');
@@ -325,14 +351,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['finalize-btn'])) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 
     <script>
-        // pass blocked dates and other data to JS
         window.blockedDates = <?php echo json_encode($blockedDates); ?>;
         window.earliestAllowedDate = '<?php echo $earliestAllowedDate; ?>';
         window.leadDays = <?php echo $leadDays; ?>;
         window.itemsInCart = <?php echo json_encode($items_in_cart); ?>;
         window.accountType = '<?php echo $account_type; ?>';
 
-        // Debug
         console.log('PHP Blocked Dates:', <?php echo json_encode($blockedDates); ?>);
         console.log('User Account Type:', '<?php echo $account_type; ?>');
         console.log('Calculated Lead Days:', <?php echo $leadDays; ?>);
@@ -340,7 +364,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['finalize-btn'])) {
     </script>
     <script src="resource/js/finalize.js"></script>
 
-    <?php if ($showAlert): ?>
+    <?php if ($showAlert && $redirectToOrderDetails && $newRequestId): ?>
+        <script type="text/javascript">
+            alert('Request submitted for approval');
+            window.location.href = 'u-order-details.php?id=<?php echo $newRequestId; ?>';
+        </script>
+    <?php elseif ($showAlert): ?>
         <script type="text/javascript">
             alert('Request submitted for approval');
             window.location.href = 'index.php';
