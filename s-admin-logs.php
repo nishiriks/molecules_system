@@ -10,6 +10,63 @@ if (basename($_SERVER['PHP_SELF']) !== 'change-pass.php') {
 
 $config = new config();
 $pdo = $config->con();
+
+// Pagination variables
+$limit = 10; // Number of records per page
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$offset = ($page - 1) * $limit;
+
+// Search and filter variables
+$search = isset($_GET['search']) ? trim($_GET['search']) : '';
+$month = isset($_GET['month']) ? (int)$_GET['month'] : '';
+$year = isset($_GET['year']) ? (int)$_GET['year'] : '';
+
+// Build WHERE conditions for search and filter
+$where_conditions = [];
+$params = [];
+
+if (!empty($search)) {
+    $where_conditions[] = "(u.first_name LIKE :search OR u.last_name LIKE :search OR u.email LIKE :search)";
+    $params[':search'] = "%$search%";
+}
+
+if (!empty($month) && !empty($year)) {
+    $where_conditions[] = "MONTH(al.log_date) = :month AND YEAR(al.log_date) = :year";
+    $params[':month'] = $month;
+    $params[':year'] = $year;
+} elseif (!empty($year)) {
+    $where_conditions[] = "YEAR(al.log_date) = :year";
+    $params[':year'] = $year;
+}
+
+$where_clause = '';
+if (!empty($where_conditions)) {
+    $where_clause = 'WHERE ' . implode(' AND ', $where_conditions);
+}
+
+// Get total number of records
+$count_query = "SELECT COUNT(*) as total FROM tbl_admin_log al INNER JOIN tbl_users u ON al.user_id = u.user_id $where_clause";
+$count_stmt = $pdo->prepare($count_query);
+foreach ($params as $key => $value) {
+    $count_stmt->bindValue($key, $value);
+}
+$count_stmt->execute();
+$total_records = $count_stmt->fetch(PDO::FETCH_ASSOC)['total'];
+$total_pages = ceil($total_records / $limit);
+
+// Ensure page is within valid range
+if ($page < 1) $page = 1;
+if ($page > $total_pages && $total_pages > 0) $page = $total_pages;
+
+// Handle direct page number input
+if (isset($_GET['goto_page'])) {
+    $goto_page = (int)$_GET['goto_page'];
+    if ($goto_page >= 1 && $goto_page <= $total_pages) {
+        header("Location: ?page=" . $goto_page . "&search=" . urlencode($search) . "&month=" . $month . "&year=" . $year);
+        exit();
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -85,9 +142,69 @@ $pdo = $config->con();
 <!-- logs table -->
 <section class="logs container my-5">
     <div class="card shadow">
-        <div class="logs-header card-header text-white">
+        <div class="logs-header card-header text-white d-flex justify-content-between align-items-center">
             <h3 class="card-title mb-0"><i class="fas fa-history me-2"></i>Admin Activity Logs</h3>
+            <span class="badge bg-light text-dark">Page <?php echo $page; ?> of <?php echo $total_pages; ?> (Total: <?php echo $total_records; ?> records)</span>
         </div>
+        
+        <!-- Search and Filter Section -->
+        <div class="card-body border-bottom">
+            <form method="GET" action="" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label for="search" class="form-label">Search by Name or Email</label>
+                    <input type="text" class="form-control" id="search" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Enter name or email...">
+                </div>
+                <div class="col-md-3">
+                    <label for="month" class="form-label">Month</label>
+                    <select class="form-select" id="month" name="month">
+                        <option value="">All Months</option>
+                        <?php
+                        $months = [
+                            1 => 'January', 2 => 'February', 3 => 'March', 4 => 'April',
+                            5 => 'May', 6 => 'June', 7 => 'July', 8 => 'August',
+                            9 => 'September', 10 => 'October', 11 => 'November', 12 => 'December'
+                        ];
+                        foreach ($months as $num => $name) {
+                            $selected = ($month == $num) ? 'selected' : '';
+                            echo "<option value='$num' $selected>$name</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="year" class="form-label">Year</label>
+                    <select class="form-select" id="year" name="year">
+                        <option value="">All Years</option>
+                        <?php
+                        $current_year = date('Y');
+                        for ($y = $current_year; $y >= 2020; $y--) {
+                            $selected = ($year == $y) ? 'selected' : '';
+                            echo "<option value='$y' $selected>$y</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary-filter w-100">Filter</button>
+                </div>
+            </form>
+            
+            <?php if (!empty($search) || !empty($month) || !empty($year)): ?>
+            <div class="mt-3">
+                <a href="s-admin-logs.php" class="btn btn-sm btn-outline-secondary">Clear Filters</a>
+                <small class="text-muted ms-2">
+                    <?php
+                    $filter_text = [];
+                    if (!empty($search)) $filter_text[] = "Search: \"$search\"";
+                    if (!empty($month) && !empty($year)) $filter_text[] = "Date: " . $months[$month] . " $year";
+                    elseif (!empty($year)) $filter_text[] = "Year: $year";
+                    echo "Active filters: " . implode(', ', $filter_text);
+                    ?>
+                </small>
+            </div>
+            <?php endif; ?>
+        </div>
+
         <div class="card-body">
             <div class="table-responsive text-center align-middle">
                 <table class="table table-striped table-bordered table-hover">
@@ -115,8 +232,20 @@ $pdo = $config->con();
                                             u.email 
                                           FROM tbl_admin_log al 
                                           INNER JOIN tbl_users u ON al.user_id = u.user_id 
-                                          ORDER BY al.log_date DESC";
-                                $stmt = $pdo->query($query);
+                                          $where_clause
+                                          ORDER BY al.log_date DESC
+                                          LIMIT :limit OFFSET :offset";
+                                $stmt = $pdo->prepare($query);
+                                
+                                // Bind search parameters
+                                foreach ($params as $key => $value) {
+                                    $stmt->bindValue($key, $value);
+                                }
+                                
+                                // Bind pagination parameters
+                                $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+                                $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+                                $stmt->execute();
                                 
                                 if ($stmt->rowCount() > 0) {
                                     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -130,19 +259,68 @@ $pdo = $config->con();
                                         echo "</tr>";
                                     }
                                 } else {
-                                    echo "<tr><td colspan='5' class='text-center py-4'>No logs found</td></tr>";
+                                    echo "<tr><td colspan='6' class='text-center py-4'>No logs found</td></tr>";
                                 }
                             } catch (PDOException $e) {
-                                echo "<tr><td colspan='5' class='text-center text-danger py-4'>Error fetching logs: " . htmlspecialchars($e->getMessage()) . "</td></tr>";
+                                echo "<tr><td colspan='6' class='text-center text-danger py-4'>Error fetching logs: " . htmlspecialchars($e->getMessage()) . "</td></tr>";
                             }
                             ?>
                     </tbody>
                 </table>
             </div>
+            
+            <!-- Enhanced Pagination -->
+            <?php if ($total_pages > 1): ?>
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center align-items-center">
+                    <!-- First Page -->
+                    <li class="page-item <?php echo $page <= 1 ? 'disabled' : ''; ?>">
+                        <a class="page-link" href="?page=1&search=<?php echo urlencode($search); ?>&month=<?php echo $month; ?>&year=<?php echo $year; ?>" aria-label="First">
+                            <span aria-hidden="true">&laquo;&laquo;</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Previous Page -->
+                    <li class="page-item <?php echo $page <= 1 ? 'disabled' : ''; ?>">
+                        <a class="page-link" href="?page=<?php echo $page - 1; ?>&search=<?php echo urlencode($search); ?>&month=<?php echo $month; ?>&year=<?php echo $year; ?>" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Page Number Input -->
+                    <li class="page-item">
+                        <form method="GET" class="d-flex mx-2" style="width: 120px;">
+                            <input type="hidden" name="search" value="<?php echo htmlspecialchars($search); ?>">
+                            <input type="hidden" name="month" value="<?php echo $month; ?>">
+                            <input type="hidden" name="year" value="<?php echo $year; ?>">
+                            <input type="number" class="form-control form-control-sm" name="goto_page" min="1" max="<?php echo $total_pages; ?>" value="<?php echo $page; ?>" placeholder="Page">
+                            <button type="submit" class="btn btn-sm btn-primary-filter ms-1">Go</button>
+                        </form>
+                    </li>
+                    
+                    <!-- Next Page -->
+                    <li class="page-item <?php echo $page >= $total_pages ? 'disabled' : ''; ?>">
+                        <a class="page-link" href="?page=<?php echo $page + 1; ?>&search=<?php echo urlencode($search); ?>&month=<?php echo $month; ?>&year=<?php echo $year; ?>" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Last Page -->
+                    <li class="page-item <?php echo $page >= $total_pages ? 'disabled' : ''; ?>">
+                        <a class="page-link" href="?page=<?php echo $total_pages; ?>&search=<?php echo urlencode($search); ?>&month=<?php echo $month; ?>&year=<?php echo $year; ?>" aria-label="Last">
+                            <span aria-hidden="true">&raquo;&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="text-center mt-2">
+                    <small class="text-muted">Showing <?php echo $offset + 1; ?> to <?php echo min($offset + $limit, $total_records); ?> of <?php echo $total_records; ?> entries</small>
+                </div>
+            </nav>
+            <?php endif; ?>
         </div>
     </div>
 </section>
-    <!-- logs table -->
 
 <!-- footer -->
 <footer>
