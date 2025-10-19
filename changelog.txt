@@ -7,3 +7,9 @@ v0.1
 v0.2
 - Updated Access Control
 - Modified File Names
+- Added additional Error Handling for Password Change and Cart
+- Added extra filters for requests admin page
+- Added additional info for order details
+
+v0.3
+-
