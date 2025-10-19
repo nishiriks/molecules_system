@@ -34,6 +34,122 @@ $stmt_items = $pdo->prepare($sql_items);
 $stmt_items->execute([$details['cart_id']]);
 $items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
 
+// Handle PDF generation
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['view-btn'])) {
+    // Prepare data for PDF generation
+    $material_type = [];
+    
+    // Determine material types based on items - CHECK ALL ITEMS
+    foreach ($items as $item) {
+        $product_type = strtolower($item['product_type']);
+        
+        // Check for each material type in every item
+        if (strpos($product_type, 'apparatus') !== false) {
+            if (!in_array('Apparatus', $material_type)) {
+                $material_type[] = 'Apparatus';
+            }
+        }
+        if (strpos($product_type, 'chemical') !== false || strpos($product_type, 'supply') !== false || $product_type === 'supplies') {
+            if (!in_array('Chemicals/Supplies', $material_type)) {
+                $material_type[] = 'Chemicals/Supplies';
+            }
+        }
+        if (strpos($product_type, 'equip') !== false) {
+            if (!in_array('Equipment', $material_type)) {
+                $material_type[] = 'Equipment';
+            }
+        }
+        if (strpos($product_type, 'model') !== false || strpos($product_type, 'chart') !== false) {
+            if (!in_array('Models/Charts', $material_type)) {
+                $material_type[] = 'Models/Charts';
+            }
+        }
+        if (strpos($product_type, 'specimen') !== false) {
+            if (!in_array('Specimen', $material_type)) {
+                $material_type[] = 'Specimen';
+            }
+        }
+    }
+    
+    // DEBUG: Log what material types we found
+    error_log("=== DEBUG: Detected material types: " . implode(', ', $material_type));
+    error_log("=== DEBUG: All items and their types:");
+    foreach ($items as $index => $item) {
+        error_log("Item $index: " . $item['name'] . " - Type: " . $item['product_type']);
+    }
+    
+    // If no specific types detected, default to Equipment
+    if (empty($material_type)) {
+        $material_type[] = 'Equipment';
+    }
+    
+    // Prepare materials data for PDF - FIXED FORMAT
+    $materials_data = [];
+    $item_count = count($items);
+    
+    for ($i = 0; $i < 8; $i++) {
+        if ($i * 2 < $item_count) {
+            $item1 = $items[$i * 2];
+            $materials_data[] = [
+                'quantity_1' => $item1['amount'] . ' ' . $item1['measure_unit'], // Put amount and unit in quantity field
+                'material_1' => $item1['name'] // Only name in material field, no product_type or amount
+            ];
+        } else {
+            $materials_data[] = ['quantity_1' => '', 'material_1' => ''];
+        }
+        
+        if ($i * 2 + 1 < $item_count) {
+            $item2 = $items[$i * 2 + 1];
+            $materials_data[$i]['quantity_2'] = $item2['amount'] . ' ' . $item2['measure_unit']; // Put amount and unit in quantity field
+            $materials_data[$i]['material_2'] = $item2['name']; // Only name in material field, no product_type or amount
+        } else {
+            $materials_data[$i]['quantity_2'] = '';
+            $materials_data[$i]['material_2'] = '';
+        }
+    }
+    
+    // Calculate days
+    $date1 = new DateTime($details['date_from']);
+    $date2 = new DateTime($details['date_to']);
+    $days = $date2->diff($date1)->days + 1;
+    
+    // Date formatting
+    $date_from = date('m/d/Y', strtotime($details['date_from']));
+    $date_to = date('m/d/Y', strtotime($details['date_to']));
+    $date_display = ($date_from === $date_to) ? $date_from : $date_from . ' - ' . $date_to;
+    
+    $time_from = date('g:ia', strtotime($details['time_from']));
+    $time_to = date('g:ia', strtotime($details['time_to']));
+    $time_display = ($time_from === $time_to) ? $time_from : $time_from . ' - ' . $time_to;
+    
+    // Create hidden form for PDF generation
+    echo '<form id="pdfForm" method="post" action="generate_pdf.php" style="display: none;">';
+    echo '<input type="hidden" name="material_type" value="' . htmlspecialchars(implode(',', $material_type)) . '">';
+    echo '<input type="hidden" name="instructor_name" value="' . htmlspecialchars($details['prof_name']) . '">';
+    echo '<input type="hidden" name="signature" value="' . htmlspecialchars($details['first_name'] . ' ' . $details['last_name']) . '">';
+    echo '<input type="hidden" name="subject" value="' . htmlspecialchars($details['subject']) . '">';
+    echo '<input type="hidden" name="date_of_use" value="' . htmlspecialchars($date_display) . '">';
+    echo '<input type="hidden" name="time" value="' . htmlspecialchars($time_display) . '">';
+    echo '<input type="hidden" name="days" value="' . htmlspecialchars($days) . '">';
+    echo '<input type="hidden" name="room" value="' . htmlspecialchars($details['room']) . '">';
+    echo '<input type="hidden" name="remarks" value="' . htmlspecialchars($details['remarks'] ?? 'Request ID: ' . $request_id) . '">';
+    echo '<input type="hidden" name="issue_date" value="' . date('m/d/Y', strtotime($details['request_date'])) . '">';
+    echo '<input type="hidden" name="return_date" value="' . htmlspecialchars($date_to) . '">';
+    
+    // Add materials data
+    foreach ($materials_data as $index => $material) {
+        $i = $index + 1;
+        echo '<input type="hidden" name="quantity_1_' . $i . '" value="' . htmlspecialchars($material['quantity_1']) . '">';
+        echo '<input type="hidden" name="material_1_' . $i . '" value="' . htmlspecialchars($material['material_1']) . '">';
+        echo '<input type="hidden" name="quantity_2_' . $i . '" value="' . htmlspecialchars($material['quantity_2']) . '">';
+        echo '<input type="hidden" name="material_2_' . $i . '" value="' . htmlspecialchars($material['material_2']) . '">';
+    }
+    
+    echo '</form>';
+    echo '<script>document.getElementById("pdfForm").submit();</script>';
+    exit();
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_status'])) {
     $new_status = $_POST['status'] ?? '';
     if (!empty($new_status)) {
@@ -84,7 +200,6 @@ $time_display = ($time_from === $time_to) ? $time_from : $time_from . ' - ' . $t
   <link
     href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bona+Nova:ital,wght@0,400;0,700;1,400&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300..700&family=Roboto:ital,wght@0,100..900;1,100..900&family=Rubik:ital,wght@0,300..900;1,300..900&family=Ruda:wght@400..900&family=Tilt+Warp&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap"
     rel="stylesheet">
-
 
   <script src="https://kit.fontawesome.com/6563a04357.js" crossorigin="anonymous"></script>
 
@@ -189,10 +304,10 @@ $time_display = ($time_from === $time_to) ? $time_from : $time_from . ' - ' . $t
                             </div>
 
                             <div class="d-flex justify-content-end mt-4">            
-                              <div class="status-container">
-                                  <button type="submit" class="btn finalize-btn" name="view-btn">View Form</button>
-                                  <a href="a-home.php" type="submit" class="btn finalize-btn ms-3">Back</a>
-                              </div>
+                                <div class="status-container">
+                                    <button type="submit" class="btn finalize-btn" name="view-btn" onclick="openPdfInNewTab(event)">View Form</button>
+                                    <a href="a-home.php" type="submit" class="btn finalize-btn ms-3">Back</a>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -200,7 +315,6 @@ $time_display = ($time_from === $time_to) ? $time_from : $time_from . ' - ' . $t
             </div>
         </div>
   </main>
-
 
 <footer>
   <div class="container-fluid">
@@ -214,6 +328,42 @@ $time_display = ($time_from === $time_to) ? $time_from : $time_from . ' - ' . $t
     </p>
   </div>
 </footer>
+
+<script>
+function openPdfInNewTab(event) {
+    event.preventDefault(); // Prevent form submission
+    
+    // Create a temporary form
+    const tempForm = document.createElement('form');
+    tempForm.method = 'post';
+    tempForm.action = 'generate_pdf.php';
+    tempForm.target = '_blank'; // Open in new tab
+    
+    // Add all the hidden inputs from the main form
+    const mainForm = event.target.closest('form');
+    const hiddenInputs = mainForm.querySelectorAll('input[type="hidden"]');
+    
+    hiddenInputs.forEach(input => {
+        const clone = input.cloneNode(true);
+        tempForm.appendChild(clone);
+    });
+    
+    // Add the view-btn input
+    const viewBtnInput = document.createElement('input');
+    viewBtnInput.type = 'hidden';
+    viewBtnInput.name = 'view-btn';
+    viewBtnInput.value = '1';
+    tempForm.appendChild(viewBtnInput);
+    
+    // Add the form to the document and submit it
+    document.body.appendChild(tempForm);
+    tempForm.submit();
+    document.body.removeChild(tempForm);
+    
+    // Stay on the current page
+    return false;
+}
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
   integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>

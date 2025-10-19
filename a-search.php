@@ -19,7 +19,16 @@ if (isset($_SESSION['success_message'])) {
     unset($_SESSION['success_message']); 
 }
 
-if (isset($_GET['type']) && !empty($_GET['type'])) {
+// ADDED SEARCH FUNCTIONALITY HERE
+if (isset($_GET['search']) && !empty(trim($_GET['search']))) {
+    $search_term = trim($_GET['search']);
+    $page_title = "Searching for: \"" . htmlspecialchars($search_term) . "\"";
+    
+    $sql = "SELECT * FROM tbl_inventory WHERE name LIKE ? ORDER BY name ASC";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(["%$search_term%"]);
+    
+} else if (isset($_GET['type']) && !empty($_GET['type'])) {
     $product_type = $_GET['type'];
     $page_title = "Showing: " . htmlspecialchars($product_type);
     
@@ -68,7 +77,11 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
       <ul class="menu-links">
       <li class="search-box">
           <i class="fa-solid fa-magnifying-glass icon"></i>
-          <input type="search" placeholder=" Search..." class="search-input">
+          <!-- UPDATED SEARCH INPUT WITH FORM -->
+          <form method="GET" action="a-search.php" style="display: flex; align-items: center; width: 100%;">
+              <input type="search" name="search" placeholder=" Search..." class="search-input" 
+                     value="<?= isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '' ?>">
+          </form>
       </li>
       <li class="nav-links chemicals-btn">
         <a href="a-search.php?type=Chemical">

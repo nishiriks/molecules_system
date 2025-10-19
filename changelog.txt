@@ -11,5 +11,8 @@ v0.2
 - Added extra filters for requests admin page
 - Added additional info for order details
 
-v0.3
--
+Alpha
+v1.0.0-alpha
+- All major functionalities added
+- PDF Generation added
+- Added Log Filters

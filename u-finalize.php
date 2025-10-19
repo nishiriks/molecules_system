@@ -14,6 +14,7 @@ if (basename($_SERVER['PHP_SELF']) !== 'change-pass.php') {
 $showAlert = false;
 $redirectToOrderDetails = false;
 $newRequestId = null;
+$cartEmptyError = false;
 
 if (isset($_SESSION['show_finalized_alert']) && $_SESSION['show_finalized_alert'] === true) {
     $showAlert = true;
@@ -68,6 +69,11 @@ foreach ($holidays as $holiday) {
 
 // get cart items including product_type
 $items_in_cart = $cart->getItems();
+
+// Check if cart is empty
+if (empty($items_in_cart)) {
+    $cartEmptyError = true;
+}
 
 // Calculate lead days based on cart items and account type
 $leadDays = 0;
@@ -131,86 +137,91 @@ if ($leadDays > 0) {
 
 // --- FORM PROCESSING ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['finalize-btn'])) {
-    $active_cart_id = $cart->getActiveCartId();
+    // Check if cart is empty before processing
+    if (empty($items_in_cart)) {
+        $cartEmptyError = true;
+    } else {
+        $active_cart_id = $cart->getActiveCartId();
 
-    if ($active_cart_id) {
-        $date_from = $_POST['date_from'] ?? '';
-        $date_to   = $_POST['date_to'] ?? '';
+        if ($active_cart_id) {
+            $date_from = $_POST['date_from'] ?? '';
+            $date_to   = $_POST['date_to'] ?? '';
 
-        $today = date('Y-m-d');
+            $today = date('Y-m-d');
 
-        // block past dates
-        if (strtotime($date_from) < strtotime($today)) {
-            die("❌ Date From cannot be earlier than today.");
-        }
+            // block past dates
+            if (strtotime($date_from) < strtotime($today)) {
+                die("❌ Date From cannot be earlier than today.");
+            }
 
-        // ✅ Block Sundays only if start or end falls on Sunday
-        if (date('w', strtotime($date_from)) == 0) {
-            die("❌ Date From cannot be Sunday.");
-        }
-        if (!empty($date_to) && date('w', strtotime($date_to)) == 0) {
-            die("❌ Date To cannot be Sunday.");
-        }
+            // ✅ Block Sundays only if start or end falls on Sunday
+            if (date('w', strtotime($date_from)) == 0) {
+                die("❌ Date From cannot be Sunday.");
+            }
+            if (!empty($date_to) && date('w', strtotime($date_to)) == 0) {
+                die("❌ Date To cannot be Sunday.");
+            }
 
-        // Date To must be >= Date From
-        if (!empty($date_to) && strtotime($date_to) < strtotime($date_from)) {
-            die("❌ Date To cannot be before Date From.");
-        }
+            // Date To must be >= Date From
+            if (!empty($date_to) && strtotime($date_to) < strtotime($date_from)) {
+                die("❌ Date To cannot be before Date From.");
+            }
 
-        // ✅ NEW VALIDATION FIX:
-        // Block holidays ONLY if Date From or Date To fall on a holiday
-        $checkDates = [$date_from];
-        if (!empty($date_to)) $checkDates[] = $date_to;
+            // ✅ NEW VALIDATION FIX:
+            // Block holidays ONLY if Date From or Date To fall on a holiday
+            $checkDates = [$date_from];
+            if (!empty($date_to)) $checkDates[] = $date_to;
 
-        foreach ($checkDates as $uDate) {
-            $monthDay = date('m-d', strtotime($uDate));
-            foreach ($blockedDates as $block) {
-                if ($block['type'] === 'once') {
-                    if ($uDate >= $block['from'] && $uDate <= $block['to']) {
-                        die("❌ $uDate is a holiday and cannot be selected.");
-                    }
-                } else {
-                    if ($monthDay >= $block['from'] && $monthDay <= $block['to']) {
-                        die("❌ $uDate is a recurring holiday and cannot be selected.");
+            foreach ($checkDates as $uDate) {
+                $monthDay = date('m-d', strtotime($uDate));
+                foreach ($blockedDates as $block) {
+                    if ($block['type'] === 'once') {
+                        if ($uDate >= $block['from'] && $uDate <= $block['to']) {
+                            die("❌ $uDate is a holiday and cannot be selected.");
+                        }
+                    } else {
+                        if ($monthDay >= $block['from'] && $monthDay <= $block['to']) {
+                            die("❌ $uDate is a recurring holiday and cannot be selected.");
+                        }
                     }
                 }
             }
+
+            $request = new requestForm(
+                $_POST['prof_name'],
+                $_POST['subject'],
+                $date_from,
+                $date_to,
+                $_POST['time_from'],
+                $_POST['time_to'],
+                $_POST['room'],
+                'Pending'
+            );
+
+            $request->reqOrder($active_cart_id);
+            $cart->finalizeRequest($_POST);
+            
+            // Get the newly created request_id to redirect to order details
+            $stmt = $pdo->prepare("SELECT request_id FROM tbl_requests WHERE cart_id = ? ORDER BY request_date DESC LIMIT 1");
+            $stmt->execute([$active_cart_id]);
+            $new_request = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($new_request && isset($new_request['request_id'])) {
+                $_SESSION['new_request_id'] = $new_request['request_id'];
+                $_SESSION['show_finalized_alert'] = true;
+                header('Location: u-finalize.php');
+                exit();
+            } else {
+                // Fallback if request_id couldn't be retrieved
+                $_SESSION['show_finalized_alert'] = true;
+                header('Location: u-finalize.php');
+                exit();
+            }
         }
 
-        $request = new requestForm(
-            $_POST['prof_name'],
-            $_POST['subject'],
-            $date_from,
-            $date_to,
-            $_POST['time_from'],
-            $_POST['time_to'],
-            $_POST['room'],
-            'Pending'
-        );
-
-        $request->reqOrder($active_cart_id);
-        $cart->finalizeRequest($_POST);
-        
-        // Get the newly created request_id to redirect to order details
-        $stmt = $pdo->prepare("SELECT request_id FROM tbl_requests WHERE cart_id = ? ORDER BY request_date DESC LIMIT 1");
-        $stmt->execute([$active_cart_id]);
-        $new_request = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        if ($new_request && isset($new_request['request_id'])) {
-            $_SESSION['new_request_id'] = $new_request['request_id'];
-            $_SESSION['show_finalized_alert'] = true;
-            header('Location: u-finalize.php');
-            exit();
-        } else {
-            // Fallback if request_id couldn't be retrieved
-            $_SESSION['show_finalized_alert'] = true;
-            header('Location: u-finalize.php');
-            exit();
-        }
+        header('Location: u-finalize.php');
+        exit();
     }
-
-    header('Location: u-finalize.php');
-    exit();
 }
 ?>
 <!DOCTYPE html>
@@ -276,62 +287,74 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['finalize-btn'])) {
         <div class="container-fluid py-5">
             <div class="row justify-content-center">
                 <div class="col-lg-8 col-md-10">
-                    <div class="request-form-card">
-                        <form method="post" action="">
-                            <div class="row mb-3 align-items-end">
-                                <div class="col-md-5">
-                                    <label for="name" class="form-label">Name of Instructor or Graduate Student:</label>
-                                    <input type="text" class="form-control" id="name" name="prof_name" placeholder="Enter name" required>
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="subject" class="form-label">Subject:</label>
-                                    <input type="text" class="form-control" id="subject" name="subject" placeholder="Enter subject" required>
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="room" class="form-label">Room:</label>
-                                    <input type="text" class="form-control" id="room" name="room" placeholder="Enter Room" required>
-                                </div>
-                            </div>
-
-                            <div class="row mb-4 align-items-end">
-                                <div class="col-md-3">
-                                    <label for="date-from" class="form-label">Date of Use (From):</label>
-                                    <input type="date" class="form-control" id="date_from" name="date_from" required>
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="date-to" class="form-label">To: (Input same day for 1-day use)</label>
-                                    <input type="date" class="form-control" id="date_to" name="date_to">
-                                </div>
-                                <div class="col-md-2">
-                                    <label for="time-from" class="form-label">Time (From):</label>
-                                    <input type="time" class="form-control" id="time_from" name="time_from" required>
-                                </div>
-                                <div class="col-md-2">
-                                    <label for="time-to" class="form-label">Time (To):</label>
-                                    <input type="time" class="form-control" id="time_to" name="time_to" required>
-                                </div>
-                            </div>
-
-                            <h4 class="request-details-title mt-4 mb-3">Request Details:</h4>
-                            <div id="request-list-container">
-                                <?php foreach ($items_in_cart as $item): ?>
-                                    <div class="request-item-card d-flex align-items-center mb-3">
-                                        <div class="item-details-simple flex-grow-1">
-                                            <h5 class="item-name mb-0">
-                                                <?= htmlspecialchars($item['name']) ?>
-                                                (<?= htmlspecialchars($item['product_type']) ?>)
-                                                - Amount: <?= htmlspecialchars($item['amount']) ?>
-                                            </h5>
-                                        </div>
+                    <?php if ($cartEmptyError): ?>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Cannot Finalize Request:</strong> Your cart is empty. Please add items to your cart before finalizing your request.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        <div class="text-center mt-4">
+                            <a href="u-search.php" class="btn btn-primary">Browse Products</a>
+                            <a href="u-cart.php" class="btn btn-outline-secondary ms-2">View Cart</a>
+                        </div>
+                    <?php else: ?>
+                        <div class="request-form-card">
+                            <form method="post" action="">
+                                <div class="row mb-3 align-items-end">
+                                    <div class="col-md-5">
+                                        <label for="name" class="form-label">Name of Instructor or Graduate Student:</label>
+                                        <input type="text" class="form-control" id="name" name="prof_name" placeholder="Enter name" required>
                                     </div>
-                                <?php endforeach; ?>
-                            </div>
+                                    <div class="col-md-4">
+                                        <label for="subject" class="form-label">Subject:</label>
+                                        <input type="text" class="form-control" id="subject" name="subject" placeholder="Enter subject" required>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="room" class="form-label">Room:</label>
+                                        <input type="text" class="form-control" id="room" name="room" placeholder="Enter Room" required>
+                                    </div>
+                                </div>
 
-                            <div class="d-flex justify-content-end mt-4">
-                                <button type="submit" class="btn finalize-btn" name="finalize-btn">Finalize Request</button>
-                            </div>
-                        </form>
-                    </div>
+                                <div class="row mb-4 align-items-end">
+                                    <div class="col-md-3">
+                                        <label for="date-from" class="form-label">Date of Use (From):</label>
+                                        <input type="date" class="form-control" id="date_from" name="date_from" required>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="date-to" class="form-label">To: (Input same day for 1-day use)</label>
+                                        <input type="date" class="form-control" id="date_to" name="date_to">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label for="time-from" class="form-label">Time (From):</label>
+                                        <input type="time" class="form-control" id="time_from" name="time_from" required>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label for="time-to" class="form-label">Time (To):</label>
+                                        <input type="time" class="form-control" id="time_to" name="time_to" required>
+                                    </div>
+                                </div>
+
+                                <h4 class="request-details-title mt-4 mb-3">Request Details:</h4>
+                                <div id="request-list-container">
+                                    <?php foreach ($items_in_cart as $item): ?>
+                                        <div class="request-item-card d-flex align-items-center mb-3">
+                                            <div class="item-details-simple flex-grow-1">
+                                                <h5 class="item-name mb-0">
+                                                    <?= htmlspecialchars($item['name']) ?>
+                                                    (<?= htmlspecialchars($item['product_type']) ?>)
+                                                    - Amount: <?= htmlspecialchars($item['amount']) ?>
+                                                </h5>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+
+                                <div class="d-flex justify-content-end mt-4">
+                                    <button type="submit" class="btn finalize-btn" name="finalize-btn">Finalize Request</button>
+                                </div>
+                            </form>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -350,19 +373,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['finalize-btn'])) {
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 
-    <script>
-        window.blockedDates = <?php echo json_encode($blockedDates); ?>;
-        window.earliestAllowedDate = '<?php echo $earliestAllowedDate; ?>';
-        window.leadDays = <?php echo $leadDays; ?>;
-        window.itemsInCart = <?php echo json_encode($items_in_cart); ?>;
-        window.accountType = '<?php echo $account_type; ?>';
+    <?php if (!$cartEmptyError): ?>
+        <script>
+            window.blockedDates = <?php echo json_encode($blockedDates); ?>;
+            window.earliestAllowedDate = '<?php echo $earliestAllowedDate; ?>';
+            window.leadDays = <?php echo $leadDays; ?>;
+            window.itemsInCart = <?php echo json_encode($items_in_cart); ?>;
+            window.accountType = '<?php echo $account_type; ?>';
 
-        console.log('PHP Blocked Dates:', <?php echo json_encode($blockedDates); ?>);
-        console.log('User Account Type:', '<?php echo $account_type; ?>');
-        console.log('Calculated Lead Days:', <?php echo $leadDays; ?>);
-        console.log('Earliest Allowed Date:', '<?php echo $earliestAllowedDate; ?>');
-    </script>
-    <script src="resource/js/finalize.js"></script>
+            console.log('PHP Blocked Dates:', <?php echo json_encode($blockedDates); ?>);
+            console.log('User Account Type:', '<?php echo $account_type; ?>');
+            console.log('Calculated Lead Days:', <?php echo $leadDays; ?>);
+            console.log('Earliest Allowed Date:', '<?php echo $earliestAllowedDate; ?>');
+        </script>
+        <script src="resource/js/finalize.js"></script>
+    <?php endif; ?>
 
     <?php if ($showAlert && $redirectToOrderDetails && $newRequestId): ?>
         <script type="text/javascript">
