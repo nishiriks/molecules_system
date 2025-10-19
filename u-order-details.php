@@ -44,6 +44,122 @@ $time_from = date('g:ia', strtotime($details['time_from']));
 $time_to = date('g:ia', strtotime($details['time_to']));
 $time_display = ($time_from === $time_to) ? $time_from : $time_from . ' - ' . $time_to;
 
+// Handle PDF generation
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['view-btn'])) {
+    // Prepare data for PDF generation
+    $material_type = [];
+    
+    // Determine material types based on items - CHECK ALL ITEMS
+    foreach ($items as $item) {
+        $product_type = strtolower($item['product_type']);
+        
+        // Check for each material type in every item
+        if (strpos($product_type, 'apparatus') !== false) {
+            if (!in_array('Apparatus', $material_type)) {
+                $material_type[] = 'Apparatus';
+            }
+        }
+        if (strpos($product_type, 'chemical') !== false || strpos($product_type, 'supply') !== false || $product_type === 'supplies') {
+            if (!in_array('Chemicals/Supplies', $material_type)) {
+                $material_type[] = 'Chemicals/Supplies';
+            }
+        }
+        if (strpos($product_type, 'equip') !== false) {
+            if (!in_array('Equipment', $material_type)) {
+                $material_type[] = 'Equipment';
+            }
+        }
+        if (strpos($product_type, 'model') !== false || strpos($product_type, 'chart') !== false) {
+            if (!in_array('Models/Charts', $material_type)) {
+                $material_type[] = 'Models/Charts';
+            }
+        }
+        if (strpos($product_type, 'specimen') !== false) {
+            if (!in_array('Specimen', $material_type)) {
+                $material_type[] = 'Specimen';
+            }
+        }
+    }
+    
+    // DEBUG: Log what material types we found
+    error_log("=== DEBUG: Detected material types: " . implode(', ', $material_type));
+    error_log("=== DEBUG: All items and their types:");
+    foreach ($items as $index => $item) {
+        error_log("Item $index: " . $item['name'] . " - Type: " . $item['product_type']);
+    }
+    
+    // If no specific types detected, default to Equipment
+    if (empty($material_type)) {
+        $material_type[] = 'Equipment';
+    }
+    
+    // Prepare materials data for PDF - FIXED FORMAT
+    $materials_data = [];
+    $item_count = count($items);
+    
+    for ($i = 0; $i < 8; $i++) {
+        if ($i * 2 < $item_count) {
+            $item1 = $items[$i * 2];
+            $materials_data[] = [
+                'quantity_1' => $item1['amount'] . ' ' . $item1['measure_unit'], // Put amount and unit in quantity field
+                'material_1' => $item1['name'] // Only name in material field, no product_type or amount
+            ];
+        } else {
+            $materials_data[] = ['quantity_1' => '', 'material_1' => ''];
+        }
+        
+        if ($i * 2 + 1 < $item_count) {
+            $item2 = $items[$i * 2 + 1];
+            $materials_data[$i]['quantity_2'] = $item2['amount'] . ' ' . $item2['measure_unit']; // Put amount and unit in quantity field
+            $materials_data[$i]['material_2'] = $item2['name']; // Only name in material field, no product_type or amount
+        } else {
+            $materials_data[$i]['quantity_2'] = '';
+            $materials_data[$i]['material_2'] = '';
+        }
+    }
+    
+    // Calculate days
+    $date1 = new DateTime($details['date_from']);
+    $date2 = new DateTime($details['date_to']);
+    $days = $date2->diff($date1)->days + 1;
+    
+    // Date formatting (for admin version only)
+    $date_from = date('m/d/Y', strtotime($details['date_from']));
+    $date_to = date('m/d/Y', strtotime($details['date_to']));
+    $date_display = ($date_from === $date_to) ? $date_from : $date_from . ' - ' . $date_to;
+    
+    $time_from = date('g:ia', strtotime($details['time_from']));
+    $time_to = date('g:ia', strtotime($details['time_to']));
+    $time_display = ($time_from === $time_to) ? $time_from : $time_from . ' - ' . $time_to;
+    
+    // Create hidden form for PDF generation
+    echo '<form id="pdfForm" method="post" action="generate_pdf.php" style="display: none;">';
+    echo '<input type="hidden" name="material_type" value="' . htmlspecialchars(implode(',', $material_type)) . '">';
+    echo '<input type="hidden" name="instructor_name" value="' . htmlspecialchars($details['prof_name']) . '">';
+    echo '<input type="hidden" name="signature" value="' . htmlspecialchars($details['first_name'] . ' ' . $details['last_name']) . '">';
+    echo '<input type="hidden" name="subject" value="' . htmlspecialchars($details['subject']) . '">';
+    echo '<input type="hidden" name="date_of_use" value="' . htmlspecialchars($date_display) . '">';
+    echo '<input type="hidden" name="time" value="' . htmlspecialchars($time_display) . '">';
+    echo '<input type="hidden" name="days" value="' . htmlspecialchars($days) . '">';
+    echo '<input type="hidden" name="room" value="' . htmlspecialchars($details['room']) . '">';
+    echo '<input type="hidden" name="remarks" value="' . htmlspecialchars($details['remarks'] ?? 'Request ID: ' . $request_id) . '">';
+    echo '<input type="hidden" name="issue_date" value="' . date('m/d/Y', strtotime($details['request_date'])) . '">';
+    echo '<input type="hidden" name="return_date" value="' . htmlspecialchars($date_to) . '">';
+    
+    // Add materials data
+    foreach ($materials_data as $index => $material) {
+        $i = $index + 1;
+        echo '<input type="hidden" name="quantity_1_' . $i . '" value="' . htmlspecialchars($material['quantity_1']) . '">';
+        echo '<input type="hidden" name="material_1_' . $i . '" value="' . htmlspecialchars($material['material_1']) . '">';
+        echo '<input type="hidden" name="quantity_2_' . $i . '" value="' . htmlspecialchars($material['quantity_2']) . '">';
+        echo '<input type="hidden" name="material_2_' . $i . '" value="' . htmlspecialchars($material['material_2']) . '">';
+    }
+    
+    echo '</form>';
+    echo '<script>document.getElementById("pdfForm").submit();</script>';
+    exit();
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -115,7 +231,7 @@ $time_display = ($time_from === $time_to) ? $time_from : $time_from . ' - ' . $t
             <div class="row justify-content-center">
                 <div class="col-lg-8 col-md-10">
                     <div class="request-form-card">
-                        <form>
+                        <form method="post" action="">
                             <h4 class="request-details-title mt-1 mb-3 text-center">Request Details <p><?= date('m/d/Y - g:ia', strtotime($details['request_date'])) ?></p></h4>
                             
                             <div class="row mb-3 align-items-end">
@@ -173,11 +289,11 @@ $time_display = ($time_from === $time_to) ? $time_from : $time_from . ' - ' . $t
                             </div>
 
                             <div class="d-flex justify-content-end mt-4">            
-                                <div class="status-container">
-                                    <button type="submit" class="btn finalize-btn" name="view-btn">View Form</button>
-                                    <a href="u-request.php" type="submit" class="btn finalize-btn ms-3">Back</a>
-                                </div>
-                            </div>
+                              <div class="status-container">
+                                  <button type="submit" class="btn finalize-btn" name="view-btn" onclick="openPdfInNewTab(event)">View Form</button>
+                                  <a href="a-home.php" type="submit" class="btn finalize-btn ms-3">Back</a>
+                              </div>
+                          </div>
                         </form>
                     </div>
                 </div>
