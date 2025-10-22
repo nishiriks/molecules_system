@@ -1,45 +1,75 @@
 :root {
-    --pending-color: #ffc107;
-    --submitted-color: #17a2b8;
-    --pickup-color: #6f42c1;
-    --received-color: #28a745;
-    --returned-color: #20c997;
-    --broken-color: #dc3545;
-    --lost-color: #e83e8c;
-    --canceled-color: #6c757d;
-    --disapproved-color: #343a40;
+    --pending-color: #ECC94B;
+    --submitted-color: #4299E1;
+    --pickup-color: #805AD5;
+    --received-color: #48BB78;
+    --returned-color: #38B2AC;
+    --broken-color: #E53E3E;
+    --lost-color: #ED8936;
+    --canceled-color: #718096;
+    --disapproved-color: #C53030;
 }
 
 body {
-    font-family: 'Inter', sans-serif;
-    background-color: #f8f9fa;
-    margin: 0;
-    padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  font-family: 'Montserrat';
 }
 
 /* Navigation */
-.navbar {
-    background-color: #2c3e50;
-    padding: 10px 0;
+.ceu-logo{
+  width: 250px;
+  height: auto;
 }
 
-.navbar-brand img {
-    height: 40px;
+.navbar{
+    background: var(--CEU-Dark-Blue, #161542);
 }
-
-.nav-link {
-    font-weight: 500;
-    margin: 0 10px;
-    transition: color 0.3s;
+.custom-toggler {
+    border: none;
 }
-
-.nav-link:hover {
-    color: #3498db !important;
+.custom-toggler:focus,
+.custom-toggler:active,
+.custom-toggler:focus-visible {
+  border: none;
+  box-shadow: none;
+  outline: none;
 }
-
-.nav-link.active {
-    color: #3498db !important;
-    font-weight: 600;
+.custom-toggler .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='white' stroke-width='3.5' stroke-linecap='round' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+/* make the offcanvas smaller */
+#offcanvasNavbar {
+  width: 210px;   
+  height: 500px;
+  text-transform: uppercase;
+  border-radius: 20px ; 
+  overflow: hidden;
+  font-size: 90%;
+  padding-top: 0px;
+  letter-spacing: 1px;
+  /* transition: 0.3s; */
+  font-size: 18px;
+  margin-right: 20px;
+}
+.offcanvas-title{
+  font-weight: bold;
+  color: #F55197;
+  /* text-transform: uppercase; */
+  letter-spacing: 1px;
+}
+#offcanvasNavbar .offcanvas-body, 
+#offcanvasNavbar .offcanvas-header {
+  background-color: #161542;
+  color: white;
+}
+.nav-item:hover {
+  border-bottom: 2px solid #F55197;
+}
+.navbar-nav .nav-item .nav-link.active,
+.navbar-nav .nav-item .nav-link.show {
+  font-weight: bold;
 }
 
 /* Main Content */
@@ -49,7 +79,7 @@ body {
 }
 
 .calendar-heading {
-    color: #2c3e50;
+    color: #F55197;
     font-weight: 700;
     margin-bottom: 30px;
     text-align: center;
@@ -67,7 +97,7 @@ body {
 }
 
 .nav-btn {
-    background: #3498db;
+    background-color: #F55197;
     color: white;
     padding: 8px 15px;
     border-radius: 5px;
@@ -77,7 +107,7 @@ body {
 }
 
 .nav-btn:hover {
-    background: #2980b9;
+    background: #c9447d;
     color: white;
 }
 
@@ -209,11 +239,23 @@ body {
 .legend-color.canceled { background-color: var(--canceled-color); }
 .legend-color.disapproved { background-color: var(--disapproved-color); }
 
-/* Footer */
+/* footer */
+.container{
+  padding-bottom: 50px;
+}
+
+main {
+  flex-grow: 1;
+}
+
+/* Your existing footer styles */
 footer {
-    background-color: #2c3e50;
-    padding: 20px 0;
-    margin-top: 40px;
+  background-color: #161542;
+}
+
+footer,p,.fa-copyright{
+ font-size: 0.7rem;
+
 }
 
 /* Responsive Design */
