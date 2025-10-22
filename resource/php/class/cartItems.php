@@ -9,17 +9,6 @@ class CartItems {
     }
 
     public function addItem($product_id, $amount) {
-        // Validate amount
-        if ($amount < 1) {
-            return false;
-        }
-
-        // Check stock availability
-        $available_stock = $this->getAvailableStock($product_id);
-        if ($available_stock < $amount) {
-            return false;
-        }
-
         $cart_id = $this->getActiveCartId(true); 
 
         $stmt_check = $this->pdo->prepare(
@@ -28,34 +17,18 @@ class CartItems {
         $stmt_check->execute([$cart_id, $product_id]);
         $existing_item = $stmt_check->fetch();
 
-        $success = false;
         if ($existing_item) {
             $new_amount = $existing_item['amount'] + $amount;
-            
-            // Check stock again for the new total
-            if ($available_stock < $new_amount) {
-                return false;
-            }
-            
             $stmt_update = $this->pdo->prepare(
                 "UPDATE tbl_cart_items SET amount = ? WHERE item_id = ?"
             );
-            $success = $stmt_update->execute([$new_amount, $existing_item['item_id']]);
+            return $stmt_update->execute([$new_amount, $existing_item['item_id']]);
         } else {
             $stmt_insert = $this->pdo->prepare(
                 "INSERT INTO tbl_cart_items (cart_id, product_id, amount) VALUES (?, ?, ?)"
             );
-            $success = $stmt_insert->execute([$cart_id, $product_id, $amount]);
+            return $stmt_insert->execute([$cart_id, $product_id, $amount]);
         }
-
-        if ($success) {
-            $stmt_stock = $this->pdo->prepare(
-                "UPDATE tbl_inventory SET stock = stock - ? WHERE product_id = ?"
-            );
-            $stmt_stock->execute([$amount, $product_id]);
-        }
-
-        return $success;
     }
 
     public function getItems() {
@@ -117,22 +90,12 @@ class CartItems {
     }
 
     public function removeItem($item_id) {
-        // Get item data before removal to restore stock
-        $item_data = $this->getItemData($item_id);
-        
+        $cart_id = $this->getActiveCartId();
+        if (!$cart_id) return false;
+
         $sql = "DELETE FROM tbl_cart_items WHERE item_id = ? AND cart_id = ?";
-        $stmt = $this->pdo->prepare($sql);
-        $success = $stmt->execute([$item_id, $this->getActiveCartId()]);
-
-        if ($success && $item_data) {
-            // Restore stock
-            $stmt_stock = $this->pdo->prepare(
-                "UPDATE tbl_inventory SET stock = stock + ? WHERE product_id = ?"
-            );
-            $stmt_stock->execute([$item_data['amount'], $item_data['product_id']]);
-        }
-
-        return $success;
+        $stmt_delete = $this->pdo->prepare($sql);
+        return $stmt_delete->execute([$item_id, $cart_id]);
     }
 
     public function finalizeRequest($requestData) {
