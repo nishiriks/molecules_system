@@ -19,7 +19,6 @@ if (isset($_SESSION['success_message'])) {
     unset($_SESSION['success_message']); 
 }
 
-// ADDED SEARCH FUNCTIONALITY HERE
 if (isset($_GET['search']) && !empty(trim($_GET['search']))) {
     $search_term = trim($_GET['search']);
     $page_title = "Searching for: \"" . htmlspecialchars($search_term) . "\"";

@@ -142,7 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['view-btn'])) {
     echo '<input type="hidden" name="time" value="' . htmlspecialchars($time_display) . '">';
     echo '<input type="hidden" name="days" value="' . htmlspecialchars($days) . '">';
     echo '<input type="hidden" name="room" value="' . htmlspecialchars($details['room']) . '">';
-    echo '<input type="hidden" name="remarks" value="' . htmlspecialchars($details['remarks'] ?? 'Request ID: ' . $request_id) . '">';
+    echo '<input type="hidden" name="remarks" value="' . htmlspecialchars($details['remarks'] ?? '') . '">';
     echo '<input type="hidden" name="issue_date" value="' . date('m/d/Y', strtotime($details['request_date'])) . '">';
     echo '<input type="hidden" name="return_date" value="' . htmlspecialchars($date_to) . '">';
     
@@ -235,28 +235,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['view-btn'])) {
                             <h4 class="request-details-title mt-1 mb-3 text-center">Request Details <p><?= date('m/d/Y - g:ia', strtotime($details['request_date'])) ?></p></h4>
                             
                             <div class="row mb-3 align-items-end">
-                                <div class="col-md-5">
+                                <div class="col-md-4">
                                     <label class="form-label">Name of Requester:</label>
                                     <input type="text" class="form-control" value="<?= htmlspecialchars($details['first_name'] . ' ' . $details['last_name']) ?>" readonly>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Name of Professor:</label>
+                                    <input type="text" class="form-control" value="<?= htmlspecialchars($details['prof_name']) ?>" readonly>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Subject:</label>
                                     <input type="text" class="form-control" value="<?= htmlspecialchars($details['subject']) ?>" readonly>
                                 </div>
-                                <div class="col-md-3">
-                                    <label class="form-label">Room:</label>
-                                    <input type="text" class="form-control" value="<?= htmlspecialchars($details['room']) ?>" readonly>
-                                </div>
                             </div>
 
                             <div class="row mb-4 align-items-end">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <label class="form-label">Date of Use:</label>
                                     <input type="text" class="form-control" value="<?= htmlspecialchars($date_display) ?>" readonly>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <label class="form-label">Time:</label>
                                     <input type="text" class="form-control" value="<?= htmlspecialchars($time_display) ?>" readonly>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Room:</label>
+                                    <input type="text" class="form-control" value="<?= htmlspecialchars($details['room']) ?>" readonly>
                                 </div>
                             </div>
                             

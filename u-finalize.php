@@ -28,6 +28,8 @@ if (isset($_SESSION['show_finalized_alert']) && $_SESSION['show_finalized_alert'
     }
 }
 
+date_default_timezone_set('Asia/Manila');
+
 $config = new config();
 $pdo = $config->con();
 $cart = new CartItems($pdo, $_SESSION['user_id']);

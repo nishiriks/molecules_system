@@ -33,7 +33,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 const searchTerm = searchInput.value.trim();
                 
                 if (searchTerm) {
-                    window.location.href = `admin-search.php?search=${encodeURIComponent(searchTerm)}`;
+                    // DYNAMIC SEARCH URL - works for both admin and user pages
+                    const currentPage = window.location.pathname;
+                    const searchUrl = currentPage.includes('a-search.php') 
+                        ? `a-search.php?search=${encodeURIComponent(searchTerm)}`
+                        : `u-search.php?search=${encodeURIComponent(searchTerm)}`;
+                    
+                    window.location.href = searchUrl;
                 }
             }
         });

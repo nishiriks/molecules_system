@@ -92,6 +92,9 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
           <a class="nav-link text-white active" href="a-home.php">Requests</a>
         </li>
         <li class="nav-item">
+          <a class="nav-link text-white" href="a-calendar.php">Calendar</a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link text-white" href="a-search.php">Inventory</a>
         </li>
         <li class="nav-item">

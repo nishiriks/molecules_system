@@ -307,3 +307,245 @@ footer,p,.fa-copyright{
         border-bottom: none;
     }
 }
+/* Multi-day event styling */
+.calendar-event.multi-day-start {
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.calendar-event.multi-day-middle {
+    border-radius: 0;
+}
+
+.calendar-event.multi-day-end {
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+/* Event with date range indicator */
+.calendar-event.has-range::after {
+    content: ' 📅';
+    font-size: 9px;
+}
+
+/* Compact event display for multiple events */
+.calendar-day.compact .calendar-event {
+    font-size: 10px;
+    padding: 2px 4px;
+    margin-bottom: 1px;
+}
+
+/* Event counter for days with many events */
+.event-counter {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: #F55197;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+/* Hover effects for better visibility */
+.calendar-event:hover {
+    z-index: 10;
+    position: relative;
+    transform: scale(1.05);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+}
+
+/* Status-specific hover effects */
+.calendar-event.pending:hover { background-color: #d69e2e; }
+.calendar-event.submitted:hover { background-color: #3182ce; }
+.calendar-event.pickup:hover { background-color: #6b46c1; }
+.calendar-event.received:hover { background-color: #38a169; }
+.calendar-event.returned:hover { background-color: #319795; }
+.calendar-event.broken:hover { background-color: #c53030; }
+.calendar-event.lost:hover { background-color: #dd6b20; }
+.calendar-event.canceled:hover { background-color: #4a5568; }
+.calendar-event.disapproved:hover { background-color: #9b2c2c; }
+
+/* Clickable calendar days */
+.calendar-day:not(.other-month) {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.calendar-day:not(.other-month):hover {
+    background-color: #f0f8ff !important;
+    box-shadow: inset 0 0 0 2px #F55197;
+}
+
+.calendar-day.active-day {
+    background-color: #e3f2fd !important;
+    box-shadow: inset 0 0 0 2px #2196f3;
+}
+
+/* Day orders modal styles */
+.day-orders-container {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.day-order-item {
+    border-left: 4px solid #ccc;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    background: #f8f9fa;
+    transition: all 0.2s ease;
+}
+
+.day-order-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.day-order-item.pending { border-left-color: var(--pending-color); }
+.day-order-item.submitted { border-left-color: var(--submitted-color); }
+.day-order-item.pickup { border-left-color: var(--pickup-color); }
+.day-order-item.received { border-left-color: var(--received-color); }
+.day-order-item.returned { border-left-color: var(--returned-color); }
+.day-order-item.broken { border-left-color: var(--broken-color); }
+.day-order-item.lost { border-left-color: var(--lost-color); }
+.day-order-item.canceled { border-left-color: var(--canceled-color); }
+.day-order-item.disapproved { border-left-color: var(--disapproved-color); }
+
+.order-header {
+    display: flex;
+    justify-content: between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.order-user {
+    font-weight: 600;
+    color: #2c3e50;
+    flex: 1;
+}
+
+.order-status {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    color: white;
+    text-transform: uppercase;
+}
+
+.order-details {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.order-date-range {
+    font-size: 12px;
+    color: #888;
+    font-style: italic;
+}
+
+.order-actions {
+    margin-top: 8px;
+    text-align: right;
+}
+
+.view-order-btn {
+    background: #F55197;
+    color: white;
+    border: none;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.2s;
+}
+
+.view-order-btn:hover {
+    background: #c9447d;
+    color: white;
+}
+
+/* No orders message */
+.no-orders {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+}
+
+.no-orders i {
+    font-size: 48px;
+    margin-bottom: 15px;
+    color: #ddd;
+}
+
+/* Event counter styling */
+.event-counter {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: #F55197;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 5;
+}
+
+.event-counter:hover {
+    background: #c9447d;
+    transform: scale(1.1);
+}
+
+/* Loading indicator */
+.loading-orders {
+    text-align: center;
+    padding: 20px;
+}
+
+.loading-orders .spinner-border {
+    color: #F55197;
+}
+
+/* Modal header styling */
+.modal-header {
+    background: #161542;
+    color: white;
+}
+
+.modal-header .btn-close {
+    filter: invert(1);
+}
+
+/* Responsive modal */
+@media (max-width: 768px) {
+    .day-order-item {
+        padding: 10px 12px;
+    }
+    
+    .order-header {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .order-status {
+        align-self: flex-start;
+    }
+}

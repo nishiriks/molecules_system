@@ -12,7 +12,7 @@ $config = new config();
 $pdo = $config->con();
 $request_id = $_GET['id'];
 
-$sql_request = "SELECT r.*, u.first_name, u.last_name, c.cart_status
+$sql_request = "SELECT r.*, u.first_name, u.last_name, c.cart_status, r.prof_name
                 FROM tbl_requests r
                 JOIN tbl_cart c ON r.cart_id = c.cart_id
                 JOIN tbl_users u ON c.user_id = u.user_id
@@ -113,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['view-btn'])) {
     $date2 = new DateTime($details['date_to']);
     $days = $date2->diff($date1)->days + 1;
     
-    // Date formatting
+    // Date formatting (for admin version only)
     $date_from = date('m/d/Y', strtotime($details['date_from']));
     $date_to = date('m/d/Y', strtotime($details['date_to']));
     $date_display = ($date_from === $date_to) ? $date_from : $date_from . ' - ' . $date_to;
@@ -132,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['view-btn'])) {
     echo '<input type="hidden" name="time" value="' . htmlspecialchars($time_display) . '">';
     echo '<input type="hidden" name="days" value="' . htmlspecialchars($days) . '">';
     echo '<input type="hidden" name="room" value="' . htmlspecialchars($details['room']) . '">';
-    echo '<input type="hidden" name="remarks" value="' . htmlspecialchars($details['remarks'] ?? 'Request ID: ' . $request_id) . '">';
+    echo '<input type="hidden" name="remarks" value="' . htmlspecialchars($details['remarks'] ?? '') . '">';
     echo '<input type="hidden" name="issue_date" value="' . date('m/d/Y', strtotime($details['request_date'])) . '">';
     echo '<input type="hidden" name="return_date" value="' . htmlspecialchars($date_to) . '">';
     
@@ -219,6 +219,9 @@ $time_display = ($time_from === $time_to) ? $time_from : $time_from . ' - ' . $t
             <a class="nav-link text-white" href="a-home.php">Requests</a>
           </li>
           <li class="nav-item">
+            <a class="nav-link text-white" href="a-calendar.php">Calendar</a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link text-white" href="a-search.php">Inventory</a>
           </li>
           <li class="nav-item">
@@ -239,28 +242,32 @@ $time_display = ($time_from === $time_to) ? $time_from : $time_from . ' - ' . $t
                             <h4 class="request-details-title mt-1 mb-3 text-center">Request Details <p><?= date('m/d/Y - g:ia', strtotime($details['request_date'])) ?></p></h4>
                             
                             <div class="row mb-3 align-items-end">
-                                <div class="col-md-5">
+                                <div class="col-md-4">
                                     <label class="form-label">Name of Requester:</label>
                                     <input type="text" class="form-control" value="<?= htmlspecialchars($details['first_name'] . ' ' . $details['last_name']) ?>" readonly>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Name of Professor:</label>
+                                    <input type="text" class="form-control" value="<?= htmlspecialchars($details['prof_name']) ?>" readonly>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Subject:</label>
                                     <input type="text" class="form-control" value="<?= htmlspecialchars($details['subject']) ?>" readonly>
                                 </div>
-                                <div class="col-md-3">
-                                    <label class="form-label">Room:</label>
-                                    <input type="text" class="form-control" value="<?= htmlspecialchars($details['room']) ?>" readonly>
-                                </div>
                             </div>
 
                             <div class="row mb-4 align-items-end">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <label class="form-label">Date of Use:</label>
                                     <input type="text" class="form-control" value="<?= htmlspecialchars($date_display) ?>" readonly>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <label class="form-label">Time:</label>
                                     <input type="text" class="form-control" value="<?= htmlspecialchars($time_display) ?>" readonly>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Room:</label>
+                                    <input type="text" class="form-control" value="<?= htmlspecialchars($details['room']) ?>" readonly>
                                 </div>
                             </div>
                             
@@ -305,7 +312,7 @@ $time_display = ($time_from === $time_to) ? $time_from : $time_from . ' - ' . $t
 
                             <div class="d-flex justify-content-end mt-4">            
                                 <div class="status-container">
-                                    <button type="submit" class="btn finalize-btn" name="view-btn" onclick="openPdfInNewTab(event)">View Form</button>
+                                    <button type="submit" class="btn finalize-btn" name="view-btn">View Form</button>
                                     <a href="a-home.php" type="submit" class="btn finalize-btn ms-3">Back</a>
                                 </div>
                             </div>
@@ -328,42 +335,6 @@ $time_display = ($time_from === $time_to) ? $time_from : $time_from . ' - ' . $t
     </p>
   </div>
 </footer>
-
-<script>
-function openPdfInNewTab(event) {
-    event.preventDefault(); // Prevent form submission
-    
-    // Create a temporary form
-    const tempForm = document.createElement('form');
-    tempForm.method = 'post';
-    tempForm.action = 'generate_pdf.php';
-    tempForm.target = '_blank'; // Open in new tab
-    
-    // Add all the hidden inputs from the main form
-    const mainForm = event.target.closest('form');
-    const hiddenInputs = mainForm.querySelectorAll('input[type="hidden"]');
-    
-    hiddenInputs.forEach(input => {
-        const clone = input.cloneNode(true);
-        tempForm.appendChild(clone);
-    });
-    
-    // Add the view-btn input
-    const viewBtnInput = document.createElement('input');
-    viewBtnInput.type = 'hidden';
-    viewBtnInput.name = 'view-btn';
-    viewBtnInput.value = '1';
-    tempForm.appendChild(viewBtnInput);
-    
-    // Add the form to the document and submit it
-    document.body.appendChild(tempForm);
-    tempForm.submit();
-    document.body.removeChild(tempForm);
-    
-    // Stay on the current page
-    return false;
-}
-</script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
   integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>

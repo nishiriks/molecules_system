@@ -10,25 +10,23 @@ if (basename($_SERVER['PHP_SELF']) !== 'change-pass.php') {
 
 $config = new config();
 $pdo = $config->con();
-$page_title = "All Products";
 
+// ADDED SEARCH FUNCTIONALITY HERE (same as a-search.php)
 if (isset($_GET['search']) && !empty(trim($_GET['search']))) {
     $search_term = trim($_GET['search']);
-    $page_title = "Searching for: \"" . htmlspecialchars($search_term) . "\"";
-
+    
     $sql = "SELECT * FROM tbl_inventory WHERE name LIKE ? ORDER BY name ASC";
     $stmt = $pdo->prepare($sql);
     $stmt->execute(["%$search_term%"]);
-}
-else if (isset($_GET['type']) && !empty($_GET['type'])) {
+    
+} else if (isset($_GET['type']) && !empty($_GET['type'])) {
     $product_type = $_GET['type'];
-    $page_title = "Showing: " . htmlspecialchars($product_type);
     
     $sql = "SELECT * FROM tbl_inventory WHERE product_type = ? ORDER BY name ASC";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$product_type]);
-} 
-else {
+
+} else {
     $sql = "SELECT * FROM tbl_inventory ORDER BY name ASC";
     $stmt = $pdo->query($sql);
 }
@@ -71,7 +69,11 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
       <ul class="menu-links">
       <li class="search-box">
           <i class="fa-solid fa-magnifying-glass icon"></i>
-          <input type="search" placeholder=" Search..." class="search-input">
+          <!-- UPDATED SEARCH INPUT WITH FORM (same as a-search.php) -->
+          <form method="GET" action="u-search.php" style="display: flex; align-items: center; width: 100%;">
+              <input type="search" name="search" placeholder=" Search..." class="search-input" 
+                     value="<?= isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '' ?>">
+          </form>
       </li>
       <li class="nav-links chemicals-btn">
         <a href="u-search.php?type=Chemical">
@@ -129,7 +131,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
       <?php if (empty($products)): ?>
         <div class="col-12">
             <div class="card p-5 text-center">
-                <p class="fs-4 mt-3">No products found in this category.</p>
+                <p class="fs-4 mt-3">No products found.</p>
                 <a href="u-search.php" class="btn btn-primary mt-3 mx-auto" style="max-width: 250px;">View All Products</a>
             </div>
         </div>
@@ -144,11 +146,6 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             Stock: <?= htmlspecialchars($product['stock']) ?> <?= htmlspecialchars($product['measure_unit']) ?>
                         </h5>
                         <div class="info">
-                             <!-- <form action="cartAction.php" method="POST">
-                                <input type="hidden" name="action" value="add">
-                                <input type="hidden" name="product_id" value="<?//= $product['product_id'] ?>">
-                                <button type="submit" class="btn-request">Request</button>
-                            </form> -->
                             <button class="btn-view" 
                                     data-product-id="<?= $product['product_id'] ?>"
                                     data-type="<?= htmlspecialchars($product['product_type']) ?>"
