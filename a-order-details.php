@@ -12,7 +12,7 @@ $config = new config();
 $pdo = $config->con();
 $request_id = $_GET['id'];
 
-$sql_request = "SELECT r.*, u.first_name, u.last_name, c.cart_status, r.prof_name
+$sql_request = "SELECT r.*, u.first_name, u.last_name, c.cart_status
                 FROM tbl_requests r
                 JOIN tbl_cart c ON r.cart_id = c.cart_id
                 JOIN tbl_users u ON c.user_id = u.user_id
@@ -34,7 +34,7 @@ $stmt_items = $pdo->prepare($sql_items);
 $stmt_items->execute([$details['cart_id']]);
 $items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
 
-// Handle PDF generation
+// Handle PDF generation - EXACT COPY FROM u-order-details.php
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['view-btn'])) {
     // Prepare data for PDF generation
     $material_type = [];
@@ -148,6 +148,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['view-btn'])) {
     echo '</form>';
     echo '<script>document.getElementById("pdfForm").submit();</script>';
     exit();
+}
+
+// Handle Approve button (change from Pending to Submitted)
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['approve_btn'])) {
+    $sql_update = "UPDATE tbl_requests SET status = 'Submitted' WHERE request_id = ?";
+    $stmt_update = $pdo->prepare($sql_update);
+    $stmt_update->execute([$request_id]);
+    
+    $stmt_request->execute([$request_id]);
+    $details = $stmt_request->fetch(PDO::FETCH_ASSOC);
+}
+
+// Handle Disapprove button (change from Pending to Disapproved)
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['disapprove_btn'])) {
+    $sql_update = "UPDATE tbl_requests SET status = 'Disapproved' WHERE request_id = ?";
+    $stmt_update = $pdo->prepare($sql_update);
+    $stmt_update->execute([$request_id]);
+    
+    $stmt_request->execute([$request_id]);
+    $details = $stmt_request->fetch(PDO::FETCH_ASSOC);
+}
+
+// Handle Return to Pending button (change from Disapproved to Pending)
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['return_to_pending_btn'])) {
+    $sql_update = "UPDATE tbl_requests SET status = 'Pending' WHERE request_id = ?";
+    $stmt_update = $pdo->prepare($sql_update);
+    $stmt_update->execute([$request_id]);
+    
+    $stmt_request->execute([$request_id]);
+    $details = $stmt_request->fetch(PDO::FETCH_ASSOC);
+}
+
+// Handle Cancel button (change to Cancelled)
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['cancel_btn'])) {
+    $sql_update = "UPDATE tbl_requests SET status = 'Cancelled' WHERE request_id = ?";
+    $stmt_update = $pdo->prepare($sql_update);
+    $stmt_update->execute([$request_id]);
+    
+    $stmt_request->execute([$request_id]);
+    $details = $stmt_request->fetch(PDO::FETCH_ASSOC);
+}
+
+// Handle Restore button (change from Cancelled to Submitted)
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['restore_btn'])) {
+    $sql_update = "UPDATE tbl_requests SET status = 'Submitted' WHERE request_id = ?";
+    $stmt_update = $pdo->prepare($sql_update);
+    $stmt_update->execute([$request_id]);
+    
+    $stmt_request->execute([$request_id]);
+    $details = $stmt_request->fetch(PDO::FETCH_ASSOC);
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_status'])) {
@@ -284,23 +334,48 @@ $time_display = ($time_from === $time_to) ? $time_from : $time_from . ' - ' . $t
                             </div>
 
                             <div class="mb-4 mt-4">
-                              <label class="form-label request-details-title">Status:</label>
-                              <div class="row align-items-end">
-                                  <div class="col-md-6">
-                                      <select class="form-select" name="status">
-                                          <option value="Pending" <?= $details['status'] == 'Pending' ? 'selected' : '' ?>>Pending</option>
-                                          <option value="Submitted" <?= $details['status'] == 'Submitted' ? 'selected' : '' ?>>Submitted</option>
-                                          <option value="Pickup" <?= $details['status'] == 'Pickup' ? 'selected' : '' ?>>For Pickup</option>
-                                          <option value="Received" <?= $details['status'] == 'Received' ? 'selected' : '' ?>>Received</option>
-                                          <option value="Returned" <?= $details['status'] == 'Returned' ? 'selected' : '' ?>>Returned</option>
-                                          <option value="Canceled" <?= $details['status'] == 'Canceled' ? 'selected' : '' ?>>Canceled</option>
-                                      </select>
-                                  </div>
-                                  <div class="col-md-6">
-                                      <button type="submit" class="btn finalize-btn" name="update_status">Update Status</button>
-                                  </div>
-                              </div>
-                          </div>
+                                <label class="form-label request-details-title">Status:</label>
+                                <div class="row align-items-end">
+                                    <div class="col-md-6">
+                                        <?php if ($details['status'] == 'Pending'): ?>
+                                            <!-- Pending State - Display current status and action buttons -->
+                                            <div class="d-flex align-items-center gap-3">
+                                                <input type="text" class="form-control" value="Pending" readonly style="width: auto; flex: 1;">
+                                                <div class="d-flex gap-2">
+                                                    <button type="submit" class="btn finalize-btn" name="approve_btn">Approve</button>
+                                                    <button type="submit" class="btn finalize-btn" name="disapprove_btn">Disapprove</button>
+                                                </div>
+                                            </div>
+                                        <?php elseif ($details['status'] == 'Disapproved'): ?>
+                                            <!-- Disapproved State - Display current status and return to pending button -->
+                                            <div class="d-flex align-items-center gap-3">
+                                                <input type="text" class="form-control" value="Disapproved" readonly style="width: auto; flex: 1;">
+                                                <button type="submit" class="btn finalize-btn" name="return_to_pending_btn">Return to Pending</button>
+                                            </div>
+                                        <?php elseif ($details['status'] == 'Cancelled'): ?>
+                                            <!-- Cancelled State - Display current status and restore button -->
+                                            <div class="d-flex align-items-center gap-3">
+                                                <input type="text" class="form-control" value="Cancelled" readonly style="width: auto; flex: 1;">
+                                                <button type="submit" class="btn finalize-btn" name="restore_btn">Restore to Submitted</button>
+                                            </div>
+                                        <?php else: ?>
+                                            <!-- Other Statuses - Display dropdown for status updates -->
+                                            <div class="d-flex align-items-center gap-3">
+                                                <select class="form-select" name="status" style="flex: 1;">
+                                                    <option value="Submitted" <?= $details['status'] == 'Submitted' ? 'selected' : '' ?>>Submitted</option>
+                                                    <option value="Pickup" <?= $details['status'] == 'Pickup' ? 'selected' : '' ?>>For Pickup</option>
+                                                    <option value="Received" <?= $details['status'] == 'Received' ? 'selected' : '' ?>>Received</option>
+                                                    <option value="Returned" <?= $details['status'] == 'Returned' ? 'selected' : '' ?>>Returned</option>
+                                                </select>
+                                                <div class="d-flex gap-2">
+                                                    <button type="submit" class="btn finalize-btn" name="update_status">Update Status</button>
+                                                    <button type="submit" class="btn finalize-btn" name="cancel_btn">Cancel</button>
+                                                </div>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
 
                             <div class="mb-4 mt-4">
                                 <label for="remarks" class="form-label request-details-title remarks">Remarks:</label>

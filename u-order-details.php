@@ -160,6 +160,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['view-btn'])) {
     exit();
 }
 
+// Handle Cancel button (change from Pending to Cancelled)
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['cancel_btn'])) {
+    $sql_update = "UPDATE tbl_requests SET status = 'Cancelled' WHERE request_id = ?";
+    $stmt_update = $pdo->prepare($sql_update);
+    $stmt_update->execute([$request_id]);
+    
+    // Refresh the details
+    $stmt_request->execute([$request_id, $current_user_id]);
+    $details = $stmt_request->fetch(PDO::FETCH_ASSOC);
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -280,7 +291,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['view-btn'])) {
                                 <label class="form-label request-details-title">Status:</label>
                                 <div class="row align-items-end">
                                     <div class="col-md-6">
-                                        <input type="text" class="form-control" value="<?= htmlspecialchars($details['status']) ?>" readonly>
+                                        <?php if ($details['status'] == 'Pending'): ?>
+                                            <!-- Pending State - Display current status and cancel button -->
+                                            <div class="d-flex align-items-center gap-3">
+                                                <input type="text" class="form-control" value="<?= htmlspecialchars($details['status']) ?>" readonly style="flex: 1;">
+                                                <button type="submit" class="btn finalize-btn" name="cancel_btn" onclick="return confirmCancel()">Cancel</button>
+                                            </div>
+                                        <?php else: ?>
+                                            <!-- Other Statuses - Display status as read-only -->
+                                            <input type="text" class="form-control" value="<?= htmlspecialchars($details['status']) ?>" readonly>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>
@@ -294,8 +314,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['view-btn'])) {
 
                             <div class="d-flex justify-content-end mt-4">            
                               <div class="status-container">
-                                  <button type="submit" class="btn finalize-btn" name="view-btn" onclick="openPdfInNewTab(event)">View Form</button>
-                                  <a href="a-home.php" type="submit" class="btn finalize-btn ms-3">Back</a>
+                                  <button type="submit" class="btn finalize-btn" name="view-btn">View Form</button>
+                                  <a href="u-request.php" type="submit" class="btn finalize-btn ms-3">Back</a>
                               </div>
                           </div>
                         </form>
@@ -317,6 +337,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['view-btn'])) {
       </p>
     </div>
   </footer>
+
+  <script>
+  function confirmCancel() {
+      return confirm("Are you sure you want to cancel this request?\n\nNote: If you want to restore this order after cancellation, you will need to contact a lab technician.");
+  }
+  </script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
