@@ -27,3 +27,4 @@ v1.1.1-alpha
 - Bugs Fixed:
     - Admin order details not filling PDF
     - Order pdf remarks showing request_id when empty 
+    - Fixed bug with search not searching when in another category
