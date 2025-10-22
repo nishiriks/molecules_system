@@ -16,3 +16,8 @@ v1.0.0-alpha
 - All major functionalities added
 - PDF Generation added
 - Added Log Filters
+
+v1.1.0-alpha
+- Added calendar for admin
+- Fixed timezon issue
+- Temporarily removed stock updates
