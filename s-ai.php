@@ -278,7 +278,7 @@ Here is the data:\n\n".$invText."\n".$salesText;
                                 <i class="fas fa-chart-bar me-2"></i>Current Order Summary
                             </button>
                             <button class="btn btn-month btn-lg" onclick="sendPrompt('STOCK_ANALYSIS')">
-                                <i class="fas fa-boxes me-2"></i>Current Month Analysis
+                                <i class="fas fa-boxes me-2"></i>Current Inventory Analysis
                             </button>
                             <button class="btn btn-previous btn-lg" onclick="sendPrompt('PREVIOUS_MONTH_ANALYSIS')">
                                 <i class="fas fa-chart-line me-2"></i>Previous Month Analysis
