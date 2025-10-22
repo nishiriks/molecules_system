@@ -117,12 +117,15 @@ if (basename($_SERVER['PHP_SELF']) !== 'change-pass.php') {
             <div class="col-12 col-md-4 mb-4">
                 <div class="card tech-card h-100">
                     <div class="card-img-container">
-                        <img src="./resource/img/tech1-placeholder.jpg" alt="Senior Lab Technician" class="card-img-top">
+                        <img src="./resource/img/jramos.webp" alt="Coordinator" class="card-img-top">
                     </div>
                     <div class="card-body">
-                        <h5 class="card-title">Mr. John Rexlester T. Santos</h5>
+                        <h5 class="card-title">Mr. John Rexlester T. Ramos</h5>
                         <h6 class="card-subtitle mb-2 text-muted">Coordinator, Science Laboratory Section</h6>
-                        <p class="card-text">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ipsa tenetur nam in, adipisci quidem aspernatur, eaque nesciunt repellendus suscipit sed, quis sapiente impedit incidunt obcaecati architecto quas dolor ratione magni!</p>
+                        <p class="card-text">BS Nursing <br>
+                        Registered Nurse <br>
+                        Schedule: Mon-Fri ; 8:00AM-5:00PM ;<br>
+                        Rest Day: Saturday</p>
                         <p class="card-text contact-info"><small class="text-muted">jramos@ceu.edu.ph | jtramos@ceu.edu.ph</small></p>
                     </div>
                 </div>
@@ -131,13 +134,13 @@ if (basename($_SERVER['PHP_SELF']) !== 'change-pass.php') {
             <div class="col-12 col-md-4 mb-4">
                 <div class="card tech-card h-100">
                     <div class="card-img-container">
-                        <img src="./resource/img/tech2-placeholder.jpg" alt="Lab Technician" class="card-img-top">
+                        <img src="./resource/img/ksacdalan.webp" alt="Lab Technician" class="card-img-top">
                     </div>
                     <div class="card-body">
-                        <h5 class="card-title">Ms. Kim Sacdalan</h5>
-                        <h6 class="card-subtitle mb-2 text-muted">Laboratory Technician</h6>
-                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur, architecto provident. Atque nemo illo dolorem eaque fugiat excepturi, iure nostrum reprehenderit animi consequuntur minima qui eum dicta veritatis cumque mollitia!</p>
-                        <p class="card-text contact-info"><small class="text-muted">kdbacdalan@ceu.edu.ph</small></p>
+                        <h5 class="card-title">Ms. Kimberly B. Sacdalan</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">Science Laboratory Technician</h6>
+                        <p class="card-text">BS Biology <br>Schedule : Mon-Thurs ; Saturday - 8:00AM-5:00PM; <br>Rest Day: Friday</p>
+                        <p class="card-text contact-info"><small class="text-muted">kbbacdalan@ceu.edu.ph</small></p>
                     </div>
                 </div>
             </div>
@@ -145,13 +148,13 @@ if (basename($_SERVER['PHP_SELF']) !== 'change-pass.php') {
             <div class="col-12 col-md-4 mb-4">
                 <div class="card tech-card h-100">
                     <div class="card-img-container">
-                        <img src="./resource/img/placeholder.webp" alt="Assistant Lab Technician" class="card-img-top">
+                        <img src="./resource/img/clabay.webp" alt="Lab Technician" class="card-img-top">
                     </div>
                     <div class="card-body">
-                        <h5 class="card-title">Mr. John Doe</h5>
-                        <h6 class="card-subtitle mb-2 text-muted">Assistant Laboratory Technician</h6>
-                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illum, repellat ad. Ratione facere amet velit, nihil non ipsum, aliquam cum distinctio quas facilis accusamus? Odit dolorum totam eligendi minus similique.</p>
-                        <p class="card-text contact-info"><small class="text-muted">sample@ceu.edu.ph</small></p>
+                        <h5 class="card-title">Mr. Carlos Rejann O. Labay</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">Science Laboratory Technician</h6>
+                        <p class="card-text">BS Biology <br>Schedule: Mon; Wednesday-Saturday - 6:30AM - 3:30PM; <br>Rest Day: Tuesday</p>
+                        <p class="card-text contact-info"><small class="text-muted">colabay@ceu.edu.ph</small></p>
                     </div>
                 </div>
             </div>
@@ -183,7 +186,7 @@ if (basename($_SERVER['PHP_SELF']) !== 'change-pass.php') {
             <div class="col-12 col-md-4 mb-4">
                 <div class="card dev-card h-100">
                     <div class="card-img-container">
-                        <img src="./resource/img/kriz.jpg" alt="Krizia Lleva" class="card-img-top">
+                        <img src="./resource/img/klleva.webp" alt="Krizia Lleva" class="card-img-top">
                     </div>
                     <div class="card-body">
                         <h5 class="card-title">Krizia Jane Lleva</h5>
@@ -197,7 +200,7 @@ if (basename($_SERVER['PHP_SELF']) !== 'change-pass.php') {
             <div class="col-12 col-md-4 mb-4">
                 <div class="card dev-card h-100">
                     <div class="card-img-container">
-                        <img src="./resource/img/tech2-placeholder.jpg" alt="Gelai Gabriel" class="card-img-top">
+                        <img src="./resource/img/agabriel.webp" alt="Gelai Gabriel" class="card-img-top">
                     </div>
                     <div class="card-body">
                         <h5 class="card-title">Angelique Mae Gabriel</h5>
