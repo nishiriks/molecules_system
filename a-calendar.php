@@ -11,14 +11,18 @@ if (basename($_SERVER['PHP_SELF']) !== 'change-pass.php') {
 $config = new config();
 $pdo = $config->con();
 
+date_default_timezone_set('Asia/Manila');
+
 // Get month and year from request or use current
 $month = isset($_GET['month']) ? (int)$_GET['month'] : date('n');
 $year = isset($_GET['year']) ? (int)$_GET['year'] : date('Y');
 
-// Get all requests for the selected month
+// Get all requests for the selected month with date ranges
 $sql = "SELECT 
             r.request_id,
             r.request_date,
+            r.date_from,
+            r.date_to,
             r.status,
             c.cart_id,
             u.first_name, 
@@ -31,22 +35,49 @@ $sql = "SELECT
         LEFT JOIN tbl_cart_items AS items ON c.cart_id = items.cart_id
         LEFT JOIN tbl_inventory AS inv ON items.product_id = inv.product_id
         WHERE c.cart_status != 'active'
-        AND MONTH(r.request_date) = ? AND YEAR(r.request_date) = ?
+        AND (
+            (MONTH(r.date_from) = ? AND YEAR(r.date_from) = ?) OR
+            (MONTH(r.date_to) = ? AND YEAR(r.date_to) = ?) OR
+            (r.date_from <= ? AND r.date_to >= ?)
+        )
         GROUP BY r.request_id 
-        ORDER BY r.request_date";
+        ORDER BY r.date_from";
+
+// Calculate the first and last day of the month for range checking
+$first_day_of_month = date('Y-m-01', mktime(0, 0, 0, $month, 1, $year));
+$last_day_of_month = date('Y-m-t', mktime(0, 0, 0, $month, 1, $year));
 
 $stmt = $pdo->prepare($sql);
-$stmt->execute([$month, $year]);
+$stmt->execute([$month, $year, $month, $year, $last_day_of_month, $first_day_of_month]);
 $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Group requests by date for easier display
 $requests_by_date = [];
 foreach ($requests as $request) {
-    $date = date('Y-m-d', strtotime($request['request_date']));
-    if (!isset($requests_by_date[$date])) {
-        $requests_by_date[$date] = [];
+    $date_from = $request['date_from'];
+    $date_to = $request['date_to'];
+    
+    // If date_from and date_to are the same, use just one day
+    if ($date_from == $date_to) {
+        $date = date('Y-m-d', strtotime($date_from));
+        if (!isset($requests_by_date[$date])) {
+            $requests_by_date[$date] = [];
+        }
+        $requests_by_date[$date][] = $request;
+    } else {
+        // Create date range
+        $current_date = $date_from;
+        while (strtotime($current_date) <= strtotime($date_to)) {
+            $date = date('Y-m-d', strtotime($current_date));
+            if (!isset($requests_by_date[$date])) {
+                $requests_by_date[$date] = [];
+            }
+            $requests_by_date[$date][] = $request;
+            
+            // Move to next day
+            $current_date = date('Y-m-d', strtotime($current_date . ' +1 day'));
+        }
     }
-    $requests_by_date[$date][] = $request;
 }
 ?>
 
@@ -86,6 +117,9 @@ foreach ($requests as $request) {
             <ul class="navbar-nav pe-3">
                 <li class="nav-item">
                     <a class="nav-link text-white" href="a-home.php">Requests</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white active" href="a-calendar.php">Calendar</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-white" href="a-search.php">Inventory</a>
@@ -164,8 +198,32 @@ foreach ($requests as $request) {
                         if (isset($requests_by_date[$current_date])) {
                             foreach ($requests_by_date[$current_date] as $request) {
                                 $status_class = strtolower($request['status']);
-                                $display_text = htmlspecialchars($request['first_name'] . ' ' . substr($request['last_name'], 0, 1) . '. - ' . $request['status']);
-                                echo '<div class="calendar-event ' . $status_class . '" data-bs-toggle="tooltip" title="' . htmlspecialchars($request['product_types'] ?? 'General') . ' Request - ' . htmlspecialchars($request['first_name'] . ' ' . $request['last_name']) . '" onclick="location.href=\'a-order-details.php?id=' . $request['request_id'] . '\'">';
+                                $date_from = date('m/d/Y', strtotime($request['date_from']));
+                                $date_to = date('m/d/Y', strtotime($request['date_to']));
+                                
+                                // Create display text
+                                if ($request['date_from'] == $request['date_to']) {
+                                    $date_display = $date_from;
+                                } else {
+                                    $date_display = $date_from . ' - ' . $date_to;
+                                }
+                                
+                                $display_text = htmlspecialchars($request['first_name'] . ' ' . substr($request['last_name'], 0, 1) . '.');
+                                $product_types = !empty($request['product_types']) ? $request['product_types'] : 'General';
+                                $tooltip_text = htmlspecialchars(
+                                    $product_types . ' Request - ' . 
+                                    $request['first_name'] . ' ' . $request['last_name'] . 
+                                    ' (' . $date_display . ')'
+                                );
+                                
+                                // Ensure all data attributes are properly set
+                                echo '<div class="calendar-event ' . $status_class . '" 
+                                        data-bs-toggle="tooltip" 
+                                        data-bs-placement="top"
+                                        title="' . $tooltip_text . '" 
+                                        data-date="' . $current_date . '"
+                                        data-request-id="' . $request['request_id'] . '"
+                                        onclick="window.location.href=\'a-order-details.php?id=' . $request['request_id'] . '\'">';
                                 echo $display_text;
                                 echo '</div>';
                             }
@@ -248,6 +306,26 @@ foreach ($requests as $request) {
             </p>
         </div>
     </footer>
+
+    <!-- Day details -->
+    <div class="modal fade" id="dayDetailsModal" tabindex="-1" aria-labelledby="dayDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="dayDetailsModalLabel">Orders for <span id="modalDate"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="dayOrdersList" class="day-orders-container">
+                        <!-- Orders will be loaded here via JavaScript -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
     <script src="resource/js/calendar.js"></script>

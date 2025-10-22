@@ -102,7 +102,7 @@ $items_in_cart = $cart->getItems();
                                     <div class="item-info">
                                         <h5 class="item-name"><?= htmlspecialchars($name) ?></h5>
                                         <p class="item-type"><?= htmlspecialchars($ptype) ?></p>
-                                        <small class="text-muted">Available Stock: <?= $current_stock + $amount ?></small>
+                                        <small class="text-muted">Available Stock: <?= $current_stock?></small>
                                     </div>
                                 </div>
                                 <div class="item-details-right">
@@ -114,7 +114,7 @@ $items_in_cart = $cart->getItems();
                                                 data-item-id="<?= $item['item_id'] ?>"
                                                 data-item-name="<?= htmlspecialchars($name) ?>"
                                                 data-item-amount="<?= htmlspecialchars($amount) ?>"
-                                                data-max-stock="<?= $current_stock + $amount ?>">
+                                                data-max-stock="<?= $current_stock?>">
                                             Edit
                                         </button>
 
@@ -173,7 +173,7 @@ $items_in_cart = $cart->getItems();
                                    class="form-control" 
                                    min="1" 
                                    required>
-                            <div class="form-text">Maximum available: <span id="max-stock-display"><?= $current_stock + $amount ?></span> units</div>
+                            <div class="form-text">Maximum available: <span id="max-stock-display"><?= $current_stock?></span> units</div>
                             <div id="amount-feedback" class="invalid-feedback"></div>
                         </div>
                         <button type="submit" class="btn btn-primary w-100 save-btn">Save Changes</button>

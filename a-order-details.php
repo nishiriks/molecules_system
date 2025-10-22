@@ -219,6 +219,9 @@ $time_display = ($time_from === $time_to) ? $time_from : $time_from . ' - ' . $t
             <a class="nav-link text-white" href="a-home.php">Requests</a>
           </li>
           <li class="nav-item">
+            <a class="nav-link text-white" href="a-calendar.php">Calendar</a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link text-white" href="a-search.php">Inventory</a>
           </li>
           <li class="nav-item">
