@@ -21,3 +21,9 @@ v1.1.0-alpha
 - Added calendar for admin
 - Fixed timezon issue
 - Temporarily removed stock updates
+
+v1.1.1-alpha
+- Updated Order details section
+- Bugs Fixed:
+    - Admin order details not filling PDF
+    - Order pdf remarks showing request_id when empty 
