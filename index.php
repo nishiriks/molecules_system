@@ -101,7 +101,7 @@ if (basename($_SERVER['PHP_SELF']) !== 'change-pass.php') {
                 <strong>IMPORTANT NOTES:</strong> <br>
                 1. Requests are subject to review by Science Laboratory Technicians. <br>
                 2. Materials are subject to specific lead times in which materials must be requested: <br> &nbsp;&nbsp;&nbsp;&nbsp;Chemicals / Supplies / Models / Charts - 2 days before intended use<br> 
-                &nbsp;&nbsp;&nbsp;&nbsp;Equipment - On the day of use<br> &nbsp;&nbsp;&nbsp;&nbsp;Specimen for instruction - 1 month before its use<br> &nbsp;&nbsp;&nbsp;&nbsp;Specimen for research - 2 months before its use<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;Equipment/Apparatus - On the day of use<br> &nbsp;&nbsp;&nbsp;&nbsp;Specimen for instruction - 1 month before its use<br> &nbsp;&nbsp;&nbsp;&nbsp;Specimen for research - 2 months before its use<br>
                 3. Any damage/lost material must be replaced or paid at the Cashier’s office before the end of the semester.<br>
                 4. Once your request is finalized, the system will provide you with a downloadable pdf, which you will then have to print and sign (if you are a student you will also need your adviser's signature). Afterwhich, you have to present this to the science laboratory technicians in person. This is to comply with the requirements of the science laboratory.
             </div>

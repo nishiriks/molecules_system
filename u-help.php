@@ -59,14 +59,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $mail->isSMTP();
             $mail->Host       = ''; 
             $mail->SMTPAuth   = true;
-            $mail->Username   = '';
+            $mail->Username   = 'ceumolecules.system@gmail.com';
             $mail->Password   = '';
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port       = 587;
             
             $mail->setFrom('ceumolecules.system@gmail.com', 'CEU MOLECULES System');
             
-            $mail->addAddress('magsakay2233884@mls.ceu.edu.ph', 'Lab Technician');
+            $mail->addAddress('magsakay2233884@mls.ceu.edu.ph@mls.ceu.edu.ph', 'Lab Technician');
             
             $mail->addReplyTo($email, $name);
             
@@ -85,7 +85,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
             $mail->send();
             $_SESSION['success_message'] = "Your message has been sent successfully! We'll get back to you soon.";
-            header('Location: help.php');
+            header('Location: u-help.php');
             exit();
             
         } catch (Exception $e) {
@@ -191,7 +191,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <div class="collapse faq-answer" id="faq2">
                             <ul>
                                 <li>Chemicals / Supplies / Models / Charts: 2 days before intended use</li>
-                                <li>Equipment: On the day of use</li>
+                                <li>Equipment/Apparatus: On the day of use</li>
                                 <li>Specimen for instruction: 1 month before its use</li>
                                 <li>Specimen for research: 2 months before its use</li>
                             </ul>
@@ -270,7 +270,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     }
                     ?>
 
-                    <form method="POST" action="help.php">
+                    <form method="POST" action="u-help.php">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
