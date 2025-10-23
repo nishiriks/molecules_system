@@ -114,7 +114,7 @@ $items_in_cart = $cart->getItems();
                                                 data-item-id="<?= $item['item_id'] ?>"
                                                 data-item-name="<?= htmlspecialchars($name) ?>"
                                                 data-item-amount="<?= htmlspecialchars($amount) ?>"
-                                                data-max-stock="<?= $current_stock?>">
+                                                data-max-stock="<?= $current_stock ?>">
                                             Edit
                                         </button>
 

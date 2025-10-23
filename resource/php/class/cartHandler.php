@@ -71,26 +71,12 @@ class CartController {
                         return;
                     }
                     
-                    // Get product_id from cart item to check stock
-                    $product_id = $this->getProductIdFromCartItem($item_id);
-                    if (!$product_id) {
-                        $_SESSION['error'] = 'Item not found in cart.';
-                        return;
-                    }
-
-                    // Check available stock (including what's already in cart)
-                    $available_stock = $this->getAvailableStockForUpdate($product_id, $item_id);
-                    if ($available_stock < $amount) {
-                        $_SESSION['error'] = "Cannot update. Only $available_stock units available in stock.";
-                        return;
-                    }
-
                     $success = $this->cart->updateItemAmount($item_id, $amount);
                     
                     if ($success) {
                         $_SESSION['message'] = 'Cart updated successfully.';
                     } else {
-                        $_SESSION['error'] = 'Failed to update cart. Please try again.';
+                        $_SESSION['error'] = 'Failed to update cart. Please check available stock and try again.';
                     }
                 }
                 break;
@@ -107,32 +93,6 @@ class CartController {
         $stmt->execute([$product_id]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result ? (int)$result['stock'] : 0;
-    }
-
-    private function getAvailableStockForUpdate($product_id, $item_id) {
-        // Get current stock + current amount in cart (since we're updating)
-        $current_cart_amount = $this->getCurrentCartAmount($item_id);
-        $current_stock = $this->getAvailableStock($product_id);
-        
-        return $current_stock + $current_cart_amount;
-    }
-
-    private function getCurrentCartAmount($item_id) {
-        $stmt = $this->pdo->prepare(
-            "SELECT amount FROM tbl_cart_items WHERE item_id = ?"
-        );
-        $stmt->execute([$item_id]);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result ? (int)$result['amount'] : 0;
-    }
-
-    private function getProductIdFromCartItem($item_id) {
-        $stmt = $this->pdo->prepare(
-            "SELECT product_id FROM tbl_cart_items WHERE item_id = ?"
-        );
-        $stmt->execute([$item_id]);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result ? $result['product_id'] : null;
     }
 }
 ?>

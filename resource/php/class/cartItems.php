@@ -65,28 +65,19 @@ class CartItems {
         // Calculate the difference
         $difference = $amount - $current_amount;
 
-        // Check if we have enough stock for the increase
+        // If amount is being increased, check if we have enough stock
         if ($difference > 0) {
             $available_stock = $this->getAvailableStock($product_id);
             if ($available_stock < $difference) {
-                return false;
+                return false; // Not enough stock for the increase
             }
         }
 
+        // Simply update the cart item amount WITHOUT modifying stock
         $sql = "UPDATE tbl_cart_items SET amount = ? 
                 WHERE item_id = ? AND cart_id = ?";
         $stmt = $this->pdo->prepare($sql);
-        $success = $stmt->execute([$amount, $item_id, $this->getActiveCartId()]);
-
-        if ($success && $difference != 0) {
-            // Update stock accordingly
-            $stmt_stock = $this->pdo->prepare(
-                "UPDATE tbl_inventory SET stock = stock - ? WHERE product_id = ?"
-            );
-            $stmt_stock->execute([$difference, $product_id]);
-        }
-
-        return $success;
+        return $stmt->execute([$amount, $item_id, $this->getActiveCartId()]);
     }
 
     public function removeItem($item_id) {
