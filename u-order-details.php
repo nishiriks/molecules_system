@@ -242,6 +242,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['cancel_btn'])) {
             <div class="row justify-content-center">
                 <div class="col-lg-8 col-md-10">
                     <div class="request-form-card">
+                        <a href="u-request.php"><i class="fas fa-arrow-left"></i></a>
                         <form method="post" action="">
                             <h4 class="request-details-title mt-1 mb-3 text-center">Request Details <p><?= date('m/d/Y - g:ia', strtotime($details['request_date'])) ?></p></h4>
                             
@@ -315,7 +316,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['cancel_btn'])) {
                             <div class="d-flex justify-content-end mt-4">            
                               <div class="status-container">
                                   <button type="submit" class="btn finalize-btn" name="view-btn">View Form</button>
-                                  <a href="u-request.php" type="submit" class="btn finalize-btn ms-3">Back</a>
                               </div>
                           </div>
                         </form>

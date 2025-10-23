@@ -129,12 +129,11 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <a href="u-request.php?status=Pickup" class="filter-btn <?= ($filter_status === 'Pickup') ? 'active' : '' ?>">For Pick-up</a>
                 <a href="u-request.php?status=Received" class="filter-btn <?= ($filter_status === 'Received') ? 'active' : '' ?>">Received</a>
                 <a href="u-request.php?status=Returned" class="filter-btn <?= ($filter_status === 'Returned') ? 'active' : '' ?>">Returned</a>
-                <a href="u-request.php?status=Broken" class="filter-btn <?= ($filter_status === 'Broken') ? 'active' : '' ?>">Broken</a>
-                <a href="u-request.php?status=Lost" class="filter-btn <?= ($filter_status === 'Lost') ? 'active' : '' ?>">Lost</a>
+                <a href="u-request.php?status=Damaged" class="filter-btn <?= ($filter_status === 'Damaged' || 'Lost') ? 'active' : '' ?>">Damaged/Lost</a>
                 <a href="u-request.php?status=Cancelled" class="filter-btn <?= ($filter_status === 'Cancelled') ? 'active' : '' ?>">Cancelled</a>
                 <a href="u-request.php?status=Disapproved" class="filter-btn <?= ($filter_status === 'Disapproved') ? 'active' : '' ?>">Disapproved</a>
+                <a href="u-request.php?status=Completed" class="filter-btn <?= ($filter_status === 'Completed') ? 'active' : '' ?>">Completed</a>
             </div>
-
             <div class="row">
                 <?php if (empty($requests)): ?>
                     <div class="col-12"><p class="text-center fs-4 mt-5">You have no request history.</p></div>

@@ -119,10 +119,10 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <a href="a-home.php?status=Pickup" class="filter-btn <?= ($filter_status === 'Pickup') ? 'active' : '' ?>">For Pick-up</a>
         <a href="a-home.php?status=Received" class="filter-btn <?= ($filter_status === 'Received') ? 'active' : '' ?>">Received</a>
         <a href="a-home.php?status=Returned" class="filter-btn <?= ($filter_status === 'Returned') ? 'active' : '' ?>">Returned</a>
-        <a href="a-home.php?status=Broken" class="filter-btn <?= ($filter_status === 'Broken') ? 'active' : '' ?>">Broken</a>
-        <a href="a-home.php?status=Lost" class="filter-btn <?= ($filter_status === 'Lost') ? 'active' : '' ?>">Lost</a>
+        <a href="a-home.php?status=Damaged" class="filter-btn <?= ($filter_status === 'Damaged'|| 'Lost' ) ? 'active' : '' ?>">Damaged/Lost</a>
         <a href="a-home.php?status=Cancelled" class="filter-btn <?= ($filter_status === 'Cancelled') ? 'active' : '' ?>">Cancelled</a>
         <a href="a-home.php?status=Disapproved" class="filter-btn <?= ($filter_status === 'Disapproved') ? 'active' : '' ?>">Disapproved</a>
+        <a href="a-home.php?status=Completed" class="filter-btn <?= ($filter_status === 'Completed') ? 'active' : '' ?>">Completed</a>
       </div>
 
       <div class="row mb-4">

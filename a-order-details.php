@@ -80,13 +80,71 @@ if (!$details) {
     exit();
 }
 
-$sql_items = "SELECT i.amount, inv.name, inv.measure_unit, inv.product_type, inv.product_id, inv.is_consumables, inv.stock
+$sql_items = "SELECT i.amount, i.report_status, i.report_qty, inv.name, inv.measure_unit, inv.product_type, inv.product_id, inv.is_consumables, inv.stock
               FROM tbl_cart_items i
               JOIN tbl_inventory inv ON i.product_id = inv.product_id
               WHERE i.cart_id = ?";
 $stmt_items = $pdo->prepare($sql_items);
 $stmt_items->execute([$details['cart_id']]);
 $items = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
+
+// Check if there are any reported items (damaged or lost)
+$has_reported_items = false;
+foreach ($items as $item) {
+    if (in_array($item['report_status'], ['Damaged', 'Lost'])) {
+        $has_reported_items = true;
+        break;
+    }
+}
+
+// Handle Mark as Completed
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['mark_completed'])) {
+    $sql_update = "UPDATE tbl_requests SET status = 'Completed' WHERE request_id = ?";
+    $stmt_update = $pdo->prepare($sql_update);
+    $stmt_update->execute([$request_id]);
+    
+    // REDIRECT to prevent resubmission
+    header("Location: a-order-details.php?id=" . $request_id);
+    exit();
+}
+
+// Handle Mark as Incomplete
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['mark_incomplete'])) {
+    $sql_update = "UPDATE tbl_requests SET status = 'Returned' WHERE request_id = ?";
+    $stmt_update = $pdo->prepare($sql_update);
+    $stmt_update->execute([$request_id]);
+    
+    // REDIRECT to prevent resubmission
+    header("Location: a-order-details.php?id=" . $request_id);
+    exit();
+}
+
+// Handle Mark as Paid
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['mark_paid'])) {
+    try {
+        $pdo->beginTransaction();
+        
+        // Update request status to Paid
+        $sql_update_request = "UPDATE tbl_requests SET status = 'Paid' WHERE request_id = ?";
+        $stmt_update_request = $pdo->prepare($sql_update_request);
+        $stmt_update_request->execute([$request_id]);
+        
+        // Update report_status only for items that are Damaged or Lost
+        $sql_update_items = "UPDATE tbl_cart_items SET report_status = 'Paid' WHERE cart_id = ? AND report_status IN ('Damaged', 'Lost')";
+        $stmt_update_items = $pdo->prepare($sql_update_items);
+        $stmt_update_items->execute([$details['cart_id']]);
+        
+        $pdo->commit();
+        
+        // REDIRECT to prevent resubmission
+        header("Location: a-order-details.php?id=" . $request_id);
+        exit();
+        
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        $error_message = "Error updating payment status: " . $e->getMessage();
+    }
+}
 
 // Handle PDF generation - EXACT COPY FROM u-order-details.php
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['view-btn'])) {
@@ -396,8 +454,25 @@ $time_display = ($time_from === $time_to) ? $time_from : $time_from . ' - ' . $t
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     <?php endif; ?>
+                    <!-- Error Message Alert from Session -->
+                    <?php if (isset($_SESSION['error_message'])): ?>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <?= $_SESSION['error_message'] ?>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        <?php unset($_SESSION['error_message']); ?>
+                    <?php endif; ?>
+                    <!-- Success Message Alert -->
+                    <?php if (isset($_SESSION['success_message'])): ?>
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <?= $_SESSION['success_message'] ?>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        <?php unset($_SESSION['success_message']); ?>
+                    <?php endif; ?>
                     
                     <div class="request-form-card">
+                        <a href="a-home.php"><i class="fas fa-arrow-left"></i></a>
                         <form method="post" action="">
                             <h4 class="request-details-title mt-1 mb-3 text-center">Request Details <p><?= date('m/d/Y - g:ia', strtotime($details['request_date'])) ?></p></h4>
                             
@@ -441,6 +516,15 @@ $time_display = ($time_from === $time_to) ? $time_from : $time_from . ' - ' . $t
                                             <?php if ($item['is_consumables'] == 1): ?>
                                                 <br><small class="text-muted">Available Stock: <?= htmlspecialchars($item['stock']) ?> <?= htmlspecialchars($item['measure_unit']) ?></small>
                                             <?php endif; ?>
+                                            <?php if (isset($item['report_status']) && !empty($item['report_status'])): ?>
+                                                <br><small class="<?= $item['report_status'] == 'Paid' ? 'text-success' : 'text-danger' ?>">
+                                                    <strong>Reported as <?= htmlspecialchars($item['report_status']) ?>: 
+                                                    <?= htmlspecialchars($item['report_qty'] ?? $item['amount']) ?> <?= htmlspecialchars($item['measure_unit']) ?></strong>
+                                                    <?php if ($item['report_status'] == 'Paid'): ?>
+                                                        (Payment Completed)
+                                                    <?php endif; ?>
+                                                </small>
+                                            <?php endif; ?>
                                         </li>
                                     <?php endforeach; ?>
                                 </ul>
@@ -471,6 +555,30 @@ $time_display = ($time_from === $time_to) ? $time_from : $time_from . ' - ' . $t
                                                 <input type="text" class="form-control" value="Cancelled" readonly style="width: auto; flex: 1;">
                                                 <button type="submit" class="btn finalize-btn" name="restore_btn">Restore to Submitted</button>
                                             </div>
+                                        <?php elseif (in_array($details['status'], ['Damaged', 'Lost'])): ?>
+                                            <!-- Damaged/Lost State - Show only status and Paid button -->
+                                            <div class="d-flex align-items-center gap-3">
+                                                <input type="text" class="form-control" value="<?= htmlspecialchars($details['status']) ?>" readonly style="width: auto; flex: 1;">
+                                                <?php 
+                                                // Check if there are still unpaid damaged/lost items
+                                                $has_unpaid_items = false;
+                                                foreach ($items as $item) {
+                                                    if (in_array($item['report_status'], ['Damaged', 'Lost'])) {
+                                                        $has_unpaid_items = true;
+                                                        break;
+                                                    }
+                                                }
+                                                ?>
+                                                <?php if ($has_unpaid_items): ?>
+                                                    <button type="submit" class="btn finalize-btn" name="mark_paid">Mark as Paid</button>
+                                                <?php endif; ?>
+                                            </div>
+                                        <?php elseif ($details['status'] == 'Paid'): ?>
+                                            <!-- Paid State - Show only status (no buttons) -->
+                                            <input type="text" class="form-control" value="Paid" readonly style="width: auto; flex: 1;">
+                                        <?php elseif ($details['status'] == 'Completed'): ?>
+                                            <!-- Completed State - Show only status (no buttons) -->
+                                            <input type="text" class="form-control" value="Completed" readonly style="width: auto; flex: 1;">
                                         <?php else: ?>
                                             <!-- Other Statuses - Display dropdown for status updates -->
                                             <div class="d-flex align-items-center gap-3">
@@ -504,11 +612,35 @@ $time_display = ($time_from === $time_to) ? $time_from : $time_from . ' - ' . $t
                                     </div>
                                 </div>
                             </div>
-
                             <div class="d-flex justify-content-end mt-4">            
                                 <div class="status-container">
                                     <button type="submit" class="btn finalize-btn" name="view-btn">View Form</button>
-                                    <a href="a-home.php" type="submit" class="btn finalize-btn ms-3">Back</a>
+                                    
+                                    <?php if (in_array($details['status'], ['Returned', 'Paid'])): ?>
+                                        <!-- Show Completed button for Returned or Paid status -->
+                                        <button type="submit" class="btn finalize-btn ms-3" name="mark_completed">Mark as Completed</button>
+                                    <?php elseif ($details['status'] == 'Completed'): ?>
+                                        <!-- Show Mark Incomplete button for Completed status -->
+                                        <button type="submit" class="btn finalize-btn ms-3" name="mark_incomplete">Mark Incomplete</button>
+                                    <?php endif; ?>
+                                    
+                                    <!-- Report button - Only show if no existing damage/loss report -->
+                                    <?php 
+                                    // Check if order already has damage/loss report
+                                    $sql_check_report = "SELECT COUNT(*) as report_count 
+                                                    FROM tbl_cart_items 
+                                                    WHERE cart_id = ? AND report_status IN ('Damaged', 'Lost')";
+                                    $stmt_check_report = $pdo->prepare($sql_check_report);
+                                    $stmt_check_report->execute([$details['cart_id']]);
+                                    $has_existing_report = $stmt_check_report->fetch(PDO::FETCH_ASSOC)['report_count'] > 0;
+                                    
+                                    // Only show report button if no existing report and status allows it
+                                    $show_report_button = !$has_existing_report && in_array($details['status'], ['Submitted', 'Pickup', 'Received', 'Returned']);
+                                    ?>
+                                    
+                                    <?php if ($show_report_button): ?>
+                                        <a href="a-report-damage-loss.php?request_id=<?= $request_id ?>" class="btn finalize-btn ms-3">Report Damage / Loss</a>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </form>
