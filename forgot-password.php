@@ -72,7 +72,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <input type="email" class="form-control" name="email" placeholder="Enter your CEU email" required>
                         </div>
 
-                        <button type="submit" class="log-button btn btn-primary w-100 mb-3">Send Reset Link</button>
+                        <button type="submit" class="g-log btn btn-primary w-100 mb-3">Send Reset Link</button>
 
                         <div class="text-center">
                             <a href="login.php" class="text-decoration-none">Back to Login</a>

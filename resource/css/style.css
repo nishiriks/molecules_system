@@ -185,22 +185,60 @@ body {
 
 /* forgot password card */
 .forgot-card {
-    justify-content: center;
-    text-align: center;
-    background: #F8F9FA;
-    width: 500px;
-    /* height: 900px; */
-    border-radius: 20px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    box-shadow: -4px 4px 4px 4px #00000040;
+  justify-content: center;
+  text-align: center;
+  background: #F8F9FA;
+  max-width: 500px;  /* <--- KEY CHANGE */
+  width: 100%;       /* <--- KEY CHANGE */
+  border-radius: 20px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  box-shadow: -4px 4px 4px 4px #00000040;
 }
-
 .email-name{
     font-weight:500;
 }
 
+/* verification card */
+.verification-card {
+    background: #F8F9FA;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      max-width: 500px;  /* <--- KEY CHANGE */
+  width: 100%;       /* <--- KEY CHANGE */
+}
 
+.g-log{
+    /* max-width: fit-content; */
+    /* margin-left: 20px; */
+    /* font-size: 14px; */
+    background: linear-gradient(90deg, #6FA9FF 0%, #8D5CCB 100%);
+    border: none;
+    /* box-shadow: -4px 4px 4px 0px #00000040; */
+    font-weight: bold;
+    font-weight: 700;
+}
+.g-log:hover,
+.g-log:active {
+    font-weight: bold;
+    background: linear-gradient(90deg, #8D5CCB 0%, #6FA9FF 100%);
+    transform: scale(1.0) translateY(-5px);
+    /* box-shadow: 0 0 6px #3c229b; */
+}
+
+.g-log:active:hover {
+    background: linear-gradient(90deg, #8D5CCB 0%, #6FA9FF 100%);
+    transition: all 0.3s ease;
+}
+
+/* reset password card */
+.reset-card {
+    background: #F8F9FA;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      max-width: 500px;  /* <--- KEY CHANGE */
+  width: 100%;       /* <--- KEY CHANGE */
+}
 
 
 
