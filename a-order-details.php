@@ -528,7 +528,7 @@ $time_display = ($time_from === $time_to) ? $time_from : $time_from . ' - ' . $t
                     <div class="request-form-card">
                         <a href="a-home.php"><i class="fas fa-arrow-left"></i></a>
                         <form method="post" action="">
-                            <h4 class="request-details-title mt-1 mb-3 text-center">Request Details <p><?= date('m/d/Y - g:ia', strtotime($details['request_date'])) ?></p></h4>
+                            <h4 class="request-details-title mt-1 mb-3 text-center">Request Details <p><?= date('m/d/Y - g:ia', strtotime($details['request_date'])) ?> (Order no. <?= htmlspecialchars($details['request_id']) ?>)</p></h4>
                             
                             <div class="row mb-3 align-items-end">
                                 <div class="col-md-4">

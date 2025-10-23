@@ -143,7 +143,7 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <div class="request-card">
                                 <div class="request-details-container">
                                     <div class="request-text">
-                                        <h5 class="request-title"><?= htmlspecialchars($request['product_types'] ?? 'General') ?> Request</h5>
+                                        <h5 class="request-title"><?= htmlspecialchars($request['product_types'] ?? 'General') ?> Request <span class="timestamp-text">(Order no. <?= htmlspecialchars($request['request_id']) ?>)</span></h5>
                                         <p class="request-info">Submitted By: <?=htmlspecialchars($request['first_name'] .' '. $request['last_name'])?></p>
                                         <p class="request-info">Status: <?= htmlspecialchars($request['status']) ?></p>
                                     </div>
