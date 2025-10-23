@@ -15,19 +15,19 @@ $pdo = $config->con();
 if (isset($_GET['search']) && !empty(trim($_GET['search']))) {
     $search_term = trim($_GET['search']);
     
-    $sql = "SELECT * FROM tbl_inventory WHERE name LIKE ? AND (is_special = 0 OR is_special IS NULL) ORDER BY name ASC";
+    $sql = "SELECT * FROM tbl_inventory WHERE name LIKE ? AND (is_special = 0 OR is_special IS NULL) AND stock > 0 ORDER BY name ASC";
     $stmt = $pdo->prepare($sql);
     $stmt->execute(["%$search_term%"]);
     
 } else if (isset($_GET['type']) && !empty($_GET['type'])) {
     $product_type = $_GET['type'];
     
-    $sql = "SELECT * FROM tbl_inventory WHERE product_type = ? AND (is_special = 0 OR is_special IS NULL) ORDER BY name ASC";
+    $sql = "SELECT * FROM tbl_inventory WHERE product_type = ? AND (is_special = 0 OR is_special IS NULL) AND stock > 0 ORDER BY name ASC";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$product_type]);
 
 } else {
-    $sql = "SELECT * FROM tbl_inventory WHERE (is_special = 0 OR is_special IS NULL) ORDER BY name ASC";
+    $sql = "SELECT * FROM tbl_inventory WHERE (is_special = 0 OR is_special IS NULL) AND stock > 0 ORDER BY name ASC";
     $stmt = $pdo->query($sql);
 }
 
@@ -152,12 +152,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <div class="container-fluid">
     <div class="row row-cols-1 row-cols-md-4 row-cols-lg-4 g-3">
       <?php if (empty($products)): ?>
-        <div class="col-12">
-            <div class="card p-5 text-center">
-                <p class="fs-4 mt-3">No products found.</p>
-                <a href="u-search.php" class="btn btn-primary mt-3 mx-auto" style="max-width: 250px;">View All Products</a>
-            </div>
-        </div>
+
       <?php else: ?>
          <?php foreach ($products as $product): ?>
             <div class="col product-col">
@@ -201,13 +196,6 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
           <h5 class="popup-product-type equip-title">Equipment</h5>
         </div>
         <span class="stock-info">Stock: 5</span>
-      </div>
-      <h5 class="reservation-title mb-3">Reservation Queue</h5>
-      <div class="reservation-item">
-        August 31, 2025 - PHL 301 - Biology 101
-      </div>
-      <div class="reservation-item">
-        August 31, 2025 - PHL 301 - Biology 101
       </div>
     </div>
     <div class="request-button-container">

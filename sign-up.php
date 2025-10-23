@@ -1,5 +1,12 @@
-<?php require_once './resource/php/init.php';
+<?php 
+require_once './resource/php/init.php';
 require_once './resource/php/class/Auth.php';
+
+// Start session if not already started
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
 $auth = new Auth();
 $errors = [];
 
@@ -10,6 +17,8 @@ $stored_data = [
     'email' => '',
     'student_number' => ''
 ];
+
+$success_message = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $fname = $_POST['first_name'];
@@ -46,8 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errors = $auth->register($fname, $lname, $email, $pass, $cpass, $snum);
 
         if (empty($errors)) {
-            header('Location: login.php?registered=success');
-            exit();
+            $success_message = "Registration successful! We've sent a verification link to your email. Please verify your email before logging in.";
         }
     }
 }
@@ -136,6 +144,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                     <br>
                     <?php
+                        // Show success message
+                        if (!empty($success_message)) {
+                            echo "
+                            <div class='alert alert-success alert-dismissible fade show' role='alert'>
+                                {$success_message}
+                                <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+                            </div>
+                            ";
+                        }
+
+                        // Show error messages
                         if (!empty($errors)) {
                             foreach ($errors as $error) {
                                 $auth->showAlert($error);
@@ -157,4 +176,11 @@ function showAlert() {
   alertBox.classList.remove("d-none");
   alertBox.classList.add("show");
 }
+
+// Auto-show success message if exists
+<?php if (!empty($success_message)): ?>
+document.addEventListener('DOMContentLoaded', function() {
+    showAlert();
+});
+<?php endif; ?>
 </script>
