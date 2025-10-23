@@ -1,4 +1,5 @@
 <?php
+require_once 'EmailService.php';
 class Auth extends config {
     public function __construct() {
         parent::__construct(); 
@@ -97,7 +98,7 @@ class Auth extends config {
         self::requireAccountType(['Student', 'Faculty']);
     }
 
-    public function register($first_name, $last_name, $email, $password, $confirm_password, $student_number) {
+     public function register($first_name, $last_name, $email, $password, $confirm_password, $student_number) {
         $errors = [];
         $account_type = ''; 
 
@@ -132,13 +133,48 @@ class Auth extends config {
 
         if (empty($errors)) {
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-            // Set is_active = 1 for new registrations
-            $sql = "INSERT INTO tbl_users (first_name, last_name, email, password, account_type, is_active) VALUES (?, ?, ?, ?, ?, 1)";
-            $this->query($sql, [$first_name, $last_name, $email, $hashed_password, $account_type]);
+            $verification_code = $this->generateVerificationCode();
+            $verification_expiry = date('Y-m-d H:i:s', strtotime('+24 hours'));
+            
+            // Set is_active = 1 but is_verified = 0 for new registrations
+            $sql = "INSERT INTO tbl_users (first_name, last_name, email, password, account_type, is_active, is_verified, verification_code, verification_code_expiry) VALUES (?, ?, ?, ?, ?, 1, 0, ?, ?)";
+            $this->query($sql, [$first_name, $last_name, $email, $hashed_password, $account_type, $verification_code, $verification_expiry]);
+            
+            // Send verification email
+            $emailService = new EmailService();
+            $emailSent = $emailService->sendVerificationEmail($email, $first_name . ' ' . $last_name, $verification_code);
+            
+            if (!$emailSent) {
+                $errors[] = "Registration successful but verification email failed to send. Please contact support.";
+            }
         }
         return $errors;
     }
 
+    private function generateVerificationCode($length = 32) {
+        return bin2hex(random_bytes($length / 2));
+    }
+
+    public function verifyEmail($verification_code) {
+        $current_time = date('Y-m-d H:i:s');
+        
+        $user = $this->query("SELECT user_id, verification_code_expiry FROM tbl_users WHERE verification_code = ? AND is_verified = 0", [$verification_code]);
+        
+        if (empty($user)) {
+            return "Invalid or expired verification code.";
+        }
+        
+        if ($user[0]['verification_code_expiry'] < $current_time) {
+            return "Verification code has expired. Please request a new one.";
+        }
+        
+        // Update user as verified
+        $this->query("UPDATE tbl_users SET is_verified = 1, verification_code = NULL, verification_code_expiry = NULL WHERE verification_code = ?", [$verification_code]);
+        
+        return true;
+    }
+
+    // Update login method to check verification
     public function login($email, $password) {
         $errors = []; 
 
@@ -155,6 +191,13 @@ class Auth extends config {
 
             if ($user_data && password_verify($password, $user_data[0]['password'])) {
                 $user = $user_data[0];
+                
+                // Check if email is verified
+                if (!$user['is_verified']) {
+                    $errors[] = "Please verify your email address before logging in. Check your email for the verification link.";
+                    return $errors;
+                }
+                
                 $_SESSION['user_id'] = $user['user_id'];
                 $_SESSION['user_email'] = $user['email'];
                 $_SESSION['first_name'] = $user['first_name'];
