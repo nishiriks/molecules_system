@@ -21,6 +21,24 @@ if (empty($request_id)) {
     exit();
 }
 
+// Function to check if consumable items have sufficient stock
+function checkSufficientStock($items) {
+    $insufficient_items = [];
+    foreach ($items as $item) {
+        if ($item['is_consumables'] == 1) {
+            if ($item['stock'] < $item['amount']) {
+                $insufficient_items[] = [
+                    'name' => $item['name'],
+                    'requested' => $item['amount'],
+                    'available' => $item['stock'],
+                    'unit' => $item['measure_unit']
+                ];
+            }
+        }
+    }
+    return $insufficient_items;
+}
+
 // Function to subtract consumable items from inventory
 function subtractConsumableItems($pdo, $items) {
     foreach ($items as $item) {
@@ -186,17 +204,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['view-btn'])) {
     exit();
 }
 
+// Initialize error message variable
+$error_message = '';
+
 // Handle Approve button (change from Pending to Submitted)
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['approve_btn'])) {
-    $sql_update = "UPDATE tbl_requests SET status = 'Submitted' WHERE request_id = ?";
-    $stmt_update = $pdo->prepare($sql_update);
-    $stmt_update->execute([$request_id]);
+    // Check if there's sufficient stock before approving
+    $insufficient_items = checkSufficientStock($items);
     
-    // Subtract consumable items from inventory
-    subtractConsumableItems($pdo, $items);
-    
-    $stmt_request->execute([$request_id]);
-    $details = $stmt_request->fetch(PDO::FETCH_ASSOC);
+    if (empty($insufficient_items)) {
+        $sql_update = "UPDATE tbl_requests SET status = 'Submitted' WHERE request_id = ?";
+        $stmt_update = $pdo->prepare($sql_update);
+        $stmt_update->execute([$request_id]);
+        
+        // Subtract consumable items from inventory
+        subtractConsumableItems($pdo, $items);
+        
+        // REDIRECT to prevent resubmission
+        header("Location: a-order-details.php?id=" . $request_id);
+        exit();
+    } else {
+        // Set error message
+        $error_message = "Cannot approve request: Insufficient stock for the following items:<br>";
+        foreach ($insufficient_items as $item) {
+            $error_message .= "- {$item['name']}: Requested {$item['requested']} {$item['unit']}, Available {$item['available']} {$item['unit']}<br>";
+        }
+    }
 }
 
 // Handle Disapprove button (change from Pending to Disapproved)
@@ -205,8 +238,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['disapprove_btn'])) {
     $stmt_update = $pdo->prepare($sql_update);
     $stmt_update->execute([$request_id]);
     
-    $stmt_request->execute([$request_id]);
-    $details = $stmt_request->fetch(PDO::FETCH_ASSOC);
+    // REDIRECT to prevent resubmission
+    header("Location: a-order-details.php?id=" . $request_id);
+    exit();
 }
 
 // Handle Return to Pending button (change from Disapproved to Pending)
@@ -215,8 +249,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['return_to_pending_btn'
     $stmt_update = $pdo->prepare($sql_update);
     $stmt_update->execute([$request_id]);
     
-    $stmt_request->execute([$request_id]);
-    $details = $stmt_request->fetch(PDO::FETCH_ASSOC);
+    // REDIRECT to prevent resubmission
+    header("Location: a-order-details.php?id=" . $request_id);
+    exit();
 }
 
 // Handle Cancel button (change to Cancelled)
@@ -228,21 +263,34 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['cancel_btn'])) {
     // Add back consumable items to inventory
     addBackConsumableItems($pdo, $items);
     
-    $stmt_request->execute([$request_id]);
-    $details = $stmt_request->fetch(PDO::FETCH_ASSOC);
+    // REDIRECT to prevent resubmission
+    header("Location: a-order-details.php?id=" . $request_id);
+    exit();
 }
 
 // Handle Restore button (change from Cancelled to Submitted)
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['restore_btn'])) {
-    $sql_update = "UPDATE tbl_requests SET status = 'Submitted' WHERE request_id = ?";
-    $stmt_update = $pdo->prepare($sql_update);
-    $stmt_update->execute([$request_id]);
+    // Check if there's sufficient stock before restoring
+    $insufficient_items = checkSufficientStock($items);
     
-    // Subtract consumable items from inventory
-    subtractConsumableItems($pdo, $items);
-    
-    $stmt_request->execute([$request_id]);
-    $details = $stmt_request->fetch(PDO::FETCH_ASSOC);
+    if (empty($insufficient_items)) {
+        $sql_update = "UPDATE tbl_requests SET status = 'Submitted' WHERE request_id = ?";
+        $stmt_update = $pdo->prepare($sql_update);
+        $stmt_update->execute([$request_id]);
+        
+        // Subtract consumable items from inventory
+        subtractConsumableItems($pdo, $items);
+        
+        // REDIRECT to prevent resubmission
+        header("Location: a-order-details.php?id=" . $request_id);
+        exit();
+    } else {
+        // Set error message
+        $error_message = "Cannot restore request: Insufficient stock for the following items:<br>";
+        foreach ($insufficient_items as $item) {
+            $error_message .= "- {$item['name']}: Requested {$item['requested']} {$item['unit']}, Available {$item['available']} {$item['unit']}<br>";
+        }
+    }
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_status'])) {
@@ -252,19 +300,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_status'])) {
         $stmt_update = $pdo->prepare($sql_update);
         $stmt_update->execute([$new_status, $request_id]);
         
-        $stmt_request->execute([$request_id]);
-        $details = $stmt_request->fetch(PDO::FETCH_ASSOC);
+        // REDIRECT to prevent resubmission
+        header("Location: a-order-details.php?id=" . $request_id);
+        exit();
     }
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_remarks'])) {
     $new_remarks = $_POST['remarks'] ?? '';
-    $sql_update_remarks = "UPDATE tbl_requests SET remarks = ? WHERE request_id = ?";
-    $stmt_update_remarks = $pdo->prepare($sql_update_remarks);
-    $stmt_update_remarks->execute([$new_remarks, $request_id]);
     
-    $stmt_request->execute([$request_id]);
-    $details = $stmt_request->fetch(PDO::FETCH_ASSOC);
+    // Validate remarks length
+    if (strlen($new_remarks) > 200) {
+        $error_message = "Remarks cannot exceed 200 characters. Current length: " . strlen($new_remarks) . " characters.";
+    } else {
+        $sql_update_remarks = "UPDATE tbl_requests SET remarks = ? WHERE request_id = ?";
+        $stmt_update_remarks = $pdo->prepare($sql_update_remarks);
+        $stmt_update_remarks->execute([$new_remarks, $request_id]);
+        
+        // REDIRECT to prevent resubmission
+        header("Location: a-order-details.php?id=" . $request_id);
+        exit();
+    }
 }
 
 $date_from = date('m/d/Y', strtotime($details['date_from']));
@@ -333,6 +389,14 @@ $time_display = ($time_from === $time_to) ? $time_from : $time_from . ' - ' . $t
         <div class="container-fluid py-5">
             <div class="row justify-content-center">
                 <div class="col-lg-8 col-md-10">
+                    <!-- Error Message Alert -->
+                    <?php if (!empty($error_message)): ?>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <?= $error_message ?>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    <?php endif; ?>
+                    
                     <div class="request-form-card">
                         <form method="post" action="">
                             <h4 class="request-details-title mt-1 mb-3 text-center">Request Details <p><?= date('m/d/Y - g:ia', strtotime($details['request_date'])) ?></p></h4>
@@ -374,6 +438,9 @@ $time_display = ($time_from === $time_to) ? $time_from : $time_from . ' - ' . $t
                                         <li class="list-group-item">
                                             <?= htmlspecialchars($item['name']) ?> (<?= htmlspecialchars($item['product_type']) ?>) - 
                                             <strong>Amount:</strong> <?= htmlspecialchars($item['amount']) ?> <?= htmlspecialchars($item['measure_unit']) ?>
+                                            <?php if ($item['is_consumables'] == 1): ?>
+                                                <br><small class="text-muted">Available Stock: <?= htmlspecialchars($item['stock']) ?> <?= htmlspecialchars($item['measure_unit']) ?></small>
+                                            <?php endif; ?>
                                         </li>
                                     <?php endforeach; ?>
                                 </ul>
@@ -426,8 +493,15 @@ $time_display = ($time_from === $time_to) ? $time_from : $time_from . ' - ' . $t
                             <div class="mb-4 mt-4">
                                 <label for="remarks" class="form-label request-details-title remarks">Remarks:</label>
                                 <div class="remarks-container">
-                                    <textarea class="form-control" id="remarks" name="remarks" rows="4" placeholder="Add remarks here..."><?= htmlspecialchars($details['remarks'] ?? '') ?></textarea>
-                                    <button type="submit" class="btn edit-remarks-btn" name="update_remarks">Save Remarks</button>
+                                    <textarea class="form-control" id="remarks" name="remarks" rows="4" 
+                                              placeholder="Add remarks here... (Maximum 200 characters)"
+                                              maxlength="200"><?= htmlspecialchars($details['remarks'] ?? '') ?></textarea>
+                                    <div class="d-flex justify-content-between align-items-center mt-2">
+                                        <small class="text-muted">
+                                            <span id="charCount"><?= strlen($details['remarks'] ?? '') ?></span>/200 characters
+                                        </small>
+                                        <button type="submit" class="btn edit-remarks-btn" name="update_remarks">Save Remarks</button>
+                                    </div>
                                 </div>
                             </div>
 
@@ -459,5 +533,33 @@ $time_display = ($time_from === $time_to) ? $time_from : $time_from . ' - ' . $t
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
   integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+
+<script>
+// Character counter for remarks textarea
+document.addEventListener('DOMContentLoaded', function() {
+    const remarksTextarea = document.getElementById('remarks');
+    const charCount = document.getElementById('charCount');
+    
+    if (remarksTextarea && charCount) {
+        // Update character count on input
+        remarksTextarea.addEventListener('input', function() {
+            charCount.textContent = this.value.length;
+        });
+        
+        // Prevent pasting more than 200 characters
+        remarksTextarea.addEventListener('paste', function(e) {
+            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            if (this.value.length + pastedText.length > 200) {
+                e.preventDefault();
+                // Get only the portion that fits within the limit
+                const allowedLength = 200 - this.value.length;
+                if (allowedLength > 0) {
+                    document.execCommand('insertText', false, pastedText.substring(0, allowedLength));
+                }
+            }
+        });
+    }
+});
+</script>
 </body>
 </html>

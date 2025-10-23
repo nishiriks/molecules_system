@@ -198,7 +198,7 @@ function generateFDFData($material_type, $instructor_name, $signature, $subject,
     
     // Remarks (split into two lines if needed)
     if (!empty($remarks)) {
-        $remarks_lines = str_split($remarks, 50); // Split long remarks
+        $remarks_lines = str_split($remarks, 100); // Split long remarks at 90 characters max
         $fields[] = "<< /T (remark_line1) /V (" . escapeFDFString($remarks_lines[0] ?? '') . ") >>";
         if (isset($remarks_lines[1])) {
             $fields[] = "<< /T (remark_line2) /V (" . escapeFDFString($remarks_lines[1]) . ") >>";
