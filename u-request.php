@@ -158,7 +158,7 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                             <form action="cartAction.php" method="POST" style="display:inline;">
                                                 <input type="hidden" name="action" value="cancel_request">
                                                 <input type="hidden" name="cart_id" value="<?= $request['cart_id'] ?>">
-                                                <button type="submit" class="cancel-button">Cancel</button>
+                                                <!-- <button type="submit" class="cancel-button">Cancel</button> -->
                                             </form>
                                         <?php endif; ?>
                                         <a href="u-order-details.php?id=<?= $request['request_id'] ?>" class="view-button">View</a>

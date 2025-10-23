@@ -295,7 +295,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['cancel_btn'])) {
                                             <!-- Pending State - Display current status and cancel button -->
                                             <div class="d-flex align-items-center gap-3">
                                                 <input type="text" class="form-control" value="<?= htmlspecialchars($details['status']) ?>" readonly style="flex: 1;">
-                                                <button type="submit" class="btn finalize-btn" name="cancel_btn" onclick="return confirmCancel()">Cancel</button>
+                                                <!-- <button type="submit" class="btn finalize-btn" name="cancel_btn" onclick="return confirmCancel()">Cancel</button> -->
                                             </div>
                                         <?php else: ?>
                                             <!-- Other Statuses - Display status as read-only -->
