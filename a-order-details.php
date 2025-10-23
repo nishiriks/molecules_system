@@ -1,4 +1,8 @@
 <?php
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 session_start();
 require_once 'resource/php/init.php';
 require_once 'resource/php/class/Auth.php';
@@ -10,7 +14,39 @@ if (basename($_SERVER['PHP_SELF']) !== 'change-pass.php') {
 
 $config = new config();
 $pdo = $config->con();
-$request_id = $_GET['id'];
+$request_id = $_GET['id'] ?? '';
+
+if (empty($request_id)) {
+    header('Location: a-home.php');
+    exit();
+}
+
+// Function to subtract consumable items from inventory
+function subtractConsumableItems($pdo, $items) {
+    foreach ($items as $item) {
+        if ($item['is_consumables'] == 1) {
+            $new_stock = $item['stock'] - $item['amount'];
+            if ($new_stock < 0) $new_stock = 0;
+            
+            $sql_update = "UPDATE tbl_inventory SET stock = ? WHERE product_id = ?";
+            $stmt_update = $pdo->prepare($sql_update);
+            $stmt_update->execute([$new_stock, $item['product_id']]);
+        }
+    }
+}
+
+// Function to add back consumable items to inventory
+function addBackConsumableItems($pdo, $items) {
+    foreach ($items as $item) {
+        if ($item['is_consumables'] == 1) {
+            $new_stock = $item['stock'] + $item['amount'];
+            
+            $sql_update = "UPDATE tbl_inventory SET stock = ? WHERE product_id = ?";
+            $stmt_update = $pdo->prepare($sql_update);
+            $stmt_update->execute([$new_stock, $item['product_id']]);
+        }
+    }
+}
 
 $sql_request = "SELECT r.*, u.first_name, u.last_name, c.cart_status
                 FROM tbl_requests r
@@ -26,7 +62,7 @@ if (!$details) {
     exit();
 }
 
-$sql_items = "SELECT i.amount, inv.name, inv.measure_unit, inv.product_type
+$sql_items = "SELECT i.amount, inv.name, inv.measure_unit, inv.product_type, inv.product_id, inv.is_consumables, inv.stock
               FROM tbl_cart_items i
               JOIN tbl_inventory inv ON i.product_id = inv.product_id
               WHERE i.cart_id = ?";
@@ -91,8 +127,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['view-btn'])) {
         if ($i * 2 < $item_count) {
             $item1 = $items[$i * 2];
             $materials_data[] = [
-                'quantity_1' => $item1['amount'] . ' ' . $item1['measure_unit'], // Put amount and unit in quantity field
-                'material_1' => $item1['name'] // Only name in material field, no product_type or amount
+                'quantity_1' => $item1['amount'] . ' ' . $item1['measure_unit'],
+                'material_1' => $item1['name']
             ];
         } else {
             $materials_data[] = ['quantity_1' => '', 'material_1' => ''];
@@ -100,8 +136,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['view-btn'])) {
         
         if ($i * 2 + 1 < $item_count) {
             $item2 = $items[$i * 2 + 1];
-            $materials_data[$i]['quantity_2'] = $item2['amount'] . ' ' . $item2['measure_unit']; // Put amount and unit in quantity field
-            $materials_data[$i]['material_2'] = $item2['name']; // Only name in material field, no product_type or amount
+            $materials_data[$i]['quantity_2'] = $item2['amount'] . ' ' . $item2['measure_unit'];
+            $materials_data[$i]['material_2'] = $item2['name'];
         } else {
             $materials_data[$i]['quantity_2'] = '';
             $materials_data[$i]['material_2'] = '';
@@ -156,6 +192,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['approve_btn'])) {
     $stmt_update = $pdo->prepare($sql_update);
     $stmt_update->execute([$request_id]);
     
+    // Subtract consumable items from inventory
+    subtractConsumableItems($pdo, $items);
+    
     $stmt_request->execute([$request_id]);
     $details = $stmt_request->fetch(PDO::FETCH_ASSOC);
 }
@@ -186,6 +225,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['cancel_btn'])) {
     $stmt_update = $pdo->prepare($sql_update);
     $stmt_update->execute([$request_id]);
     
+    // Add back consumable items to inventory
+    addBackConsumableItems($pdo, $items);
+    
     $stmt_request->execute([$request_id]);
     $details = $stmt_request->fetch(PDO::FETCH_ASSOC);
 }
@@ -195,6 +237,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['restore_btn'])) {
     $sql_update = "UPDATE tbl_requests SET status = 'Submitted' WHERE request_id = ?";
     $stmt_update = $pdo->prepare($sql_update);
     $stmt_update->execute([$request_id]);
+    
+    // Subtract consumable items from inventory
+    subtractConsumableItems($pdo, $items);
     
     $stmt_request->execute([$request_id]);
     $details = $stmt_request->fetch(PDO::FETCH_ASSOC);
@@ -254,6 +299,7 @@ $time_display = ($time_from === $time_to) ? $time_from : $time_from . ' - ' . $t
   <script src="https://kit.fontawesome.com/6563a04357.js" crossorigin="anonymous"></script>
 
 </head>
+<body>
   <nav class="navbar navbar-expand-lg">
     <a class="navbar-brand" href="#">
       <img class="ceu-logo img-fluid" src="./resource/img/ceu-molecules.png" alt="CEU Molecules Logo"/>
@@ -414,5 +460,4 @@ $time_display = ($time_from === $time_to) ? $time_from : $time_from . ' - ' . $t
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
   integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 </body>
-
 </html>
