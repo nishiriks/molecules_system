@@ -35,3 +35,9 @@ v1.2.0-alpha
 - Fixed bugs in cart with item overflows
 - Removed cancellation of request for User
 
+
+v1.3.0-alpha
+- Added basic damage/lost report
+- Added working special request
+- Fixed multiple bugs caused by addin special request
+- Added Admin Action logging
