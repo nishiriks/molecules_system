@@ -23,7 +23,12 @@ if (isset($_GET['search']) && !empty(trim($_GET['search']))) {
     $search_term = trim($_GET['search']);
     $page_title = "Searching for: \"" . htmlspecialchars($search_term) . "\"";
     
-    $sql = "SELECT * FROM tbl_inventory WHERE name LIKE ? AND (is_special = 0 OR is_special IS NULL) ORDER BY name ASC";
+    // ADDED filter for is_deleted
+    $sql = "SELECT * FROM tbl_inventory 
+            WHERE name LIKE ? 
+            AND (is_special = 0 OR is_special IS NULL) 
+            AND is_deleted = 0 
+            ORDER BY name ASC";
     $stmt = $pdo->prepare($sql);
     $stmt->execute(["%$search_term%"]);
     
@@ -31,12 +36,21 @@ if (isset($_GET['search']) && !empty(trim($_GET['search']))) {
     $product_type = $_GET['type'];
     $page_title = "Showing: " . htmlspecialchars($product_type);
     
-    $sql = "SELECT * FROM tbl_inventory WHERE product_type = ? AND (is_special = 0 OR is_special IS NULL) ORDER BY name ASC";
+    // ADDED filter for is_deleted
+    $sql = "SELECT * FROM tbl_inventory 
+            WHERE product_type = ? 
+            AND (is_special = 0 OR is_special IS NULL) 
+            AND is_deleted = 0 
+            ORDER BY name ASC";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$product_type]);
 
 } else {
-    $sql = "SELECT * FROM tbl_inventory WHERE (is_special = 0 OR is_special IS NULL) ORDER BY name ASC";
+    // ADDED filter for is_deleted
+    $sql = "SELECT * FROM tbl_inventory 
+            WHERE (is_special = 0 OR is_special IS NULL) 
+            AND is_deleted = 0 
+            ORDER BY name ASC";
     $stmt = $pdo->query($sql);
 }
 
@@ -182,6 +196,14 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
         <div class="edit-button-container">
           <button type="button" class="btn-button edit-button">Edit</button>
+          
+          <form action="a-action.php" method="POST" style="display: inline;">
+              <input type="hidden" name="action" value="soft_delete_item">
+              <input type="hidden" name="product_id" value=""> 
+              <button type="submit" class="btn-button delete-button btn btn-danger">
+                  Delete
+              </button>
+          </form>
         </div>
       </div>
     </div>
@@ -203,6 +225,13 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
     <div class="button-container">
       <button type="button" class="btn-button edit-button">Edit</button>
+      <form action="a-action.php" method="POST" style="display: inline;">
+          <input type="hidden" name="action" value="soft_delete_item">
+          <input type="hidden" name="product_id" value=""> 
+          <button type="submit" class="btn-button delete-button btn btn-danger">
+          Delete
+          </button>
+      </form>
     </div>
   </div>
 </div>

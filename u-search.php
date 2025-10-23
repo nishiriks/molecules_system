@@ -15,19 +15,36 @@ $pdo = $config->con();
 if (isset($_GET['search']) && !empty(trim($_GET['search']))) {
     $search_term = trim($_GET['search']);
     
-    $sql = "SELECT * FROM tbl_inventory WHERE name LIKE ? AND (is_special = 0 OR is_special IS NULL) AND stock > 0 ORDER BY name ASC";
+    // ADDED: AND is_deleted = 0
+    $sql = "SELECT * FROM tbl_inventory 
+            WHERE name LIKE ? 
+            AND (is_special = 0 OR is_special IS NULL) 
+            AND is_deleted = 0 
+            AND stock > 0 
+            ORDER BY name ASC";
     $stmt = $pdo->prepare($sql);
     $stmt->execute(["%$search_term%"]);
     
 } else if (isset($_GET['type']) && !empty($_GET['type'])) {
     $product_type = $_GET['type'];
     
-    $sql = "SELECT * FROM tbl_inventory WHERE product_type = ? AND (is_special = 0 OR is_special IS NULL) AND stock > 0 ORDER BY name ASC";
+    // ADDED: AND is_deleted = 0
+    $sql = "SELECT * FROM tbl_inventory 
+            WHERE product_type = ? 
+            AND (is_special = 0 OR is_special IS NULL) 
+            AND is_deleted = 0 
+            AND stock > 0 
+            ORDER BY name ASC";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$product_type]);
 
 } else {
-    $sql = "SELECT * FROM tbl_inventory WHERE (is_special = 0 OR is_special IS NULL) AND stock > 0 ORDER BY name ASC";
+    // ADDED: AND is_deleted = 0
+    $sql = "SELECT * FROM tbl_inventory 
+            WHERE (is_special = 0 OR is_special IS NULL) 
+            AND is_deleted = 0 
+            AND stock > 0 
+            ORDER BY name ASC";
     $stmt = $pdo->query($sql);
 }
 
