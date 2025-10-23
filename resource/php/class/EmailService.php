@@ -96,5 +96,66 @@ class EmailService {
         </html>
         ";
     }
+
+    public function sendPasswordResetEmail($toEmail, $toName, $resetToken) {
+        try {
+            $this->mail->addAddress($toEmail, $toName);
+            
+            // Content
+            $this->mail->isHTML(true);
+            $this->mail->Subject = 'Password Reset - Molecules CEU';
+            
+            $resetLink = "http://" . $_SERVER['HTTP_HOST'] . "/molecules_system/reset-password.php?token=" . $resetToken;
+            
+            $this->mail->Body = $this->getPasswordResetEmailTemplate($toName, $resetLink);
+            $this->mail->AltBody = "Hello $toName,\n\nYou requested to reset your password. Click this link to reset your password: $resetLink\n\nThis link will expire in 1 hour.\n\nIf you didn't request this, please ignore this email.";
+
+            $this->mail->send();
+            return true;
+        } catch (Exception $e) {
+            error_log("Password reset email failed: " . $this->mail->ErrorInfo);
+            return false;
+        }
+    }
+
+    private function getPasswordResetEmailTemplate($name, $link) {
+        return "
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                .header { background: #007bff; color: white; padding: 20px; text-align: center; }
+                .content { padding: 20px; background: #f9f9f9; }
+                .button { display: inline-block; padding: 12px 24px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; }
+                .warning { color: #dc3545; font-weight: bold; }
+            </style>
+        </head>
+        <body>
+            <div class='container'>
+                <div class='header'>
+                    <h1>Molecules CEU</h1>
+                    <h2>Password Reset</h2>
+                </div>
+                <div class='content'>
+                    <p>Hello <strong>$name</strong>,</p>
+                    <p>You requested to reset your password for your Molecules CEU account.</p>
+                    
+                    <p>Click the button below to reset your password:</p>
+                    <a href='$link' class='button'>Reset Password</a>
+                    
+                    <p>If the button doesn't work, copy and paste this link in your browser:</p>
+                    <p><a href='$link'>$link</a></p>
+                    
+                    <p class='warning'>This reset link will expire in 1 hour.</p>
+                    
+                    <p>If you didn't request a password reset, please ignore this email. Your password will remain unchanged.</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        ";
+    }
 }
 ?>
