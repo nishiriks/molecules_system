@@ -179,17 +179,9 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
             <span class="stock-info"></span>
           </div>
-          <h5 class="reservation-title mb-3">Reservation Queue</h5>
-          <div class="reservation-item">
-            August 31, 2025 - PHL 301 - Biology 101
-          </div>
-          <div class="reservation-item">
-            August 31, 2025 - PHL 301 - Biology 101
-          </div>
         </div>
         <div class="edit-button-container">
           <button type="button" class="btn-button edit-button">Edit</button>
-          <button type="button" class="btn-button delete-button">Delete</button>
         </div>
       </div>
     </div>
@@ -211,7 +203,6 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
     <div class="button-container">
       <button type="button" class="btn-button edit-button">Edit</button>
-      <button type="button" class="btn-button delete-button">Delete</button>
     </div>
   </div>
 </div>
@@ -228,15 +219,10 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
       <label for="edit-equipment-stock">Stock:</label>
       <div class="stock-input-group">
         <input type="number" id="edit-equipment-stock" name="stock" min="1">
-
-        <select id="edit-equipment-stock-unit" name="measure_unit">
-            <option value="" disabled>Select Unit</option> 
-            <option value="units">units</option>
-        </select>
+        <input type="text" id="edit-equipment-stock-unit" name="measure_unit" placeholder="e.g., units" value="units">
       </div>
       <div class="button-container">
         <button type="submit" class="save-btn">Save</button>
-        <button type="submit" class="save-btn">Cancel</button>
       </div>
     </form>
   </div>
@@ -254,16 +240,10 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
       <label for="edit-chemical-stock">Stock:</label>
       <div class="stock-input-group">
         <input type="number" id="edit-chemical-stock" name="stock" min="1">
-         <select id="edit-chemical-stock-unit" name="measure_unit">
-          <option value="" disabled>Select Unit</option> 
-          <option value="ml">ml</option>
-          <option value="l">l</option>
-          <option value="units">units</option>
-        </select>
+        <input type="text" id="edit-chemical-stock-unit" name="measure_unit" placeholder="e.g., ml, l, units">
       </div>
       <div class="button-container">
         <button type="submit" class="save-btn">Save</button>
-        <button type="submit" class="save-btn">Cancel</button>
        </div>
       </form>
     </div>

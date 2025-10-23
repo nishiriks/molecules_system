@@ -152,27 +152,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // --- ACTION 3: HANDLE DELETE BUTTON (Admin only) ---
         if (deleteButton) {
-            const popup = deleteButton.closest('.product-popup');
-            const productId = popup.dataset.editingProductId;
-            const productNameElement = popup.querySelector('.equipment-title') || popup.querySelector('.chemical-title');
-            const productName = productNameElement ? productNameElement.textContent : 'this item';
-
-            // Show a confirmation dialog before deleting
-            if (confirm(`Are you sure you want to delete "${productName}"? This action cannot be undone.`)) {
-                // If confirmed, create a temporary form to submit the product ID
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = 'deleteProduct.php';
-                
-                const hiddenInput = document.createElement('input');
-                hiddenInput.type = 'hidden';
-                hiddenInput.name = 'product_id';
-                hiddenInput.value = productId;
-
-                form.appendChild(hiddenInput);
-                document.body.appendChild(form);
-                form.submit();
-            }
+            // Let the Bootstrap modal handler in a-search.php handle the deletion
+            // We just prevent the default and let the modal take over
+            event.preventDefault();
+            return;
         }
 
         // --- ACTION 4: CLOSE ANY POPUP ---
