@@ -121,7 +121,7 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <a href="a-home.php?status=Returned" class="filter-btn <?= ($filter_status === 'Returned') ? 'active' : '' ?>">Returned</a>
         <a href="a-home.php?status=Broken" class="filter-btn <?= ($filter_status === 'Broken') ? 'active' : '' ?>">Broken</a>
         <a href="a-home.php?status=Lost" class="filter-btn <?= ($filter_status === 'Lost') ? 'active' : '' ?>">Lost</a>
-        <a href="a-home.php?status=Canceled" class="filter-btn <?= ($filter_status === 'Canceled') ? 'active' : '' ?>">Canceled</a>
+        <a href="a-home.php?status=Cancelled" class="filter-btn <?= ($filter_status === 'Cancelled') ? 'active' : '' ?>">Cancelled</a>
         <a href="a-home.php?status=Disapproved" class="filter-btn <?= ($filter_status === 'Disapproved') ? 'active' : '' ?>">Disapproved</a>
       </div>
 

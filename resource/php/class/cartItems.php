@@ -9,14 +9,31 @@ class CartItems {
     }
 
     public function addItem($product_id, $amount) {
+        // Validate amount
+        if ($amount < 1) {
+            return false;
+        }
+
         $cart_id = $this->getActiveCartId(true); 
 
+        // Check current amount in cart for this product
         $stmt_check = $this->pdo->prepare(
             "SELECT item_id, amount FROM tbl_cart_items WHERE cart_id = ? AND product_id = ?"
         );
         $stmt_check->execute([$cart_id, $product_id]);
         $existing_item = $stmt_check->fetch();
 
+        // Calculate total amount that would be in cart after adding
+        $current_cart_amount = $existing_item ? $existing_item['amount'] : 0;
+        $total_amount_after_add = $current_cart_amount + $amount;
+
+        // Check if total would exceed available stock
+        $available_stock = $this->getAvailableStock($product_id);
+        if ($total_amount_after_add > $available_stock) {
+            return false; // Would exceed available stock
+        }
+
+        // Proceed with adding/updating the item
         if ($existing_item) {
             $new_amount = $existing_item['amount'] + $amount;
             $stmt_update = $this->pdo->prepare(
@@ -65,28 +82,19 @@ class CartItems {
         // Calculate the difference
         $difference = $amount - $current_amount;
 
-        // Check if we have enough stock for the increase
+        // If amount is being increased, check if we have enough stock
         if ($difference > 0) {
             $available_stock = $this->getAvailableStock($product_id);
             if ($available_stock < $difference) {
-                return false;
+                return false; // Not enough stock for the increase
             }
         }
 
+        // Simply update the cart item amount WITHOUT modifying stock
         $sql = "UPDATE tbl_cart_items SET amount = ? 
                 WHERE item_id = ? AND cart_id = ?";
         $stmt = $this->pdo->prepare($sql);
-        $success = $stmt->execute([$amount, $item_id, $this->getActiveCartId()]);
-
-        if ($success && $difference != 0) {
-            // Update stock accordingly
-            $stmt_stock = $this->pdo->prepare(
-                "UPDATE tbl_inventory SET stock = stock - ? WHERE product_id = ?"
-            );
-            $stmt_stock->execute([$difference, $product_id]);
-        }
-
-        return $success;
+        return $stmt->execute([$amount, $item_id, $this->getActiveCartId()]);
     }
 
     public function removeItem($item_id) {

@@ -131,7 +131,7 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <a href="u-request.php?status=Returned" class="filter-btn <?= ($filter_status === 'Returned') ? 'active' : '' ?>">Returned</a>
                 <a href="u-request.php?status=Broken" class="filter-btn <?= ($filter_status === 'Broken') ? 'active' : '' ?>">Broken</a>
                 <a href="u-request.php?status=Lost" class="filter-btn <?= ($filter_status === 'Lost') ? 'active' : '' ?>">Lost</a>
-                <a href="u-request.php?status=Canceled" class="filter-btn <?= ($filter_status === 'Canceled') ? 'active' : '' ?>">Canceled</a>
+                <a href="u-request.php?status=Cancelled" class="filter-btn <?= ($filter_status === 'Cancelled') ? 'active' : '' ?>">Cancelled</a>
                 <a href="u-request.php?status=Disapproved" class="filter-btn <?= ($filter_status === 'Disapproved') ? 'active' : '' ?>">Disapproved</a>
             </div>
 
@@ -158,7 +158,7 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                             <form action="cartAction.php" method="POST" style="display:inline;">
                                                 <input type="hidden" name="action" value="cancel_request">
                                                 <input type="hidden" name="cart_id" value="<?= $request['cart_id'] ?>">
-                                                <button type="submit" class="cancel-button">Cancel</button>
+                                                <!-- <button type="submit" class="cancel-button">Cancel</button> -->
                                             </form>
                                         <?php endif; ?>
                                         <a href="u-order-details.php?id=<?= $request['request_id'] ?>" class="view-button">View</a>

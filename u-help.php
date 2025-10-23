@@ -221,7 +221,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <i class="fas fa-chevron-right"></i> Can I cancel or modify a request after submission?
                         </div>
                         <div class="collapse faq-answer" id="faq5">
-                            Requests cannot be modified upon finalization but it can cancelled if you have not yet submitted the physical form to the laboratory technicians. Once processing has begun, please contact the laboratory directly for any changes.
+                            Requests cannot be modified after finalization but it can be cancelled if you have not yet submitted the physical form by contacting the laboratory technicians. Once processing has begun, please contact the laboratory directly for any changes.
                         </div>
                     </div>
                     

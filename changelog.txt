@@ -28,3 +28,10 @@ v1.1.1-alpha
     - Admin order details not filling PDF
     - Order pdf remarks showing request_id when empty 
     - Fixed bug with search not searching when in another category
+
+v1.2.0-alpha
+- Updated status changing functions
+- Added stock updates to admin order details
+- Fixed bugs in cart with item overflows
+- Removed cancellation of request for User
+
