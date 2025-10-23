@@ -12,6 +12,7 @@ if (basename($_SERVER['PHP_SELF']) !== 'change-pass.php') {
 $config = new config();
 $pdo = $config->con();
 $success_message = '';
+$warning_message = '';
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['request-item-btn'])) {
@@ -46,6 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['request-item-btn'])) 
             
             if ($success) {
                 $success_message = "Item '$item_name' was requested successfully and added to your cart!";
+                $warning_message = "Note: Special requested items cannot have their quantity changed in the cart. The amount will always match your requested quantity.";
             } else {
                 $success_message = "Item '$item_name' was added to inventory but could not be added to cart. Please try adding it manually from the search page.";
             }
@@ -154,6 +156,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['request-item-btn'])) 
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     <?php endif; ?>
+                    
+                    <!-- Warning Message -->
+                    <?php if (!empty($warning_message)): ?>
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                            <?php echo htmlspecialchars($warning_message); ?>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    <?php endif; ?>
+                    
+                    <!-- Information Alert (always shown) -->
+                    <div class="alert alert-info" role="alert">
+                        <i class="fa-solid fa-circle-info me-2"></i>
+                        <strong>Special Request Information:</strong> Items requested through this form are considered special requests. Once added to your cart, the quantity cannot be changed and will always match your requested amount.
+                    </div>
                     
                     <div class="request-form-card">
                         <form method="post" action="">

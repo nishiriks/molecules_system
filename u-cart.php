@@ -97,6 +97,11 @@ $items_in_cart = $cart->getItems();
                         $current_stock = $item['stock'] ?? 0;
                         $is_special = $item['is_special'] ?? 0;
                         $is_editable = !$is_special; // Special items are not editable
+                        
+                        // For special items, force amount to match stock
+                        if ($is_special) {
+                            $amount = $current_stock;
+                        }
                         ?>
                         <div class="col-12 mb-3">
                             <div class="cart-card-item">

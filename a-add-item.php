@@ -88,6 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add-item-btn'])) {
 
   <main class="equipment-page">
       <div class="container-fluid py-5">
+        <h2 class="requests-heading">Add Item</h2>
           <div class="row justify-content-center">
               <div class="col-lg-8 col-md-10">
                   <div class="request-form-card">
