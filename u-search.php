@@ -83,7 +83,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
       </li>
       <li class="nav-links chemicals-btn">
         <a href="u-search.php?type=Supplies">
-          <i class="fa-solid fa-prescription-bottle icon"></i>
+          <i class="fa-solid fa-ruler icon"></i>
           <span class="text nav-text">Supplies</span>
         </a>
       </li>
@@ -103,6 +103,12 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <a href="u-search.php?type=Specimen">
           <i class="fa-solid fa-vial icon"></i>
           <span class="text nav-text">Specimens</span>
+        </a>
+      </li>
+      <li class="nav-links chemicals-btn">
+        <a href="u-search.php?type=Apparatus">
+          <i class="fa-solid fa-prescription-bottle icon"></i>
+          <span class="text nav-text">Apparatus</span>
         </a>
       </li>
       <li class="nav-links chemicals-btn">

@@ -95,6 +95,8 @@ $items_in_cart = $cart->getItems();
                         $amount = $item['amount'] ?? 0;
                         $measure = $item['measure_unit'] ?? '';
                         $current_stock = $item['stock'] ?? 0;
+                        $is_special = $item['is_special'] ?? 0;
+                        $is_editable = !$is_special; // Special items are not editable
                         ?>
                         <div class="col-12 mb-3">
                             <div class="cart-card-item">
@@ -103,21 +105,30 @@ $items_in_cart = $cart->getItems();
                                     <div class="item-info">
                                         <h5 class="item-name"><?= htmlspecialchars($name) ?></h5>
                                         <p class="item-type"><?= htmlspecialchars($ptype) ?></p>
+                                        <?php if ($is_special): ?>
+                                            <span class="badge bg-warning text-dark">Special Request</span>
+                                        <?php endif; ?>
                                         <small class="text-muted">Available Stock: <?= $current_stock?></small>
                                     </div>
                                 </div>
                                 <div class="item-details-right">
                                     <div class="item-amount">Amount: <?= htmlspecialchars($amount) ?> <?= htmlspecialchars($measure) ?></div>
                                     <div class="item-actions">
-                                        <button class="edit-btn" 
-                                                data-bs-toggle="modal" 
-                                                data-bs-target="#edit-popup"
-                                                data-item-id="<?= $item['item_id'] ?>"
-                                                data-item-name="<?= htmlspecialchars($name) ?>"
-                                                data-item-amount="<?= htmlspecialchars($amount) ?>"
-                                                data-max-stock="<?= $current_stock ?>">
-                                            Edit
-                                        </button>
+                                        <?php if ($is_editable): ?>
+                                            <button class="edit-btn" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#edit-popup"
+                                                    data-item-id="<?= $item['item_id'] ?>"
+                                                    data-item-name="<?= htmlspecialchars($name) ?>"
+                                                    data-item-amount="<?= htmlspecialchars($amount) ?>"
+                                                    data-max-stock="<?= $current_stock ?>">
+                                                Edit
+                                            </button>
+                                        <?php else: ?>
+                                            <button class="edit-btn disabled" disabled title="Special requested items cannot be edited">
+                                                Edit
+                                            </button>
+                                        <?php endif; ?>
 
                                         <form action="cartAction.php" method="POST" style="display: inline;">
                                             <input type="hidden" name="action" value="remove">
