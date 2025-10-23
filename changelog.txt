@@ -47,5 +47,6 @@ v1.4.0-alpha
 
 v1.5.0-alpha
 - Added Forgot Password
+- Added order number to show
 
 v1.0.0-beta
