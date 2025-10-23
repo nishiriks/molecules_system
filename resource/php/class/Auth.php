@@ -298,4 +298,88 @@ class Auth extends config
             error_log("Log error: " . $e->getMessage());
         }
     }
+
+public function sendPasswordReset($email) {
+    // Validate email format
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return "Invalid email format.";
+    }
+
+    // Check if user exists and is active
+    $user = $this->query("SELECT user_id, first_name, last_name, is_active FROM tbl_users WHERE email = ?", [$email]);
+    
+    if (empty($user)) {
+        return "If this email exists in our system, we will send reset instructions.";
+    }
+    
+    if (!$user[0]['is_active']) {
+        return "This account has been deactivated. Please contact administrator.";
+    }
+
+    // Generate reset token
+    $reset_token = $this->generateVerificationCode();
+    $reset_expiry = date('Y-m-d H:i:s', strtotime('+1 hour')); // Token valid for 1 hour
+
+    // Store reset token in database
+    $this->query("UPDATE tbl_users SET reset_token = ?, reset_token_expiry = ? WHERE email = ?", 
+                [$reset_token, $reset_expiry, $email]);
+
+    // Send reset email
+    $emailService = new EmailService();
+    $user_name = $user[0]['first_name'] . ' ' . $user[0]['last_name'];
+    $emailSent = $emailService->sendPasswordResetEmail($email, $user_name, $reset_token);
+
+    if ($emailSent) {
+        return true;
+    } else {
+        return "Failed to send reset email. Please try again later.";
+    }
+}
+
+public function validateResetToken($token) {
+    $current_time = date('Y-m-d H:i:s');
+    
+    $user = $this->query("SELECT user_id, reset_token_expiry FROM tbl_users WHERE reset_token = ?", [$token]);
+    
+    if (empty($user)) {
+        return "Invalid or expired reset token.";
+    }
+    
+    if ($user[0]['reset_token_expiry'] < $current_time) {
+        // Clear expired token
+        $this->query("UPDATE tbl_users SET reset_token = NULL, reset_token_expiry = NULL WHERE reset_token = ?", [$token]);
+        return "Reset token has expired. Please request a new one.";
+    }
+    
+    return true;
+}
+
+    public function getUserByResetToken($token) {
+        $user = $this->query("SELECT email FROM tbl_users WHERE reset_token = ?", [$token]);
+        return $user[0] ?? null;
+    }
+
+    public function resetPassword($email, $new_password, $confirm_password) {
+        // Validate passwords
+        if (empty($new_password) || empty($confirm_password)) {
+            return "Both password fields are required.";
+        }
+        
+        if ($new_password !== $confirm_password) {
+            return "Passwords do not match.";
+        }
+        
+        if (strlen($new_password) < 8) {
+            return "Password must be at least 8 characters long.";
+        }
+
+        // Hash new password
+        $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+
+        // Update password and clear reset token
+        $this->query("UPDATE tbl_users SET password = ?, reset_token = NULL, reset_token_expiry = NULL WHERE email = ?", 
+                    [$hashed_password, $email]);
+
+        return true;
+    }
 }

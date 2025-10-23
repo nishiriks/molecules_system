@@ -1,4 +1,4 @@
-<?php 
+<?php
 require_once './resource/php/init.php';
 require_once './resource/php/class/Auth.php';
 
@@ -38,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Email domain validation
     $valid_ceu_domains = ['@ceu.edu.ph', '@mls.ceu.edu.ph'];
     $user_email_domain = strtolower(substr($email, strpos($email, '@')));
-    
+
     if (!in_array($user_email_domain, $valid_ceu_domains)) {
         $errors[] = "Registration is only for CEU Students and Staff.";
     }
@@ -63,14 +63,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign-up</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css"  href="resource/css/style.css">
+    <link rel="stylesheet" type="text/css" href="resource/css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -80,16 +81,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 </head>
+
 <body class="signup-page">
     <!--pop-up-->
-   <div class="col-md-6">
-    <div id="successAlert" 
-         class="alert alert-success alert-dismissible fade d-none" 
-         role="alert">
-        We have sent a verification link to your email!
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <div class="col-md-6">
+        <div id="successAlert"
+            class="alert alert-success alert-dismissible fade d-none"
+            role="alert">
+            We have sent a verification link to your email!
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
     </div>
-</div>
 
     <section class="log-in d-flex justify-content-center align-items-center">
         <div class="container">
@@ -144,22 +146,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                     <br>
                     <?php
-                        // Show success message
-                        if (!empty($success_message)) {
-                            echo "
+                    // Show success message
+                    if (!empty($success_message)) {
+                        echo "
                             <div class='alert alert-success alert-dismissible fade show' role='alert'>
                                 {$success_message}
                                 <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
                             </div>
                             ";
-                        }
+                    }
 
-                        // Show error messages
-                        if (!empty($errors)) {
-                            foreach ($errors as $error) {
-                                $auth->showAlert($error);
-                            }
+                    // Show error messages
+                    if (!empty($errors)) {
+                        foreach ($errors as $error) {
+                            $auth->showAlert($error);
                         }
+                    }
                     ?>
                 </div>
             </div>
@@ -168,19 +170,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 </body>
+
 </html>
 
 <script>
-function showAlert() {
-  const alertBox = document.getElementById("successAlert");
-  alertBox.classList.remove("d-none");
-  alertBox.classList.add("show");
-}
+    function showAlert() {
+        const alertBox = document.getElementById("successAlert");
+        alertBox.classList.remove("d-none");
+        alertBox.classList.add("show");
+    }
 
-// Auto-show success message if exists
-<?php if (!empty($success_message)): ?>
-document.addEventListener('DOMContentLoaded', function() {
-    showAlert();
-});
-<?php endif; ?>
+    // Auto-show success message if exists
+    <?php if (!empty($success_message)): ?>
+        document.addEventListener('DOMContentLoaded', function() {
+            showAlert();
+        });
+    <?php endif; ?>
 </script>
