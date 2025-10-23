@@ -77,6 +77,7 @@ $items_in_cart = $cart->getItems();
     <main class="user-cart">
         <div class="container">
             <h2 class="requests-heading mt-2">My Cart</h2>
+            
             <div class="row">
                 <?php if (empty($items_in_cart)): ?>
                     <div class="col-12">
@@ -130,14 +131,7 @@ $items_in_cart = $cart->getItems();
                     <?php endforeach; ?>
                 <?php endif; ?>
             </div>
-            <!-- Display Messages -->
-            <?php if (isset($_SESSION['error'])): ?>
-                <div class="alert alert-danger alert-dismissible fade show m-3" role="alert">
-                    <?= $_SESSION['error'] ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-                <?php unset($_SESSION['error']); ?>
-            <?php endif; ?>
+            
             <?php if (!empty($items_in_cart)): ?>
                 <div class="finalize-btn-container text-end mt-4">
                     <a href="u-finalize.php" class="finalize-request-btn" style="text-decoration: none;">Finalize Request</a>

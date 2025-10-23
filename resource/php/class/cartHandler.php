@@ -31,19 +31,14 @@ class CartController {
                         return;
                     }
                     
-                    // Check stock availability
-                    $available_stock = $this->getAvailableStock($product_id);
-                    if ($available_stock < $amount) {
-                        $_SESSION['error'] = "Cannot add item. Only $available_stock units available in stock.";
-                        return;
-                    }
-                    
                     $success = $this->cart->addItem($product_id, $amount);
                     
                     if ($success) {
                         $_SESSION['message'] = 'Item added to cart successfully.';
                     } else {
-                        $_SESSION['error'] = 'Failed to add item to cart. Please try again.';
+                        // Get available stock for better error message
+                        $available_stock = $this->getAvailableStock($product_id);
+                        $_SESSION['error'] = "Cannot add item. The requested amount would exceed available stock of $available_stock units.";
                     }
                 }
                 break;

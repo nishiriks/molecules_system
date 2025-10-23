@@ -9,14 +9,31 @@ class CartItems {
     }
 
     public function addItem($product_id, $amount) {
+        // Validate amount
+        if ($amount < 1) {
+            return false;
+        }
+
         $cart_id = $this->getActiveCartId(true); 
 
+        // Check current amount in cart for this product
         $stmt_check = $this->pdo->prepare(
             "SELECT item_id, amount FROM tbl_cart_items WHERE cart_id = ? AND product_id = ?"
         );
         $stmt_check->execute([$cart_id, $product_id]);
         $existing_item = $stmt_check->fetch();
 
+        // Calculate total amount that would be in cart after adding
+        $current_cart_amount = $existing_item ? $existing_item['amount'] : 0;
+        $total_amount_after_add = $current_cart_amount + $amount;
+
+        // Check if total would exceed available stock
+        $available_stock = $this->getAvailableStock($product_id);
+        if ($total_amount_after_add > $available_stock) {
+            return false; // Would exceed available stock
+        }
+
+        // Proceed with adding/updating the item
         if ($existing_item) {
             $new_amount = $existing_item['amount'] + $amount;
             $stmt_update = $this->pdo->prepare(

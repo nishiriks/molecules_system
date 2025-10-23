@@ -126,6 +126,23 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <!-- main content for user page-->
 <main class="user-page content">
+<!-- Display Success Messages -->
+<?php if (isset($_SESSION['message'])): ?>
+    <div class="alert alert-success alert-dismissible fade show m-3" role="alert">
+        <?= $_SESSION['message'] ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <?php unset($_SESSION['message']); ?>
+<?php endif; ?>
+
+<!-- Display Error Messages -->
+<?php if (isset($_SESSION['error'])): ?>
+    <div class="alert alert-danger alert-dismissible fade show m-3" role="alert">
+        <?= $_SESSION['error'] ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <?php unset($_SESSION['error']); ?>
+<?php endif; ?>
 <div class="container-fluid">
     <div class="row row-cols-1 row-cols-md-4 row-cols-lg-4 g-3">
       <?php if (empty($products)): ?>
