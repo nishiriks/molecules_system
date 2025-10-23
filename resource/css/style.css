@@ -185,30 +185,35 @@ body {
 
 /* forgot password card */
 .forgot-card {
-  justify-content: center;
-  text-align: center;
-  background: #F8F9FA;
-  max-width: 500px;  /* <--- KEY CHANGE */
-  width: 100%;       /* <--- KEY CHANGE */
-  border-radius: 20px;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  box-shadow: -4px 4px 4px 4px #00000040;
+    justify-content: center;
+    text-align: center;
+    background: #F8F9FA;
+    max-width: 500px;
+    /* <--- KEY CHANGE */
+    width: 100%;
+    /* <--- KEY CHANGE */
+    border-radius: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    box-shadow: -4px 4px 4px 4px #00000040;
 }
-.email-name{
-    font-weight:500;
+
+.email-name {
+    font-weight: 500;
 }
 
 /* verification card */
 .verification-card {
     background: #F8F9FA;
     border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      max-width: 500px;  /* <--- KEY CHANGE */
-  width: 100%;       /* <--- KEY CHANGE */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    max-width: 500px;
+    /* <--- KEY CHANGE */
+    width: 100%;
+    /* <--- KEY CHANGE */
 }
 
-.g-log{
+.g-log {
     /* max-width: fit-content; */
     /* margin-left: 20px; */
     /* font-size: 14px; */
@@ -218,6 +223,7 @@ body {
     font-weight: bold;
     font-weight: 700;
 }
+
 .g-log:hover,
 .g-log:active {
     font-weight: bold;
@@ -235,9 +241,11 @@ body {
 .reset-card {
     background: #F8F9FA;
     border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      max-width: 500px;  /* <--- KEY CHANGE */
-  width: 100%;       /* <--- KEY CHANGE */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    max-width: 500px;
+    /* <--- KEY CHANGE */
+    width: 100%;
+    /* <--- KEY CHANGE */
 }
 
 

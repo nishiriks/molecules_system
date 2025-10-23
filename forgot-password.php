@@ -48,42 +48,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <body>
 
-<section class="log-in d-flex justify-content-center align-items-center">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="forgot-card p-5">
-                    <div class="text-center mb-4">
-                        <img src="resource/img/molecules-logo.png" class="mb-3" style="max-width: 150px;">
-                        <h2 class="greetings fw-bold">Forgot Password</h2>
-                        <p class="text-muted">Enter your email to reset your password</p>
+    <section class="log-in d-flex justify-content-center align-items-center">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="forgot-card p-5">
+                        <div class="text-center mb-4">
+                            <img src="resource/img/molecules-logo.png" class="mb-3" style="max-width: 150px;">
+                            <h2 class="greetings fw-bold">Forgot Password</h2>
+                            <p class="text-muted">Enter your email to reset your password</p>
+                        </div>
+
+                        <?php if (!empty($message)): ?>
+                            <div class="alert alert-<?= $message_type ?> alert-dismissible fade show" role="alert">
+                                <?= $message ?>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        <?php endif; ?>
+
+                        <form method="POST" action="forgot-password.php">
+                            <div class="mb-3">
+                                <label class="email-name form-label">Email Address</label>
+                                <input type="email" class="form-control" name="email" placeholder="Enter your CEU email" required>
+                            </div>
+
+                            <button type="submit" class="g-log btn btn-primary w-100 mb-3">Send Reset Link</button>
+
+                            <div class="text-center">
+                                <a href="login.php" class="text-decoration-none">Back to Login</a>
+                            </div>
+                        </form>
                     </div>
-
-                    <?php if (!empty($message)): ?>
-                        <div class="alert alert-<?= $message_type ?> alert-dismissible fade show" role="alert">
-                            <?= $message ?>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    <?php endif; ?>
-
-                    <form method="POST" action="forgot-password.php">
-                        <div class="mb-3">
-                            <label class="email-name form-label">Email Address</label>
-                            <input type="email" class="form-control" name="email" placeholder="Enter your CEU email" required>
-                        </div>
-
-                        <button type="submit" class="g-log btn btn-primary w-100 mb-3">Send Reset Link</button>
-
-                        <div class="text-center">
-                            <a href="login.php" class="text-decoration-none">Back to Login</a>
-                        </div>
-                    </form>
                 </div>
             </div>
         </div>
-    </div>
-</section>
-    
+    </section>
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 </body>
