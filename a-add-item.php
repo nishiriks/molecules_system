@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once 'resource/php/init.php';
+require_once 'resource/php/class/logging.php';
 require_once 'resource/php/class/Auth.php';
 Auth::requireAccountType('Admin');
 
@@ -21,16 +22,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add-item-btn'])) {
     $image_path = './resource/img/default.png'; 
 
     // Determine if item is consumable based on product type
-    $is_consumable = 0; // Default to non-consumable
+    $is_consumables = 0; // Default to non-consumable
     if ($product_type === 'Chemical' || $product_type === 'Supplies' || $product_type === 'Specimen') {
-        $is_consumable = 1;
+        $is_consumables = 1;
     }
 
-    $sql = "INSERT INTO tbl_inventory (name, product_type, stock, measure_unit, image_path, is_consumable) VALUES (?, ?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO tbl_inventory (name, product_type, stock, measure_unit, image_path, is_consumables) VALUES (?, ?, ?, ?, ?, ?)";
     $stmt = $pdo->prepare($sql);
 
-    if ($stmt->execute([$item_name, $product_type, $quantity, $unit, $image_path, $is_consumable])) {
+    if ($stmt->execute([$item_name, $product_type, $quantity, $unit, $image_path, $is_consumables])) {
         $success_message = "Item '$item_name' was added successfully!";
+        
+        // Log the action
+        $user_id = $_SESSION['user_id'] ?? 0;
+        $log_action = "ADD_ITEM: Added item '$item_name' (Type: $product_type, Qty: $quantity $unit)";
+        logAdminAction($pdo, $user_id, $log_action);
     } else {
         $success_message = "Error: Could not add the item.";
     }

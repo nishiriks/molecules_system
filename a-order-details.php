@@ -5,6 +5,7 @@ ini_set('display_errors', 1);
 
 session_start();
 require_once 'resource/php/init.php';
+require_once 'resource/php/class/logging.php';
 require_once 'resource/php/class/Auth.php';
 Auth::requireAccountType('Admin');
 
@@ -66,7 +67,7 @@ function addBackConsumableItems($pdo, $items) {
     }
 }
 
-$sql_request = "SELECT r.*, u.first_name, u.last_name, c.cart_status
+$sql_request = "SELECT r.*, u.first_name, u.last_name, u.email, c.cart_status
                 FROM tbl_requests r
                 JOIN tbl_cart c ON r.cart_id = c.cart_id
                 JOIN tbl_users u ON c.user_id = u.user_id
@@ -103,6 +104,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['mark_completed'])) {
     $stmt_update = $pdo->prepare($sql_update);
     $stmt_update->execute([$request_id]);
     
+    // Log the action
+    $user_id = $_SESSION['user_id'] ?? 0;
+    $log_action = "STATUS_UPDATE: Marked request #$request_id as Completed";
+    logAdminAction($pdo, $user_id, $log_action);
+    
     // REDIRECT to prevent resubmission
     header("Location: a-order-details.php?id=" . $request_id);
     exit();
@@ -113,6 +119,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['mark_incomplete'])) {
     $sql_update = "UPDATE tbl_requests SET status = 'Returned' WHERE request_id = ?";
     $stmt_update = $pdo->prepare($sql_update);
     $stmt_update->execute([$request_id]);
+    
+    // Log the action
+    $user_id = $_SESSION['user_id'] ?? 0;
+    $log_action = "STATUS_UPDATE: Marked request #$request_id as Incomplete (Returned)";
+    logAdminAction($pdo, $user_id, $log_action);
     
     // REDIRECT to prevent resubmission
     header("Location: a-order-details.php?id=" . $request_id);
@@ -133,6 +144,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['mark_paid'])) {
         $sql_update_items = "UPDATE tbl_cart_items SET report_status = 'Paid' WHERE cart_id = ? AND report_status IN ('Damaged', 'Lost')";
         $stmt_update_items = $pdo->prepare($sql_update_items);
         $stmt_update_items->execute([$details['cart_id']]);
+        
+        // Log the action
+        $user_id = $_SESSION['user_id'] ?? 0;
+        $log_action = "STATUS_UPDATE: Marked request #$request_id as Paid (Damage/Loss payment completed)";
+        logAdminAction($pdo, $user_id, $log_action);
         
         $pdo->commit();
         
@@ -278,6 +294,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['approve_btn'])) {
         // Subtract consumable items from inventory
         subtractConsumableItems($pdo, $items);
         
+        // Log the action
+        $user_id = $_SESSION['user_id'] ?? 0;
+        $log_action = "STATUS_UPDATE: Approved request #$request_id (Changed from Pending to Submitted)";
+        logAdminAction($pdo, $user_id, $log_action);
+        
         // REDIRECT to prevent resubmission
         header("Location: a-order-details.php?id=" . $request_id);
         exit();
@@ -296,6 +317,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['disapprove_btn'])) {
     $stmt_update = $pdo->prepare($sql_update);
     $stmt_update->execute([$request_id]);
     
+    // Log the action
+    $user_id = $_SESSION['user_id'] ?? 0;
+    $log_action = "STATUS_UPDATE: Disapproved request #$request_id (Changed from Pending to Disapproved)";
+    logAdminAction($pdo, $user_id, $log_action);
+    
     // REDIRECT to prevent resubmission
     header("Location: a-order-details.php?id=" . $request_id);
     exit();
@@ -306,6 +332,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['return_to_pending_btn'
     $sql_update = "UPDATE tbl_requests SET status = 'Pending' WHERE request_id = ?";
     $stmt_update = $pdo->prepare($sql_update);
     $stmt_update->execute([$request_id]);
+    
+    // Log the action
+    $user_id = $_SESSION['user_id'] ?? 0;
+    $log_action = "STATUS_UPDATE: Returned request #$request_id to Pending from Disapproved";
+    logAdminAction($pdo, $user_id, $log_action);
     
     // REDIRECT to prevent resubmission
     header("Location: a-order-details.php?id=" . $request_id);
@@ -320,6 +351,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['cancel_btn'])) {
     
     // Add back consumable items to inventory
     addBackConsumableItems($pdo, $items);
+    
+    // Log the action
+    $user_id = $_SESSION['user_id'] ?? 0;
+    $log_action = "STATUS_UPDATE: Cancelled request #$request_id";
+    logAdminAction($pdo, $user_id, $log_action);
     
     // REDIRECT to prevent resubmission
     header("Location: a-order-details.php?id=" . $request_id);
@@ -339,6 +375,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['restore_btn'])) {
         // Subtract consumable items from inventory
         subtractConsumableItems($pdo, $items);
         
+        // Log the action
+        $user_id = $_SESSION['user_id'] ?? 0;
+        $log_action = "STATUS_UPDATE: Restored request #$request_id from Cancelled to Submitted";
+        logAdminAction($pdo, $user_id, $log_action);
+        
         // REDIRECT to prevent resubmission
         header("Location: a-order-details.php?id=" . $request_id);
         exit();
@@ -353,10 +394,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['restore_btn'])) {
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_status'])) {
     $new_status = $_POST['status'] ?? '';
+    $old_status = $details['status'];
+    
     if (!empty($new_status)) {
         $sql_update = "UPDATE tbl_requests SET status = ? WHERE request_id = ?";
         $stmt_update = $pdo->prepare($sql_update);
         $stmt_update->execute([$new_status, $request_id]);
+        
+        // Log the action
+        $user_id = $_SESSION['user_id'] ?? 0;
+        $log_action = "STATUS_UPDATE: Changed request #$request_id status from $old_status to $new_status";
+        logAdminAction($pdo, $user_id, $log_action);
         
         // REDIRECT to prevent resubmission
         header("Location: a-order-details.php?id=" . $request_id);
@@ -366,6 +414,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_status'])) {
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_remarks'])) {
     $new_remarks = $_POST['remarks'] ?? '';
+    $old_remarks = $details['remarks'] ?? '';
     
     // Validate remarks length
     if (strlen($new_remarks) > 200) {
@@ -374,6 +423,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_remarks'])) {
         $sql_update_remarks = "UPDATE tbl_requests SET remarks = ? WHERE request_id = ?";
         $stmt_update_remarks = $pdo->prepare($sql_update_remarks);
         $stmt_update_remarks->execute([$new_remarks, $request_id]);
+        
+        // Log the action
+        $user_id = $_SESSION['user_id'] ?? 0;
+        $log_action = "REMARKS_UPDATE: Updated remarks for request #$request_id";
+        logAdminAction($pdo, $user_id, $log_action);
         
         // REDIRECT to prevent resubmission
         header("Location: a-order-details.php?id=" . $request_id);
@@ -478,29 +532,33 @@ $time_display = ($time_from === $time_to) ? $time_from : $time_from . ' - ' . $t
                             
                             <div class="row mb-3 align-items-end">
                                 <div class="col-md-4">
-                                    <label class="form-label">Name of Requester:</label>
-                                    <input type="text" class="form-control" value="<?= htmlspecialchars($details['first_name'] . ' ' . $details['last_name']) ?>" readonly>
-                                </div>
-                                <div class="col-md-4">
                                     <label class="form-label">Name of Professor:</label>
                                     <input type="text" class="form-control" value="<?= htmlspecialchars($details['prof_name']) ?>" readonly>
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="form-label">Subject:</label>
-                                    <input type="text" class="form-control" value="<?= htmlspecialchars($details['subject']) ?>" readonly>
+                                    <label class="form-label">Name of Requester:</label>
+                                    <input type="text" class="form-control" value="<?= htmlspecialchars($details['first_name'] . ' ' . $details['last_name']) ?>" readonly>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">User Email:</label>
+                                    <input type="text" class="form-control" value="<?= htmlspecialchars($details['email']) ?>" readonly>
                                 </div>
                             </div>
 
                             <div class="row mb-4 align-items-end">
-                                <div class="col-md-4">
+                                <div class="col-md-3">
+                                    <label class="form-label">Subject:</label>
+                                    <input type="text" class="form-control" value="<?= htmlspecialchars($details['subject']) ?>" readonly>
+                                </div>
+                                <div class="col-md-3">
                                     <label class="form-label">Date of Use:</label>
                                     <input type="text" class="form-control" value="<?= htmlspecialchars($date_display) ?>" readonly>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <label class="form-label">Time:</label>
                                     <input type="text" class="form-control" value="<?= htmlspecialchars($time_display) ?>" readonly>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <label class="form-label">Room:</label>
                                     <input type="text" class="form-control" value="<?= htmlspecialchars($details['room']) ?>" readonly>
                                 </div>
@@ -624,17 +682,18 @@ $time_display = ($time_from === $time_to) ? $time_from : $time_from . ' - ' . $t
                                         <button type="submit" class="btn finalize-btn ms-3" name="mark_incomplete">Mark Incomplete</button>
                                     <?php endif; ?>
                                     
-                                    <!-- Report button - Only show if no existing damage/loss report -->
+                                     <!-- Report button - Only show if no existing damage/loss report -->
                                     <?php 
-                                    // Check if order already has damage/loss report
-                                    $sql_check_report = "SELECT COUNT(*) as report_count 
-                                                    FROM tbl_cart_items 
-                                                    WHERE cart_id = ? AND report_status IN ('Damaged', 'Lost')";
-                                    $stmt_check_report = $pdo->prepare($sql_check_report);
-                                    $stmt_check_report->execute([$details['cart_id']]);
-                                    $has_existing_report = $stmt_check_report->fetch(PDO::FETCH_ASSOC)['report_count'] > 0;
+                                    // Check if any items already have damage/loss reports (including Paid)
+                                    $has_existing_report = false;
+                                    foreach ($items as $item) {
+                                        if (in_array($item['report_status'], ['Damaged', 'Lost', 'Paid'])) {
+                                            $has_existing_report = true;
+                                            break;
+                                        }
+                                    }
                                     
-                                    // Only show report button if no existing report and status allows it
+                                    // Only show report button if NO items have damage/loss reports (including Paid) AND status allows reporting
                                     $show_report_button = !$has_existing_report && in_array($details['status'], ['Submitted', 'Pickup', 'Received', 'Returned']);
                                     ?>
                                     

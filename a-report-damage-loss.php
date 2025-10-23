@@ -5,6 +5,7 @@ ini_set('display_errors', 1);
 
 session_start();
 require_once 'resource/php/init.php';
+require_once 'resource/php/class/logging.php';
 require_once 'resource/php/class/Auth.php';
 Auth::requireAccountType('Admin');
 
@@ -184,6 +185,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_report'])) {
                 $sql_update_remarks = "UPDATE tbl_requests SET remarks = ? WHERE request_id = ?";
                 $stmt_update_remarks = $pdo->prepare($sql_update_remarks);
                 $stmt_update_remarks->execute([$remarks, $request_id]);
+                
+                // Log the action
+                $user_id = $_SESSION['user_id'] ?? 0;
+                $log_action = "DAMAGE_LOSS_REPORT: Submitted $report_type report for request #$request_id - Items: $items_list";
+                logAdminAction($pdo, $user_id, $log_action);
                 
                 $pdo->commit();
                 
