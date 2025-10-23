@@ -1,9 +1,9 @@
 <?php
 session_start();
 require_once 'resource/php/init.php';
+require_once 'resource/php/class/logging.php';
 require_once 'resource/php/class/Auth.php';
 Auth::requireAccountType('Admin');
-
 
 if (basename($_SERVER['PHP_SELF']) !== 'change-pass.php') {
   $_SESSION['previous_page'] = $_SERVER['REQUEST_URI'];
@@ -39,8 +39,9 @@ if ($filter_status !== 'ALL') {
 }
 
 if (!empty($search_name)) {
-  $where_conditions[] = "(u.first_name LIKE ? OR u.last_name LIKE ?)";
+  $where_conditions[] = "(u.first_name LIKE ? OR u.last_name LIKE ? OR r.request_id LIKE ?)";
   $search_term = "%$search_name%";
+  $params[] = $search_term;
   $params[] = $search_term;
   $params[] = $search_term;
 }
@@ -119,17 +120,17 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <a href="a-home.php?status=Pickup" class="filter-btn <?= ($filter_status === 'Pickup') ? 'active' : '' ?>">For Pick-up</a>
         <a href="a-home.php?status=Received" class="filter-btn <?= ($filter_status === 'Received') ? 'active' : '' ?>">Received</a>
         <a href="a-home.php?status=Returned" class="filter-btn <?= ($filter_status === 'Returned') ? 'active' : '' ?>">Returned</a>
-        <a href="a-home.php?status=Broken" class="filter-btn <?= ($filter_status === 'Broken') ? 'active' : '' ?>">Broken</a>
-        <a href="a-home.php?status=Lost" class="filter-btn <?= ($filter_status === 'Lost') ? 'active' : '' ?>">Lost</a>
+        <a href="a-home.php?status=Damaged" class="filter-btn <?= ($filter_status === 'Damaged'|| 'Lost' ) ? 'active' : '' ?>">Damaged/Lost</a>
         <a href="a-home.php?status=Cancelled" class="filter-btn <?= ($filter_status === 'Cancelled') ? 'active' : '' ?>">Cancelled</a>
         <a href="a-home.php?status=Disapproved" class="filter-btn <?= ($filter_status === 'Disapproved') ? 'active' : '' ?>">Disapproved</a>
+        <a href="a-home.php?status=Completed" class="filter-btn <?= ($filter_status === 'Completed') ? 'active' : '' ?>">Completed</a>
       </div>
 
       <div class="row mb-4">
         <div class="col-md-12">
           <form method="GET" action="" class="d-flex align-items-center">
             <div class="input-group">
-              <input type="text" class="form-control search-input" name="search_name" placeholder="Search by name..." value="<?= htmlspecialchars($search_name) ?>">
+              <input type="text" class="form-control search-input" name="search_name" placeholder="Search by name or order number..." value="<?= htmlspecialchars($search_name) ?>">
               <button type="submit" class="btn search-btn">
                 <i class="fas fa-search"></i>
               </button>
@@ -158,7 +159,7 @@ $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <div class="request-details-container">
                   <div class="request-text">
                     <h5 class="request-title">
-                      <?= htmlspecialchars($request['product_types'] ?? 'General') ?> Request
+                      <?= htmlspecialchars($request['product_types'] ?? 'General') ?> Request <span class="timestamp-text">(Order no. <?= htmlspecialchars($request['request_id']) ?>)</span>
                     </h5>
                     <p class="request-info">From: <?= htmlspecialchars($request['first_name'] . ' ' . $request['last_name']) ?> (<?= htmlspecialchars($request['account_type']) ?>)</p>
                     <p class="request-info">Status: <?= htmlspecialchars($request['status']) ?></p>

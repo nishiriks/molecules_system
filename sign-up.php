@@ -134,6 +134,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             </form>
                         </div>
                     </div>
+                    <br>
                     <?php
                         if (!empty($errors)) {
                             foreach ($errors as $error) {

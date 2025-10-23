@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once 'resource/php/init.php';
+require_once 'resource/php/class/logging.php';
 require_once 'resource/php/class/Auth.php';
 Auth::requireAccountType('Admin');
 
@@ -20,11 +21,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add-item-btn'])) {
     
     $image_path = './resource/img/default.png'; 
 
-    $sql = "INSERT INTO tbl_inventory (name, product_type, stock, measure_unit, image_path) VALUES (?, ?, ?, ?, ?)";
+    // Determine if item is consumable based on product type
+    $is_consumables = 0; // Default to non-consumable
+    if ($product_type === 'Chemical' || $product_type === 'Supplies' || $product_type === 'Specimen') {
+        $is_consumables = 1;
+    }
+
+    $sql = "INSERT INTO tbl_inventory (name, product_type, stock, measure_unit, image_path, is_consumables) VALUES (?, ?, ?, ?, ?, ?)";
     $stmt = $pdo->prepare($sql);
 
-    if ($stmt->execute([$item_name, $product_type, $quantity, $unit, $image_path])) {
+    if ($stmt->execute([$item_name, $product_type, $quantity, $unit, $image_path, $is_consumables])) {
         $success_message = "Item '$item_name' was added successfully!";
+        
+        // Log the action
+        $user_id = $_SESSION['user_id'] ?? 0;
+        $log_action = "ADD_ITEM: Added item '$item_name' (Type: $product_type, Qty: $quantity $unit)";
+        logAdminAction($pdo, $user_id, $log_action);
     } else {
         $success_message = "Error: Could not add the item.";
     }
@@ -44,7 +56,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add-item-btn'])) {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bona+Nova:ital,wght@0,400;0,700;1,400&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300..700&family=Roboto:ital,wght@0,100..900;1,100..900&family=Rubik:ital,wght@0,300..900;1,300..900&family=Ruda:wght@400..900&family=Tilt+Warp&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-
 
     <script src="https://kit.fontawesome.com/6563a04357.js" crossorigin="anonymous"></script>
 
@@ -83,9 +94,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add-item-btn'])) {
 
   <main class="equipment-page">
       <div class="container-fluid py-5">
+        <h2 class="requests-heading">Add Item</h2>
           <div class="row justify-content-center">
               <div class="col-lg-8 col-md-10">
                   <div class="request-form-card">
+                      <!-- Success Message -->
+                      <?php if (!empty($success_message)): ?>
+                          <div class="alert alert-success alert-dismissible fade show" role="alert">
+                              <?php echo htmlspecialchars($success_message); ?>
+                              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                          </div>
+                      <?php endif; ?>
+                      
                       <form method="post" action="">
                         <div class="row mb-3 align-items-end">
                           <div class="col-md">

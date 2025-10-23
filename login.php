@@ -93,6 +93,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <?php //logUserMsg()?>
                         </div>
                     </div>
+                    <br>
                     <?php
                             if (!empty($errors)) {
                             foreach ($errors as $error) {

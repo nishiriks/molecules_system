@@ -15,19 +15,19 @@ $pdo = $config->con();
 if (isset($_GET['search']) && !empty(trim($_GET['search']))) {
     $search_term = trim($_GET['search']);
     
-    $sql = "SELECT * FROM tbl_inventory WHERE name LIKE ? ORDER BY name ASC";
+    $sql = "SELECT * FROM tbl_inventory WHERE name LIKE ? AND (is_special = 0 OR is_special IS NULL) ORDER BY name ASC";
     $stmt = $pdo->prepare($sql);
     $stmt->execute(["%$search_term%"]);
     
 } else if (isset($_GET['type']) && !empty($_GET['type'])) {
     $product_type = $_GET['type'];
     
-    $sql = "SELECT * FROM tbl_inventory WHERE product_type = ? ORDER BY name ASC";
+    $sql = "SELECT * FROM tbl_inventory WHERE product_type = ? AND (is_special = 0 OR is_special IS NULL) ORDER BY name ASC";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$product_type]);
 
 } else {
-    $sql = "SELECT * FROM tbl_inventory ORDER BY name ASC";
+    $sql = "SELECT * FROM tbl_inventory WHERE (is_special = 0 OR is_special IS NULL) ORDER BY name ASC";
     $stmt = $pdo->query($sql);
 }
 
@@ -83,7 +83,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
       </li>
       <li class="nav-links chemicals-btn">
         <a href="u-search.php?type=Supplies">
-          <i class="fa-solid fa-prescription-bottle icon"></i>
+          <i class="fa-solid fa-ruler icon"></i>
           <span class="text nav-text">Supplies</span>
         </a>
       </li>
@@ -103,6 +103,12 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <a href="u-search.php?type=Specimen">
           <i class="fa-solid fa-vial icon"></i>
           <span class="text nav-text">Specimens</span>
+        </a>
+      </li>
+      <li class="nav-links chemicals-btn">
+        <a href="u-search.php?type=Apparatus">
+          <i class="fa-solid fa-prescription-bottle icon"></i>
+          <span class="text nav-text">Apparatus</span>
         </a>
       </li>
       <li class="nav-links chemicals-btn">

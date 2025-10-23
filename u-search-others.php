@@ -2,10 +2,61 @@
 session_start();
 require_once 'resource/php/init.php';
 require_once 'resource/php/class/Auth.php';
+require_once 'resource/php/class/cartItems.php';
 Auth::requireUserAccess();
 
 if (basename($_SERVER['PHP_SELF']) !== 'change-pass.php') {
     $_SESSION['previous_page'] = $_SERVER['REQUEST_URI'];
+}
+
+$config = new config();
+$pdo = $config->con();
+$success_message = '';
+$warning_message = '';
+
+// Handle form submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['request-item-btn'])) {
+    $item_name = $_POST['prof_name'];
+    $product_type = $_POST['type'];
+    $quantity = $_POST['amount'];
+    $unit = $_POST['unit'];
+    
+    // Set is_consumables based on product type
+    $is_consumables = 0; // Default to non-consumable
+    if ($product_type === 'Chemical' || $product_type === 'Supplies' || $product_type === 'Specimen') {
+        $is_consumables = 1;
+    }
+    
+    // Set is_special to 1 automatically for items requested through this form
+    $is_special = 1;
+    
+    $image_path = './resource/img/default.png'; 
+
+    try {
+        // First, insert the item into inventory
+        $sql = "INSERT INTO tbl_inventory (name, product_type, stock, measure_unit, image_path, is_consumables, is_special) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $stmt = $pdo->prepare($sql);
+
+        if ($stmt->execute([$item_name, $product_type, $quantity, $unit, $image_path, $is_consumables, $is_special])) {
+            // Get the inserted product ID
+            $product_id = $pdo->lastInsertId();
+            
+            // Use your existing cart system to add the item to cart
+            $cart = new CartItems($pdo, $_SESSION['user_id']);
+            $success = $cart->addItem($product_id, $quantity);
+            
+            if ($success) {
+                $success_message = "Item '$item_name' was requested successfully and added to your cart!";
+                $warning_message = "Note: Special requested items cannot have their quantity changed in the cart. The amount will always match your requested quantity.";
+            } else {
+                $success_message = "Item '$item_name' was added to inventory but could not be added to cart. Please try adding it manually from the search page.";
+            }
+        } else {
+            $success_message = "Error: Could not request the item.";
+        }
+    } catch (Exception $e) {
+        $success_message = "Error: " . $e->getMessage();
+    }
 }
 ?>
 
@@ -98,6 +149,29 @@ if (basename($_SERVER['PHP_SELF']) !== 'change-pass.php') {
         <div class="container-fluid py-5">
             <div class="row justify-content-center">
                 <div class="col-lg-8 col-md-10">
+                    <!-- Success Message -->
+                    <?php if (!empty($success_message)): ?>
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <?php echo htmlspecialchars($success_message); ?>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    <?php endif; ?>
+                    
+                    <!-- Warning Message -->
+                    <?php if (!empty($warning_message)): ?>
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                            <?php echo htmlspecialchars($warning_message); ?>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    <?php endif; ?>
+                    
+                    <!-- Information Alert (always shown) -->
+                    <div class="alert alert-info" role="alert">
+                        <i class="fa-solid fa-circle-info me-2"></i>
+                        <strong>Special Request Information:</strong> Items requested through this form are considered special requests. Once added to your cart, the quantity cannot be changed and will always match your requested amount.
+                    </div>
+                    
                     <div class="request-form-card">
                         <form method="post" action="">
                           <div class="row mb-3 align-items-end">
@@ -116,6 +190,7 @@ if (basename($_SERVER['PHP_SELF']) !== 'change-pass.php') {
                                   <option value="Models">Models</option>
                                   <option value="Specimen">Specimen</option>
                                   <option value="Supplies">Supplies</option>
+                                  <option value="Apparatus">Apparatus</option>
                                 </select>
                             </div>
                             <div class="col-md">

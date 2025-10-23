@@ -108,7 +108,7 @@ if (basename($_SERVER['PHP_SELF']) !== 'change-pass.php') {
             <hr>
         </div>
         <div class="container mt-2">
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4"> 
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-4"> 
                 <div class="col">
                     <div class="card home-card">
                       <a class="card-link" href="u-search.php?type=Chemical">
@@ -124,7 +124,7 @@ if (basename($_SERVER['PHP_SELF']) !== 'change-pass.php') {
                     <div class="card home-card">
                       <a class="card-link" href="u-search.php?type=Supplies">
                         <div class="card-body text-center d-flex flex-column justify-content-center">                       
-                          <div class="card-title gradient-text"><i class="fa-solid fa-prescription-bottle"></i></div>
+                          <div class="card-title gradient-text"><i class="fa-solid fa-ruler"></i></div>
                           <div class="card-text pt-2">SUPPLIES</div>                       
                         </div>
                       </a>
@@ -159,6 +159,16 @@ if (basename($_SERVER['PHP_SELF']) !== 'change-pass.php') {
                         <div class="card-body text-center d-flex flex-column justify-content-center">                       
                           <div class="card-title gradient-text"><i class="fa-solid fa-vial"></i></div>
                           <div class="card-text pt-2">SPECIMENS</div>
+                        </div>
+                      </a>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card home-card">
+                      <a class="card-link" href="u-search.php?type=Apparatus">
+                        <div class="card-body text-center d-flex flex-column justify-content-center">
+                          <div class="card-title gradient-text"><i class="fa-solid fa-prescription-bottle"></i></div>
+                          <div class="card-text pt-2">Apparatus</div>
                         </div>
                       </a>
                     </div>
