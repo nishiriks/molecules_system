@@ -35,6 +35,9 @@ html{
 }
 .navbar{
     background: var(--CEU-Dark-Blue, #161542);
+    position: sticky;
+    top: 0;
+    z-index: 1040; /* Highest z-index */
 }
 .custom-toggler {
     border: none;
@@ -102,6 +105,8 @@ footer {
     background-color: #161542;
     flex-shrink: 0;
     margin-top: auto;
+    position: relative;
+    z-index: 1030; /* Above sidebar but below navbar */
 }
 
 footer p, .fa-copyright{
@@ -294,3 +299,179 @@ footer p, .fa-copyright{
     border: 1px solid #F55197;
 }
 
+/* AI Report Sidebar Styles */
+.saved-reports-sidebar {
+    background: #f8f9fa;
+    border-right: 1px solid #dee2e6;
+    height: calc(100vh - 76px); /* Full height minus navbar */
+    overflow-y: auto;
+    position: fixed;
+    left: 0;
+    top: 76px; /* Start below navbar */
+    width: 350px;
+    z-index: 1025; /* Below navbar but above main content */
+    transition: transform 0.3s ease;
+    transform: translateX(0);
+}
+
+.main-content {
+    margin-left: 350px;
+    transition: margin-left 0.3s ease;
+    min-height: calc(100vh - 76px);
+    width: calc(100% - 350px);
+    position: relative;
+    z-index: 1;
+}
+
+.sidebar-collapsed .saved-reports-sidebar {
+    transform: translateX(-100%);
+}
+
+.sidebar-collapsed .main-content {
+    margin-left: 0;
+    width: 100%;
+}
+
+.toggle-sidebar {
+    position: fixed;
+    left: 360px;
+    top: 85px;
+    z-index: 2035; /* Higher than sidebar */
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: left 0.3s ease;
+}
+
+.sidebar-collapsed .toggle-sidebar {
+    left: 10px;
+}
+
+.saved-report-item {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    padding: 15px;
+    background: white;
+    transition: all 0.3s ease;
+}
+
+.saved-report-item:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.report-title {
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.report-date {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-bottom: 10px;
+}
+
+.report-actions {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.report-preview {
+    max-height: 100px;
+    overflow: hidden;
+    position: relative;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    color: #666;
+}
+
+.report-preview::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 20px;
+    background: linear-gradient(transparent, #f8f9fa);
+}
+
+.save-report-modal .modal-dialog {
+    max-width: 500px;
+}
+
+/* Ensure proper spacing for the main content when sidebar is present */
+body.has-sidebar {
+    overflow-x: hidden;
+}
+
+/* Make sure the main content container doesn't have conflicting styles */
+.container.my-5 {
+    position: relative;
+    z-index: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .saved-reports-sidebar {
+        width: 300px;
+    }
+    
+    .main-content {
+        margin-left: 300px;
+        width: calc(100% - 300px);
+    }
+    
+    .toggle-sidebar {
+        left: 310px;
+        top: 85px;
+    }
+    
+    .sidebar-collapsed .toggle-sidebar {
+        left: 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .saved-reports-sidebar {
+        width: 280px;
+    }
+    
+    .main-content {
+        margin-left: 280px;
+        width: calc(100% - 280px);
+    }
+    
+    .toggle-sidebar {
+        left: 290px;
+    }
+    
+    .report-actions {
+        flex-direction: column;
+    }
+    
+    .report-actions .btn {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+}
+
+/* Table container adjustments for sidebar */
+.table-container {
+    position: relative;
+    z-index: 1;
+}
+
+/* Ensure the AI output area has proper spacing */
+.ai-output {
+    min-height: 200px;
+    line-height: 1.6;
+}
