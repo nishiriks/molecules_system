@@ -50,3 +50,6 @@ v1.5.0-alpha
 - Added order number to show
 
 v1.0.0-beta
+- Deployed
+- Improved AI Page
+- Updated Calendar

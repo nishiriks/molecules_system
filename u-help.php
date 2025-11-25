@@ -57,16 +57,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
             // Server settings proxy email
             $mail->isSMTP();
-            $mail->Host       = ''; 
+            $mail->Host       = 'smtp.gmail.com'; 
             $mail->SMTPAuth   = true;
             $mail->Username   = 'ceumolecules.system@gmail.com';
-            $mail->Password   = '';
+            $mail->Password   = 'fkyeirlvoniaizqc';
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port       = 587;
             
             $mail->setFrom('ceumolecules.system@gmail.com', 'CEU MOLECULES System');
             
-            $mail->addAddress('magsakay2233884@mls.ceu.edu.ph@mls.ceu.edu.ph', 'Lab Technician');
+            $mail->addAddress('gabriel2231439@mls.ceu.edu.ph', 'Lab Technician');
             
             $mail->addReplyTo($email, $name);
             

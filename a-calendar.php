@@ -277,14 +277,14 @@ foreach ($requests as $request) {
                 </div>
                 <div class="legend-item">
                     <div class="legend-color broken"></div>
-                    <span>Broken</span>
+                    <span>Damaged</span>
                 </div>
                 <div class="legend-item">
                     <div class="legend-color lost"></div>
                     <span>Lost</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color canceled"></div>
+                    <div class="legend-color cancelled"></div>
                     <span>Canceled</span>
                 </div>
                 <div class="legend-item">
