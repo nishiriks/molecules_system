@@ -150,12 +150,24 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // --- ACTION 3: HANDLE DELETE BUTTON (Admin only) ---
-        if (deleteButton) {
-            // Let the Bootstrap modal handler in a-search.php handle the deletion
-            // We just prevent the default and let the modal take over
-            event.preventDefault();
-            return;
+        // --- ACTION 3: HANDLE DELETE BUTTON CLICK ---
+        const deleteButtonForm = event.target.closest('form[action="admin_action.php"]');
+        if (deleteButtonForm && event.target.matches('.delete-button')) {
+            // Find the card associated with the popup the button is in
+            const viewPopup = deleteButtonForm.closest('.product-popup');
+            if (viewPopup && viewPopup.dataset.productId) {
+                const productIdToDelete = viewPopup.dataset.productId;
+                // Find the corresponding card on the main page
+                const cardToDelete = adminPage.querySelector(`.card .btn-view[data-product-id="${productIdToDelete}"]`)?.closest('.col');
+                    
+                // Visually hide the card immediately
+                if (cardToDelete) {
+                    cardToDelete.style.display = 'none';
+                }
+                // No confirmation needed, let the form submit naturally
+            }
+            // No event.preventDefault() here, allow submission
+            return; // Stop further processing for this click
         }
 
         // --- ACTION 4: CLOSE ANY POPUP ---

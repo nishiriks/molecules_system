@@ -12,86 +12,173 @@ $config = new config();
 $pdo = $config->con();
 $GEMINI_API_KEY = $config->getGeminiKey();
 
+// Initialize saved reports session storage if not exists
+if (!isset($_SESSION['saved_reports'])) {
+    $_SESSION['saved_reports'] = [];
+}
+
+// Handle view report from URL parameter
+$viewingReport = false;
+$currentReportContent = '';
+if (isset($_GET['view_report']) && !empty($_GET['view_report'])) {
+    $reportId = $_GET['view_report'];
+    if (isset($_SESSION['saved_reports'][$reportId])) {
+        $report = $_SESSION['saved_reports'][$reportId];
+        $currentReportContent = $report['content'];
+        $viewingReport = true;
+    }
+}
+
+// Handle saving reports
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $postData = json_decode(file_get_contents('php://input'), true);
     $prompt = trim($postData['prompt'] ?? '');
+    $action = $postData['action'] ?? '';
 
-    // --- STAT_SUMMARY ---
-    if ($prompt === 'STAT_SUMMARY') {
-        $firstDay = date('Y-m-01');
-        $lastDay  = date('Y-m-t');
-
-        $sql = "
-            SELECT i.name,
-                   SUM(ci.amount) as total_amount
-            FROM tbl_requests r
-            JOIN tbl_cart_items ci ON r.cart_id = ci.cart_id
-            JOIN tbl_inventory i ON ci.product_id = i.product_id
-            WHERE r.status = 'completed'
-              AND r.request_date BETWEEN ? AND ?
-            GROUP BY i.name
-            ORDER BY total_amount DESC
-        ";
-
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$firstDay, $lastDay]);
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        $summaryText = "Here are the products ordered (completed status) from $firstDay to $lastDay:\n\n";
-        if (!empty($rows)) {
-            foreach ($rows as $row) {
-                $summaryText .= "- {$row['name']}: {$row['total_amount']} units ordered\n";
-            }
+    // Handle get report data for PDF export
+    if ($action === 'get_report_data') {
+        $report_id = $postData['report_id'] ?? '';
+        
+        if (!empty($report_id) && isset($_SESSION['saved_reports'][$report_id])) {
+            $report = $_SESSION['saved_reports'][$report_id];
+            header('Content-Type: application/json');
+            echo json_encode([
+                "success" => true,
+                "title" => $report['title'],
+                "content" => $report['content'],
+                "date" => $report['date'],
+                "type" => $report['type']
+            ]);
+            exit;
         } else {
-            $summaryText .= "(No completed orders this month)";
+            header('Content-Type: application/json');
+            echo json_encode(["success" => false, "error" => "Report not found"]);
+            exit;
         }
-
-        $prompt = "Provide a clear statistical summary of the following data. 
-Return the answer formatted in valid HTML with headings, bullet lists or tables (use <h2>, <ul>, <li>, <table> if needed). 
-Do NOT include <html> or <body> tags, only the HTML for the content itself:\n\n".$summaryText;
     }
 
-    // --- STOCK_ANALYSIS ---
-    if ($prompt === 'STOCK_ANALYSIS') {
+    // Handle save report action
+    if ($action === 'save_report') {
+        $title = trim($postData['title'] ?? '');
+        $content = trim($postData['content'] ?? '');
+        
+        if (!empty($title) && !empty($content)) {
+            $report_id = uniqid('report_');
+            $_SESSION['saved_reports'][$report_id] = [
+                'id' => $report_id,
+                'title' => $title,
+                'content' => $content,
+                'date' => date('Y-m-d H:i:s'),
+                'type' => $postData['type'] ?? 'stat_summary'
+            ];
+            
+            header('Content-Type: application/json');
+            echo json_encode(["success" => true, "id" => $report_id]);
+            exit;
+        } else {
+            header('Content-Type: application/json');
+            echo json_encode(["success" => false, "error" => "Title and content are required"]);
+            exit;
+        }
+    }
+    
+    // Handle delete report action
+    if ($action === 'delete_report') {
+        $report_id = $postData['report_id'] ?? '';
+        
+        if (!empty($report_id) && isset($_SESSION['saved_reports'][$report_id])) {
+            unset($_SESSION['saved_reports'][$report_id]);
+            header('Content-Type: application/json');
+            echo json_encode(["success" => true]);
+            exit;
+        } else {
+            header('Content-Type: application/json');
+            echo json_encode(["success" => false, "error" => "Report not found"]);
+            exit;
+        }
+    }
+    
+    // Handle clear all reports action
+    if ($action === 'clear_all_reports') {
+        $_SESSION['saved_reports'] = [];
+        header('Content-Type: application/json');
+        echo json_encode(["success" => true]);
+        exit;
+    }
+
+    // --- CURRENT_INVENTORY_SUMMARY ---
+    if ($prompt === 'CURRENT_INVENTORY_SUMMARY') {
         $firstDay = date('Y-m-01');
         $lastDay  = date('Y-m-t');
 
+        // Get current inventory
         $invSql = "SELECT name, stock, measure_unit, product_type FROM tbl_inventory";
         $invRows = $pdo->query($invSql)->fetchAll(PDO::FETCH_ASSOC);
 
-        $invText = "Inventory data:\n";
+        $invText = "Current Inventory Status:\n";
         foreach ($invRows as $r) {
             $invText .= "- {$r['name']} ({$r['product_type']}): {$r['stock']} {$r['measure_unit']}\n";
         }
 
-        $salesSql = "
-            SELECT i.name,
-                   SUM(ci.amount) as total_amount
+        // Get current month orders (all statuses for trend analysis)
+        $ordersSql = "
+            SELECT 
+                i.name,
+                i.product_type,
+                r.status,
+                COUNT(r.request_id) as request_count,
+                SUM(ci.amount) as total_amount
             FROM tbl_requests r
             JOIN tbl_cart_items ci ON r.cart_id = ci.cart_id
             JOIN tbl_inventory i ON ci.product_id = i.product_id
-            WHERE r.status = 'completed'
-              AND r.request_date BETWEEN ? AND ?
+            WHERE r.request_date BETWEEN ? AND ?
+            GROUP BY i.name, i.product_type, r.status
+            ORDER BY total_amount DESC, request_count DESC
+        ";
+        $stmt = $pdo->prepare($ordersSql);
+        $stmt->execute([$firstDay, $lastDay]);
+        $ordersRows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $ordersText = "Current Month Orders ($firstDay to $lastDay):\n";
+        if (!empty($ordersRows)) {
+            foreach ($ordersRows as $r) {
+                $ordersText .= "- {$r['name']}: {$r['total_amount']} units ordered, {$r['request_count']} requests, Status: {$r['status']}\n";
+            }
+        } else {
+            $ordersText .= "(No orders this month)\n";
+        }
+
+        // Get upcoming orders (pending/submitted status)
+        $upcomingSql = "
+            SELECT 
+                i.name,
+                SUM(ci.amount) as total_amount,
+                COUNT(r.request_id) as request_count
+            FROM tbl_requests r
+            JOIN tbl_cart_items ci ON r.cart_id = ci.cart_id
+            JOIN tbl_inventory i ON ci.product_id = i.product_id
+            WHERE r.status IN ('pending', 'submitted')
+                AND r.date_from >= CURDATE()
             GROUP BY i.name
             ORDER BY total_amount DESC
         ";
-        $stmt = $pdo->prepare($salesSql);
-        $stmt->execute([$firstDay, $lastDay]);
-        $salesRows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $upcomingRows = $pdo->query($upcomingSql)->fetchAll(PDO::FETCH_ASSOC);
 
-        $salesText = "Sales data ($firstDay to $lastDay):\n";
-        if (!empty($salesRows)) {
-            foreach ($salesRows as $r) {
-                $salesText .= "- {$r['name']}: {$r['total_amount']} units ordered\n";
+        $upcomingText = "Upcoming Orders (Pending/Submitted):\n";
+        if (!empty($upcomingRows)) {
+            foreach ($upcomingRows as $r) {
+                $upcomingText .= "- {$r['name']}: {$r['total_amount']} units in {$r['request_count']} requests\n";
             }
         } else {
-            $salesText .= "(No completed orders this month)\n";
+            $upcomingText .= "(No upcoming orders)\n";
         }
 
-        $prompt = "Analyze the following inventory and recent sales data. 
-Return the answer formatted in valid HTML with clear headings and bullet lists or tables (use <h2>, <ul>, <li>, <table> if needed). 
-Do NOT include <html> or <body> tags, only the HTML for the content itself. 
-Here is the data:\n\n".$invText."\n".$salesText;
+        $prompt = "Analyze the current inventory status, current month order trends, and upcoming orders to provide comprehensive inventory management recommendations for the current month. 
+        Consider stock levels, demand patterns from current orders, and anticipated demand from upcoming orders.
+        Provide specific recommendations for restocking, inventory optimization, and risk assessment.
+        Return the answer formatted in valid HTML with clear headings and bullet lists or tables (use <h2>, <ul>, <li>, <table> if needed). 
+        Do NOT include <html> or <body> tags, only the HTML for the content itself.
+        Here is the data:\n\n".$invText."\n\n".$ordersText."\n\n".$upcomingText;
     }
 
     // --- PREVIOUS_MONTH_ANALYSIS ---
@@ -110,33 +197,131 @@ Here is the data:\n\n".$invText."\n".$salesText;
 
         $salesSql = "
             SELECT i.name,
-                   SUM(ci.amount) as total_amount
+                i.product_type,
+                SUM(ci.amount) as total_amount,
+                COUNT(r.request_id) as request_count
             FROM tbl_requests r
             JOIN tbl_cart_items ci ON r.cart_id = ci.cart_id
             JOIN tbl_inventory i ON ci.product_id = i.product_id
-            WHERE r.status = 'completed'
-              AND r.request_date BETWEEN ? AND ?
-            GROUP BY i.name
+            WHERE (r.status = 'received' OR r.status = 'returned')
+            AND r.request_date BETWEEN ? AND ?
+            GROUP BY i.name, i.product_type
             ORDER BY total_amount DESC
         ";
         $stmt = $pdo->prepare($salesSql);
         $stmt->execute([$firstDay, $lastDay]);
         $salesRows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        $salesText = "Previous Month Sales data ($monthName):\n";
+        $salesText = "Previous Month Completed Orders ($monthName):\n";
         if (!empty($salesRows)) {
             foreach ($salesRows as $r) {
-                $salesText .= "- {$r['name']}: {$r['total_amount']} units ordered\n";
+                $salesText .= "- {$r['name']} ({$r['product_type']}): {$r['total_amount']} units in {$r['request_count']} requests\n";
             }
         } else {
             $salesText .= "(No completed orders in $monthName)\n";
         }
 
-        $prompt = "Analyze the following current inventory data compared to previous month sales. 
-Return the answer formatted in valid HTML with clear headings and bullet lists or tables (use <h2>, <ul>, <li>, <table> if needed). 
-Do NOT include <html> or <body> tags, only the HTML for the content itself. 
-Focus on identifying patterns, stock levels relative to previous month demand, and provide recommendations for inventory management.
-Here is the data:\n\n".$invText."\n".$salesText;
+        $prompt = "Analyze the previous month's completed orders (received or returned status) and compare with current inventory levels.
+        Note that returned status only applies to Apparatus, Models, and Equipment.
+        Identify consumption patterns, popular items, and provide insights for inventory planning.
+        Return the answer formatted in valid HTML with clear headings and bullet lists or tables (use <h2>, <ul>, <li>, <table> if needed). 
+        Do NOT include <html> or <body> tags, only the HTML for the content itself.
+        Focus on identifying patterns, stock levels relative to previous month demand, and provide recommendations for inventory management.
+        Here is the data:\n\n".$invText."\n".$salesText;
+    }
+
+    // --- YEARLY_ANALYSIS ---
+    if ($prompt === 'YEARLY_ANALYSIS') {
+        // Determine current academic year (August to May)
+        $currentYear = date('Y');
+        $currentMonth = date('n');
+        
+        // If current month is June or July, use previous academic year
+        if ($currentMonth >= 6 && $currentMonth <= 7) {
+            $yearStart = ($currentYear - 1) . '-08-01';
+            $yearEnd = $currentYear . '-05-31';
+        } else {
+            // If after August, current academic year started last August
+            if ($currentMonth >= 8) {
+                $yearStart = $currentYear . '-08-01';
+                $yearEnd = ($currentYear + 1) . '-05-31';
+            } else {
+                // If January-May, academic year started previous August
+                $yearStart = ($currentYear - 1) . '-08-01';
+                $yearEnd = $currentYear . '-05-31';
+            }
+        }
+
+        // Get yearly orders summary
+        $yearlySql = "
+            SELECT 
+                i.name,
+                i.product_type,
+                r.status,
+                COUNT(r.request_id) as request_count,
+                SUM(ci.amount) as total_amount,
+                MONTH(r.request_date) as month
+            FROM tbl_requests r
+            JOIN tbl_cart_items ci ON r.cart_id = ci.cart_id
+            JOIN tbl_inventory i ON ci.product_id = i.product_id
+            WHERE r.request_date BETWEEN ? AND ?
+            GROUP BY i.name, i.product_type, r.status, MONTH(r.request_date)
+            ORDER BY month, total_amount DESC
+        ";
+        $stmt = $pdo->prepare($yearlySql);
+        $stmt->execute([$yearStart, $yearEnd]);
+        $yearlyRows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $yearlyText = "Academic Year Analysis ($yearStart to $yearEnd):\n\n";
+        
+        if (!empty($yearlyRows)) {
+            $currentMonth = null;
+            foreach ($yearlyRows as $r) {
+                $monthName = date('F', mktime(0, 0, 0, $r['month'], 1));
+                if ($currentMonth !== $r['month']) {
+                    $currentMonth = $r['month'];
+                    $yearlyText .= "\n$monthName:\n";
+                }
+                $yearlyText .= "- {$r['name']} ({$r['product_type']}): {$r['total_amount']} units, {$r['request_count']} requests, Status: {$r['status']}\n";
+            }
+        } else {
+            $yearlyText .= "No orders in this academic year period.\n";
+        }
+
+        // Get top products for the year
+        $topProductsSql = "
+            SELECT 
+                i.name,
+                i.product_type,
+                SUM(ci.amount) as total_units,
+                COUNT(r.request_id) as total_requests
+            FROM tbl_requests r
+            JOIN tbl_cart_items ci ON r.cart_id = ci.cart_id
+            JOIN tbl_inventory i ON ci.product_id = i.product_id
+            WHERE r.request_date BETWEEN ? AND ?
+            GROUP BY i.name, i.product_type
+            ORDER BY total_units DESC
+            LIMIT 10
+        ";
+        $stmt = $pdo->prepare($topProductsSql);
+        $stmt->execute([$yearStart, $yearEnd]);
+        $topProducts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $topProductsText = "\nTop Products (Academic Year):\n";
+        if (!empty($topProducts)) {
+            foreach ($topProducts as $product) {
+                $topProductsText .= "- {$product['name']}: {$product['total_units']} units across {$product['total_requests']} requests\n";
+            }
+        } else {
+            $topProductsText .= "No product data available.\n";
+        }
+
+        $prompt = "Provide a comprehensive analysis of the academic year (August to May) order patterns and trends.
+        Analyze monthly distribution, popular products, usage patterns across the academic year, and provide insights for long-term inventory planning.
+        Identify seasonal trends, peak usage periods, and make recommendations for academic year inventory strategy.
+        Return the answer formatted in valid HTML with clear headings and bullet lists or tables (use <h2>, <ul>, <li>, <table> if needed). 
+        Do NOT include <html> or <body> tags, only the HTML for the content itself.
+        Here is the data:\n\n".$yearlyText."\n".$topProductsText;
     }
 
     // --- Gemini API call ---
@@ -208,9 +393,11 @@ Here is the data:\n\n".$invText."\n".$salesText;
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bona+Nova:ital,wght@0,400;0,700;1,400&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300..700&family=Roboto:ital,wght@0,100..900;1,100..900&family=Rubik:ital,wght@0,300..900;1,300..900&family=Ruda:wght@400..900&family=Tilt+Warp&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
   <script src="https://kit.fontawesome.com/6563a04357.js" crossorigin="anonymous"></script>
+  <!-- Include jsPDF for PDF generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 
-<body>
+<body class="has-sidebar">
 <?php
     if (isset($_SESSION['success_message'])) {
         echo '<div class="alert alert-success alert-dismissible fade show m-3" role="alert">';
@@ -261,7 +448,77 @@ Here is the data:\n\n".$invText."\n".$salesText;
       </ul>
     </div>
 </nav>
-<main>
+
+<!-- Toggle Sidebar Button -->
+<div class="toggle-sidebar" onclick="toggleSidebar()">
+    <i class="fas fa-chevron-left" id="sidebar-toggle-icon"></i>
+</div>
+
+<!-- Saved Reports Sidebar -->
+<div class="saved-reports-sidebar">
+    <div class="p-3 border-bottom">
+        <h5 class="mb-3 mt-3"><i class="fas fa-save me-2"></i>Saved Reports</h5>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <small class="text-muted"><?php echo count($_SESSION['saved_reports']); ?> reports saved</small>
+            <?php if (!empty($_SESSION['saved_reports'])): ?>
+                <button class="btn btn-sm btn-outline-danger" onclick="clearAllReports()">
+                    <i class="fas fa-trash me-1"></i>Clear All
+                </button>
+            <?php endif; ?>
+        </div>
+    </div>
+    
+    <div class="p-3">
+        <?php if (empty($_SESSION['saved_reports'])): ?>
+            <div class="text-center text-muted py-4">
+                <i class="fas fa-inbox fa-2x mb-3"></i>
+                <p>No saved reports yet</p>
+                <small>Generate and save AI reports to see them here</small>
+            </div>
+        <?php else: ?>
+            <div class="saved-reports-list">
+                <?php foreach (array_reverse($_SESSION['saved_reports']) as $report): ?>
+                    <div class="saved-report-item" data-report-id="<?php echo $report['id']; ?>">
+                        <div class="report-title"><?php echo htmlspecialchars($report['title']); ?></div>
+                        <div class="report-date">
+                            <i class="far fa-clock me-1"></i>
+                            <?php echo date('M j, Y g:i A', strtotime($report['date'])); ?>
+                        </div>
+                        <div class="report-type badge bg-secondary mb-2">
+                            <?php 
+                            $typeLabels = [
+                                'current_inventory' => 'Current Inventory Summary',
+                                'previous_month' => 'Previous Month Analysis',
+                                'yearly_analysis' => 'Yearly Analysis'
+                            ];
+                            echo $typeLabels[$report['type']] ?? ucfirst($report['type']);
+                            ?>
+                        </div>
+                        <div class="report-preview mb-2">
+                            <?php 
+                            $preview = strip_tags($report['content']);
+                            echo strlen($preview) > 100 ? substr($preview, 0, 100) . '...' : $preview;
+                            ?>
+                        </div>
+                        <div class="report-actions">
+                            <button class="btn btn-sm btn-primary" onclick="loadSavedReport('<?php echo $report['id']; ?>')">
+                                <i class="fas fa-eye me-1"></i>View
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="exportReport('<?php echo $report['id']; ?>', 'pdf')">
+                                <i class="fas fa-file-pdf me-1"></i>PDF
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteReport('<?php echo $report['id']; ?>')">
+                                <i class="fas fa-trash me-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>
+
+<main class="main-content">
     <!-- AI Report Section -->
     <section class="container my-5">
         <div class="card shadow table-container">
@@ -274,31 +531,38 @@ Here is the data:\n\n".$invText."\n".$salesText;
                         <p class="lead mb-4">Get AI-powered insights and analysis of your inventory and sales data.</p>
                         
                         <div class="d-flex flex-wrap gap-3 mb-4">
-                            <button class="btn btn-order btn-lg" onclick="sendPrompt('STAT_SUMMARY')">
-                                <i class="fas fa-chart-bar me-2"></i>Current Order Summary
+                            <button class="btn btn-order btn-lg" onclick="sendPrompt('CURRENT_INVENTORY_SUMMARY')">
+                                <i class="fas fa-boxes me-2"></i>Current Inventory Summary
                             </button>
-                            <button class="btn btn-month btn-lg" onclick="sendPrompt('STOCK_ANALYSIS')">
-                                <i class="fas fa-boxes me-2"></i>Current Inventory Analysis
-                            </button>
-                            <button class="btn btn-previous btn-lg" onclick="sendPrompt('PREVIOUS_MONTH_ANALYSIS')">
+                            <button class="btn btn-month btn-lg" onclick="sendPrompt('PREVIOUS_MONTH_ANALYSIS')">
                                 <i class="fas fa-chart-line me-2"></i>Previous Month Analysis
                             </button>
-                        </div>
+                            <button class="btn btn-previous btn-lg" onclick="sendPrompt('YEARLY_ANALYSIS')">
+                                <i class="fas fa-calendar-alt me-2"></i>Yearly Analysis
+                            </button>
+                        </div>  
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-12">
                         <div class="card">
-                            <div class="logs-header card-header">
+                            <div class="logs-header card-header d-flex justify-content-between align-items-center">
                                 <h5 class="card-title mb-0"><i class="fas fa-comment-dots me-2"></i>AI Response</h5>
+                                <button class="btn btn-sm btn-success" id="save-report-btn" style="display: <?php echo $viewingReport ? 'block' : 'none'; ?>;" onclick="showSaveReportModal()">
+                                    <i class="fas fa-save me-1"></i>Save Report
+                                </button>
                             </div>
                             <div class="card-body">
                                 <div id="output" class="ai-output">
-                                    <div class="text-center text-muted py-5">
-                                        <i class="fas fa-robot fa-3x mb-3"></i>
-                                        <p>Select an option above to generate AI analysis</p>
-                                    </div>
+                                    <?php if ($viewingReport): ?>
+                                        <?php echo $currentReportContent; ?>
+                                    <?php else: ?>
+                                        <div class="text-center text-muted py-5">
+                                            <i class="fas fa-robot fa-3x mb-3"></i>
+                                            <p>Select an option above to generate AI analysis</p>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
@@ -308,6 +572,49 @@ Here is the data:\n\n".$invText."\n".$salesText;
         </div>
     </section>
 </main>
+
+<!-- Save Report Modal -->
+<div class="modal fade save-report-modal" id="saveReportModal" tabindex="-1" aria-labelledby="saveReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="saveReportModalLabel">
+                    <i class="fas fa-save me-2"></i>Save Report
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="saveReportForm">
+                    <div class="mb-3">
+                        <label for="reportTitle" class="form-label">Report Title</label>
+                        <input type="text" class="form-control" id="reportTitle" required 
+                               placeholder="Enter a descriptive title for this report">
+                    </div>
+                    <div class="mb-3">
+                        <label for="reportType" class="form-label">Report Type</label>
+                        <select class="form-select" id="reportType">
+                            <option value="current_inventory">Current Inventory Summary</option>
+                            <option value="previous_month">Previous Month Analysis</option>
+                            <option value="yearly_analysis">Yearly Analysis</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Preview</label>
+                        <div class="border p-2 bg-light" style="max-height: 150px; overflow-y: auto; font-size: 0.9rem;" id="reportPreview">
+                            <!-- Preview will be inserted here -->
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveCurrentReport()">
+                    <i class="fas fa-save me-1"></i>Save Report
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- footer -->
 <footer>
@@ -322,48 +629,7 @@ Here is the data:\n\n".$invText."\n".$salesText;
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
-
-<script>
-async function sendPrompt(prompt) {
-    const output = document.getElementById('output');
-    output.innerHTML = `
-        <div class="text-center py-4">
-            <div class="spinner-border text-primary mb-3" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-            <p>Generating AI analysis...</p>
-        </div>
-    `;
-
-    try {
-        const res = await fetch('', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt })
-        });
-
-        const data = await res.json();
-        
-        if (data.answer) {
-            output.innerHTML = data.answer;
-        } else {
-            output.innerHTML = `
-                <div class="alert alert-danger">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
-                    Error getting response from AI.
-                </div>
-            `;
-        }
-    } catch (error) {
-        output.innerHTML = `
-            <div class="alert alert-danger">
-                <i class="fas fa-exclamation-triangle me-2"></i>
-                Network error: ${error.message}
-            </div>
-        `;
-    }
-}
-</script>
+<script src="resource/js/ai-reports.js"></script>
 
 </body>
 </html>
