@@ -13,34 +13,7 @@ $pdo = $config->con();
 
 // ADDED SEARCH FUNCTIONALITY HERE (same as a-search.php)
 if (isset($_GET['search']) && !empty(trim($_GET['search']))) {
-<<<<<<< HEAD
   $search_term = trim($_GET['search']);
-=======
-    $search_term = trim($_GET['search']);
-    
-    // ADDED: AND is_deleted = 0
-    $sql = "SELECT * FROM tbl_inventory 
-            WHERE name LIKE ? 
-            AND (is_special = 0 OR is_special IS NULL) 
-            AND is_deleted = 0 
-            AND stock > 0 
-            ORDER BY name ASC";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute(["%$search_term%"]);
-    
-} else if (isset($_GET['type']) && !empty($_GET['type'])) {
-    $product_type = $_GET['type'];
-    
-    // ADDED: AND is_deleted = 0
-    $sql = "SELECT * FROM tbl_inventory 
-            WHERE product_type = ? 
-            AND (is_special = 0 OR is_special IS NULL) 
-            AND is_deleted = 0 
-            AND stock > 0 
-            ORDER BY name ASC";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([$product_type]);
->>>>>>> 82016a1866589c2b55f9867f02a6a571f7d49195
 
   $sql = "SELECT * FROM tbl_inventory WHERE name LIKE ? AND (is_special = 0 OR is_special IS NULL) AND stock > 0 ORDER BY name ASC";
   $stmt = $pdo->prepare($sql);
@@ -52,10 +25,6 @@ if (isset($_GET['search']) && !empty(trim($_GET['search']))) {
   $stmt = $pdo->prepare($sql);
   $stmt->execute([$product_type]);
 } else {
-<<<<<<< HEAD
-  $sql = "SELECT * FROM tbl_inventory WHERE (is_special = 0 OR is_special IS NULL) AND stock > 0 ORDER BY name ASC";
-  $stmt = $pdo->query($sql);
-=======
     // ADDED: AND is_deleted = 0
     $sql = "SELECT * FROM tbl_inventory 
             WHERE (is_special = 0 OR is_special IS NULL) 
@@ -63,7 +32,6 @@ if (isset($_GET['search']) && !empty(trim($_GET['search']))) {
             AND stock > 0 
             ORDER BY name ASC";
     $stmt = $pdo->query($sql);
->>>>>>> 82016a1866589c2b55f9867f02a6a571f7d49195
 }
 
 $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
