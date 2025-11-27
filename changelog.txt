@@ -53,3 +53,7 @@ v1.0.0-beta
 - Deployed
 - Improved AI Page
 - Updated Calendar
+
+v1.1.0-beta
+- Added new Functions for AI
+- Changed wordings of buttons upon client request
