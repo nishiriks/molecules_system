@@ -1,6 +1,6 @@
 <?php
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Process form data - convert material_type from string to array
+    // Process form data
     $material_type = isset($_POST['material_type']) ? $_POST['material_type'] : '';
     if (!empty($material_type) && is_string($material_type)) {
         $material_type = explode(',', $material_type);
@@ -30,39 +30,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ];
     }
     
-    // DEBUG: Show what material types we're processing
+    // DEBUG
     error_log("Material types to process: " . implode(', ', $material_type));
     
-    // Generate FDF data for PDFtk
+    // Generate FDF data
     $fdf_data = generateFDFData($material_type, $instructor_name, $signature, $subject, $date_of_use, $time, $days, $room, $remarks, $issue_date, $return_date, $materials_data);
     
     // Save FDF to temporary file
     $fdf_filename = tempnam(sys_get_temp_dir(), 'requisition_') . '.fdf';
     file_put_contents($fdf_filename, $fdf_data);
     
-    // Source PDF - fixed path
+    // Source PDF
     $source_pdf = 'resource/pdf/Requisition_form.pdf';
     
     // Output PDF filename
     $output_pdf = 'CEU_Requisition_Form_' . date('Y-m-d_His') . '.pdf';
     
-    // Use PDFtk to fill the form
+    // PDFtk fill form
     $pdftk_path = '"C:\Program Files (x86)\PDFtk Server\bin\pdftk"';
     $command = $pdftk_path . " \"$source_pdf\" fill_form \"$fdf_filename\" output \"$output_pdf\" flatten 2>&1";
     
-    // Execute command
     $output = [];
     $return_var = 0;
     exec($command, $output, $return_var);
     
     if ($return_var === 0 && file_exists($output_pdf)) {
-        // Send PDF to browser
         header('Content-Type: application/pdf');
         header('Content-Disposition: attachment; filename="' . $output_pdf . '"');
         header('Content-Length: ' . filesize($output_pdf));
         readfile($output_pdf);
         
-        // Clean up temporary files
         unlink($fdf_filename);
         unlink($output_pdf);
         exit;
@@ -74,7 +71,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo "<p>Output PDF: $output_pdf</p>";
         echo "<p>FDF File: $fdf_filename</p>";
         
-        // Check if source PDF exists
         if (!file_exists($source_pdf)) {
             echo "<p style='color: red;'>Source PDF file not found: $source_pdf</p>";
         }
@@ -87,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo "<h3>FDF Data:</h3>";
         echo "<pre>" . htmlspecialchars($fdf_data) . "</pre>";
         
-        // Show what fields are being set
+        // Show fields
         echo "<h3>Fields being set in FDF:</h3>";
         preg_match_all('/\/T \(([^)]+)\)/', $fdf_data, $matches);
         echo "<pre>" . print_r($matches[1], true) . "</pre>";
@@ -103,9 +99,7 @@ function generateFDFData($material_type, $instructor_name, $signature, $subject,
     $fields = [];
     
     // Material Type Text Fields - Write 'X' for selected types
-    // Try different possible field names for the material type checkboxes
     $textfield_mappings = [
-        // Try these variations of field names
         [
             'Apparatus' => 'check_apparatus',
             'Chemicals/Supplies' => 'check_chemicals', 
@@ -134,25 +128,22 @@ function generateFDFData($material_type, $instructor_name, $signature, $subject,
         $material_type = [];
     }
     
-    // Try each mapping until we find one that works
+    // Trial error mapping
     $mapping_found = false;
     foreach ($textfield_mappings as $mapping) {
         $fields_tried = [];
         foreach ($mapping as $form_value => $pdf_field) {
             $fields_tried[] = $pdf_field;
             if (in_array($form_value, $material_type)) {
-                // Write 'X' in the text field
                 $fields[] = "<< /T ($pdf_field) /V (X) >>";
             } else {
-                // Leave empty for unselected types
                 $fields[] = "<< /T ($pdf_field) /V () >>";
             }
         }
         
-        // If we have material types and we're setting fields, assume this mapping might work
         if (!empty($material_type)) {
             error_log("Trying field mapping: " . implode(', ', $fields_tried));
-            break; // Use the first mapping for now
+            break;
         }
     }
     
@@ -205,11 +196,11 @@ function generateFDFData($material_type, $instructor_name, $signature, $subject,
         }
     }
     
-    // Technician names (you might want to set these or leave empty)
+    // Technician names
     $fields[] = "<< /T (tech_name) /V () >>";
     $fields[] = "<< /T (tech_name2) /V () >>";
     
-    // Materials Data - Map to the correct quantity and item fields
+    // Materials Data
     $qty_fields = ['qty1', 'qty2', 'qty3', 'qty4', 'qty5', 'qty6', 'qty7', 'qty8', 
                    'qty9', 'qty10', 'qty11', 'qty12', 'qty13', 'qty14', 'qty15', 'qty16'];
     

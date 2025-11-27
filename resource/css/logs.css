@@ -475,3 +475,47 @@ body.has-sidebar {
     min-height: 200px;
     line-height: 1.6;
 }
+
+/* Custom Prompt Modal Styles */
+.custom-prompt-modal .modal-content {
+    border-radius: 10px;
+}
+
+.date-range-inputs {
+    display: flex;
+    gap: 15px;
+    align-items: end;
+}
+
+.date-input-group {
+    flex: 1;
+}
+
+.date-input-group label {
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+/* Saved Reports Sidebar Updates */
+.saved-report-item {
+    border-left: 3px solid #162142;
+}
+
+.report-date-range {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-bottom: 5px;
+}
+
+/* Button Styles */
+.btn-custom {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    padding: 12px 24px;
+}
+
+.btn-custom:hover {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+    color: white;
+}
