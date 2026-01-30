@@ -1,9 +1,8 @@
 <?php
-session_start();
 require_once 'resource/php/init.php';
 require_once 'resource/php/class/Auth.php'; 
 require_once 'resource/php/class/inventoryManager.php'; 
-
+require_once 'session_check.php';
 Auth::requireAccountType(['Admin', 'Super Admin']);
 
 if (!isset($_POST['action'])) {

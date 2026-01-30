@@ -9,10 +9,16 @@ use PHPMailer\PHPMailer\Exception;
 
 class EmailService {
     private $mail;
+    private $lastError = '';
 
     public function __construct() {
-        $this->mail = new PHPMailer(true);
-        $this->configureMailer();
+        try {
+            $this->mail = new PHPMailer(true);
+            $this->configureMailer();
+        } catch (Exception $e) {
+            $this->lastError = "PHPMailer initialization error: " . $e->getMessage();
+            error_log($this->lastError);
+        }
     }
 
     private function configureMailer() {
@@ -23,19 +29,31 @@ class EmailService {
             $this->mail->SMTPAuth = true;
             $this->mail->Username = SMTP_USERNAME;
             $this->mail->Password = SMTP_PASSWORD;
-            $this->mail->SMTPSecure = SMTP_ENCRYPTION;
+            $this->mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; // Use STARTTLS
             $this->mail->Port = SMTP_PORT;
-
+            
+            // Enable debugging for development
+            // $this->mail->SMTPDebug = 2; // Uncomment for debugging
+            // $this->mail->Debugoutput = function($str, $level) {
+            //     error_log("SMTP Debug (Level $level): $str");
+            // };
+            
+            // Character set
+            $this->mail->CharSet = 'UTF-8';
+            
             // Recipients
             $this->mail->setFrom(FROM_EMAIL, FROM_NAME);
             $this->mail->addReplyTo(FROM_EMAIL, FROM_NAME);
+            
         } catch (Exception $e) {
-            error_log("Email configuration error: " . $e->getMessage());
+            $this->lastError = "Email configuration error: " . $e->getMessage();
+            error_log($this->lastError);
         }
     }
 
     public function sendVerificationEmail($toEmail, $toName, $verificationCode) {
         try {
+            $this->mail->clearAddresses();
             $this->mail->addAddress($toEmail, $toName);
             
             // Content
@@ -50,7 +68,8 @@ class EmailService {
             $this->mail->send();
             return true;
         } catch (Exception $e) {
-            error_log("Email sending failed: " . $this->mail->ErrorInfo);
+            $this->lastError = "Email sending failed: " . $this->mail->ErrorInfo;
+            error_log($this->lastError);
             return false;
         }
     }
@@ -99,6 +118,7 @@ class EmailService {
 
     public function sendPasswordResetEmail($toEmail, $toName, $resetToken) {
         try {
+            $this->mail->clearAddresses();
             $this->mail->addAddress($toEmail, $toName);
             
             // Content
@@ -113,7 +133,8 @@ class EmailService {
             $this->mail->send();
             return true;
         } catch (Exception $e) {
-            error_log("Password reset email failed: " . $this->mail->ErrorInfo);
+            $this->lastError = "Password reset email failed: " . $this->mail->ErrorInfo;
+            error_log($this->lastError);
             return false;
         }
     }
@@ -156,6 +177,45 @@ class EmailService {
         </body>
         </html>
         ";
+    }
+
+    public function sendCustomEmail($toEmail, $toName, $subject, $htmlBody) {
+        try {
+            $this->mail->clearAddresses();
+            $this->mail->addAddress($toEmail, $toName);
+            
+            // Content
+            $this->mail->isHTML(true);
+            $this->mail->Subject = $subject;
+            $this->mail->Body = $htmlBody;
+            $this->mail->AltBody = strip_tags($htmlBody);
+            
+            // Debug logging
+            error_log("Attempting to send email to: $toEmail");
+            error_log("Subject: $subject");
+            error_log("SMTP Host: " . $this->mail->Host);
+            error_log("SMTP User: " . $this->mail->Username);
+            
+            $sent = $this->mail->send();
+            
+            if ($sent) {
+                error_log("Email sent successfully to: $toEmail");
+                return true;
+            } else {
+                error_log("Email sending failed: " . $this->mail->ErrorInfo);
+                return false;
+            }
+            
+        } catch (Exception $e) {
+            $this->lastError = "Custom email sending failed: " . $this->mail->ErrorInfo . " | Exception: " . $e->getMessage();
+            error_log($this->lastError);
+            return false;
+        }
+    }
+    
+    // Add this method to get the last error
+    public function getLastError() {
+        return $this->lastError;
     }
 }
 ?>

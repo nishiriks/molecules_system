@@ -1,6 +1,5 @@
 <?php
-session_start();
-
+require_once 'session_check.php';
 require_once 'resource/php/init.php';
 require_once 'resource/php/class/Auth.php';
 Auth::requireUserAccess();

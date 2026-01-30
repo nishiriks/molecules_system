@@ -2,7 +2,6 @@
 session_start();
 require_once './resource/php/init.php';
 require_once './resource/php/class/Auth.php';
-
 $auth = new Auth();
 $message = '';
 $message_type = '';

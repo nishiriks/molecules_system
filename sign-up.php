@@ -50,6 +50,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
+    // Password requirements validation
+    if (!empty($pass)) {
+        if (strlen($pass) < 8) {
+            $errors[] = "Password must be at least 8 characters long.";
+        }
+        if (!preg_match('/[A-Z]/', $pass)) {
+            $errors[] = "Password must contain at least one uppercase letter.";
+        }
+        if (!preg_match('/[a-z]/', $pass)) {
+            $errors[] = "Password must contain at least one lowercase letter.";
+        }
+        if (!preg_match('/[0-9]/', $pass)) {
+            $errors[] = "Password must contain at least one number.";
+        }
+        if (!preg_match('/[!@#$%^&*()\-_=+{};:,<.>]/', $pass)) {
+            $errors[] = "Password must contain at least one special character (!@#$%^&*()-_=+{};:,<.>).";
+        }
+        if ($pass !== $cpass) {
+            $errors[] = "Passwords do not match.";
+        }
+    }
+
     // Errors validation
     if (empty($errors)) {
         $errors = $auth->register($fname, $lname, $email, $pass, $cpass, $snum);
@@ -106,6 +128,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <div class="col-md-6 p-4">
                             <img src="resource/img/molecules-logo.png" class="logo-img mb-3">
                             <h2 class="greetings fw-bold mb-1">Sign up</h2>
+                            
                             <form method="POST" action="sign-up.php">
                                 <div class="row mb-3 mt-3">
                                     <div class="col-md-6">
@@ -145,6 +168,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </div>
                     </div>
                     <br>
+                     <!-- Password Requirements Info -->
+                            <div class="alert alert-info py-2 mb-3" role="alert">
+                                <small class="d-flex align-items-center">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <span>Password must be 8+ characters long and must contain atleast 1 uppercase letter, 1 lowercase letter, 1 number & 1 special character (!@#$%^&*()-_=+{};:,<.>).</span>
+                                </small>
+                            </div>
+                    <br>
                     <?php
                     // Show success message
                     if (!empty($success_message)) {
@@ -155,7 +186,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             </div>
                             ";
                     }
-
+                    
                     // Show error messages
                     if (!empty($errors)) {
                         foreach ($errors as $error) {

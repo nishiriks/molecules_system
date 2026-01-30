@@ -1,9 +1,8 @@
 <?php
-session_start();
 require_once 'resource/php/init.php';
 require_once 'resource/php/class/Auth.php';
 Auth::requireUserAccess();
-
+require_once 'session_check.php';
 require_once 'vendor/phpmailer/src/Exception.php';
 require_once 'vendor/phpmailer/src/PHPMailer.php';
 require_once 'vendor/phpmailer/src/SMTP.php';
