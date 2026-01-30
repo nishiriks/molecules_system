@@ -3,12 +3,11 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-session_start();
 require_once 'resource/php/init.php';
 require_once 'resource/php/class/logging.php';
 require_once 'resource/php/class/Auth.php';
 Auth::requireAccountType('Admin');
-
+require_once 'session_check.php';
 if (basename($_SERVER['PHP_SELF']) !== 'change-pass.php') {
     $_SESSION['previous_page'] = $_SERVER['REQUEST_URI'];
 }

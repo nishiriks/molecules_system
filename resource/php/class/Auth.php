@@ -2,12 +2,37 @@
 require_once 'EmailService.php';
 class Auth extends config
 {
+    private $session_timeout = 1800; // 30 minutes in seconds
+    
     public function __construct()
     {
         parent::__construct();
-
-        if (session_status() == PHP_SESSION_NONE) {
-            session_start();
+        
+        $this->checkSessionTimeout();
+    }
+    
+    private function checkSessionTimeout()
+    {
+        if (isset($_SESSION['user_id']) && isset($_SESSION['last_activity'])) {
+            $current_time = time();
+            $elapsed_time = $current_time - $_SESSION['last_activity'];
+            
+            if ($elapsed_time > $this->session_timeout) {
+                // Session expired - clear everything
+                session_unset();
+                session_destroy();
+                
+                // Redirect to login with expired parameter
+                if (!defined('API_REQUEST')) {
+                    header('Location: login.php?expired=1');
+                    exit();
+                }
+            }
+        }
+        
+        // Update last activity time for authenticated users
+        if (isset($_SESSION['user_id'])) {
+            $_SESSION['last_activity'] = time();
         }
     }
 
@@ -39,10 +64,26 @@ class Auth extends config
             session_start();
         }
 
+        // Check session timeout
+        if (isset($_SESSION['user_id']) && isset($_SESSION['last_activity'])) {
+            $current_time = time();
+            $elapsed_time = $current_time - $_SESSION['last_activity'];
+            
+            if ($elapsed_time > 1800) { // 30 minutes
+                session_unset();
+                session_destroy();
+                header('Location: login.php?expired=1');
+                exit();
+            }
+        }
+
         if (!isset($_SESSION['user_id'])) {
             header('Location: login.php');
             exit();
         }
+        
+        // Update last activity time
+        $_SESSION['last_activity'] = time();
     }
 
     public static function requireAccountType($allowed_types)
@@ -191,7 +232,7 @@ class Auth extends config
         return true;
     }
 
-    // Update login method to check verification
+    // Updated login method with session timeout
     public function login($email, $password)
     {
         $errors = [];
@@ -220,6 +261,7 @@ class Auth extends config
                 $_SESSION['user_email'] = $user['email'];
                 $_SESSION['first_name'] = $user['first_name'];
                 $_SESSION['account_type'] = $user['account_type'];
+                $_SESSION['last_activity'] = time(); // Set session activity time
 
                 // Add login log entry
                 $this->addLoginLog($user['user_id'], $user['account_type']);
@@ -274,6 +316,11 @@ class Auth extends config
         if (empty($errors)) {
             $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
             $this->query("UPDATE tbl_users SET password = ? WHERE user_id = ?", [$hashed_password, $user_id]);
+            
+            // Update session activity after password change
+            if (isset($_SESSION['user_id'])) {
+                $_SESSION['last_activity'] = time();
+            }
         }
 
         return $errors;
@@ -299,60 +346,60 @@ class Auth extends config
         }
     }
 
-public function sendPasswordReset($email) {
-    // Validate email format
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        return "Invalid email format.";
+    public function sendPasswordReset($email) {
+        // Validate email format
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return "Invalid email format.";
+        }
+
+        // Check if user exists and is active
+        $user = $this->query("SELECT user_id, first_name, last_name, is_active FROM tbl_users WHERE email = ?", [$email]);
+        
+        if (empty($user)) {
+            return "If this email exists in our system, we will send reset instructions.";
+        }
+        
+        if (!$user[0]['is_active']) {
+            return "This account has been deactivated. Please contact administrator.";
+        }
+
+        // Generate reset token
+        $reset_token = $this->generateVerificationCode();
+        $reset_expiry = date('Y-m-d H:i:s', strtotime('+1 hour')); // Token valid for 1 hour
+
+        // Store reset token in database
+        $this->query("UPDATE tbl_users SET reset_token = ?, reset_token_expiry = ? WHERE email = ?", 
+                    [$reset_token, $reset_expiry, $email]);
+
+        // Send reset email
+        $emailService = new EmailService();
+        $user_name = $user[0]['first_name'] . ' ' . $user[0]['last_name'];
+        $emailSent = $emailService->sendPasswordResetEmail($email, $user_name, $reset_token);
+
+        if ($emailSent) {
+            return true;
+        } else {
+            return "Failed to send reset email. Please try again later.";
+        }
     }
 
-    // Check if user exists and is active
-    $user = $this->query("SELECT user_id, first_name, last_name, is_active FROM tbl_users WHERE email = ?", [$email]);
-    
-    if (empty($user)) {
-        return "If this email exists in our system, we will send reset instructions.";
-    }
-    
-    if (!$user[0]['is_active']) {
-        return "This account has been deactivated. Please contact administrator.";
-    }
-
-    // Generate reset token
-    $reset_token = $this->generateVerificationCode();
-    $reset_expiry = date('Y-m-d H:i:s', strtotime('+1 hour')); // Token valid for 1 hour
-
-    // Store reset token in database
-    $this->query("UPDATE tbl_users SET reset_token = ?, reset_token_expiry = ? WHERE email = ?", 
-                [$reset_token, $reset_expiry, $email]);
-
-    // Send reset email
-    $emailService = new EmailService();
-    $user_name = $user[0]['first_name'] . ' ' . $user[0]['last_name'];
-    $emailSent = $emailService->sendPasswordResetEmail($email, $user_name, $reset_token);
-
-    if ($emailSent) {
+    public function validateResetToken($token) {
+        $current_time = date('Y-m-d H:i:s');
+        
+        $user = $this->query("SELECT user_id, reset_token_expiry FROM tbl_users WHERE reset_token = ?", [$token]);
+        
+        if (empty($user)) {
+            return "Invalid or expired reset token.";
+        }
+        
+        if ($user[0]['reset_token_expiry'] < $current_time) {
+            // Clear expired token
+            $this->query("UPDATE tbl_users SET reset_token = NULL, reset_token_expiry = NULL WHERE reset_token = ?", [$token]);
+            return "Reset token has expired. Please request a new one.";
+        }
+        
         return true;
-    } else {
-        return "Failed to send reset email. Please try again later.";
     }
-}
-
-public function validateResetToken($token) {
-    $current_time = date('Y-m-d H:i:s');
-    
-    $user = $this->query("SELECT user_id, reset_token_expiry FROM tbl_users WHERE reset_token = ?", [$token]);
-    
-    if (empty($user)) {
-        return "Invalid or expired reset token.";
-    }
-    
-    if ($user[0]['reset_token_expiry'] < $current_time) {
-        // Clear expired token
-        $this->query("UPDATE tbl_users SET reset_token = NULL, reset_token_expiry = NULL WHERE reset_token = ?", [$token]);
-        return "Reset token has expired. Please request a new one.";
-    }
-    
-    return true;
-}
 
     public function getUserByResetToken($token) {
         $user = $this->query("SELECT email FROM tbl_users WHERE reset_token = ?", [$token]);
@@ -382,4 +429,44 @@ public function validateResetToken($token) {
 
         return true;
     }
+    
+    // Method to manually check session status
+    public static function checkSession()
+    {
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        
+        if (isset($_SESSION['user_id']) && isset($_SESSION['last_activity'])) {
+            $current_time = time();
+            $elapsed_time = $current_time - $_SESSION['last_activity'];
+            
+            if ($elapsed_time > 1800) { // 30 minutes
+                session_unset();
+                session_destroy();
+                return false;
+            }
+            
+            // Update last activity time
+            $_SESSION['last_activity'] = $current_time;
+            return true;
+        }
+        
+        return false;
+    }
+    
+    // Method to get remaining session time
+    public static function getSessionRemainingTime()
+    {
+        if (isset($_SESSION['last_activity'])) {
+            $current_time = time();
+            $elapsed_time = $current_time - $_SESSION['last_activity'];
+            $remaining_time = 1800 - $elapsed_time; // 30 minutes total
+            
+            return max(0, $remaining_time);
+        }
+        
+        return 0;
+    }
 }
+?>

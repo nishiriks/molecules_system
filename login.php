@@ -1,12 +1,27 @@
 <?php 
-session_start();
+require_once './resource/php/init.php';
+
+require_once './resource/php/init.php';
+
+// Check if session has expired (remove duplicate session_start() call)
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 1800)) {
+    // Session expired
+    session_unset();
+    session_destroy();
+    header('Location: login.php?expired=1');
+    exit();
+}
+
+// Update last activity time
+if (isset($_SESSION['user_id'])) {
+    $_SESSION['last_activity'] = time();
+}
 
 if (isset($_SESSION['user_id'])) {
     header('Location: index.php'); 
     exit();
 }
 
-require_once './resource/php/init.php';
 require_once './resource/php/class/Auth.php';
 $auth = new Auth();
 
@@ -20,6 +35,10 @@ if (isset($_GET['registered']) && $_GET['registered'] == 'success') {
     $success_message = "Registration successful! Please log in.";
 }
 
+// Add message for expired session
+if (isset($_GET['expired']) && $_GET['expired'] == '1') {
+    $errors[] = "Your session has expired. Please log in again.";
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['user_email'];
@@ -30,6 +49,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!empty($login_errors)) {
         $_SESSION['login_errors'] = $login_errors;
         header('Location: login.php');
+        exit();
+    } else {
+        // Set last activity time on successful login
+        $_SESSION['last_activity'] = time();
+        header('Location: index.php');
         exit();
     }
 }

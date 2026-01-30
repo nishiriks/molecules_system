@@ -1,10 +1,9 @@
 <?php
-session_start();
 require_once 'resource/php/init.php';
 require_once 'resource/php/class/logging.php';
 require_once 'resource/php/class/Auth.php';
 Auth::requireAccountType('Admin');
-
+require_once 'session_check.php';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_id'])) {
     $product_id = $_POST['product_id'];
 

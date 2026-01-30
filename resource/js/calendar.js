@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Helper function to get event status
     function getEventStatus(event) {
-        const statusClasses = ['pending', 'submitted', 'pickup', 'received', 'returned', 'broken', 'lost', 'canceled', 'disapproved'];
+        const statusClasses = ['Pending', 'Submitted', 'Pickup', 'Received', 'Returned', 'Damaged', 'Lost', 'Cancelled', 'disapproved'];
         return Array.from(event.classList).find(cls => statusClasses.includes(cls)) || 'pending';
     }
     

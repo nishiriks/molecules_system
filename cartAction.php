@@ -1,5 +1,4 @@
 <?php
-session_start();
 require_once 'resource/php/init.php';
 require_once 'resource/php/class/cartHandler.php'; 
 

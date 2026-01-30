@@ -1,8 +1,7 @@
 <?php
-session_start();
 require_once 'resource/php/init.php';
 require_once 'resource/php/class/Auth.php';
-
+require_once 'session_check.php';
 // Security: Redirect user if they are not logged in
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
