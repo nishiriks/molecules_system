@@ -2,8 +2,7 @@
 require_once 'EmailService.php';
 class Auth extends config
 {
-    private $session_timeout = 1800; // 30 minutes in seconds
-    
+    private $session_timeout = 1800;
     public function __construct()
     {
         parent::__construct();
@@ -18,11 +17,9 @@ class Auth extends config
             $elapsed_time = $current_time - $_SESSION['last_activity'];
             
             if ($elapsed_time > $this->session_timeout) {
-                // Session expired - clear everything
                 session_unset();
                 session_destroy();
                 
-                // Redirect to login with expired parameter
                 if (!defined('API_REQUEST')) {
                     header('Location: login.php?expired=1');
                     exit();
@@ -30,7 +27,6 @@ class Auth extends config
             }
         }
         
-        // Update last activity time for authenticated users
         if (isset($_SESSION['user_id'])) {
             $_SESSION['last_activity'] = time();
         }

@@ -1,14 +1,12 @@
 <?php
-// Function to safely start session with configuration
 function safe_session_start() {
     if (session_status() === PHP_SESSION_NONE) {
-        // Configure session settings BEFORE starting
-        ini_set('session.gc_maxlifetime', 1800); // 30 minutes in seconds
+        ini_set('session.gc_maxlifetime', 1800);
         session_set_cookie_params([
             'lifetime' => 1800,
             'path' => '/',
             'domain' => '',
-            'secure' => isset($_SERVER['HTTPS']), // Auto-detect HTTPS
+            'secure' => isset($_SERVER['HTTPS']),
             'httponly' => true,
             'samesite' => 'Strict'
         ]);
@@ -16,7 +14,6 @@ function safe_session_start() {
     }
 }
 
-// Always start session safely in init.php
 safe_session_start();
 
 require_once 'functions.php';
