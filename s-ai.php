@@ -10,7 +10,7 @@
 
     $config = new config();
     $pdo = $config->con();
-    $GEMINI_API_KEY = $config->getGeminiKey();
+    $GROQ_API_KEY = $config->getGroqKey();
 
     // Get current user
     $current_user = $_SESSION['user_id'] ?? 'unknown';
@@ -464,28 +464,33 @@
             Here is the data:\n\n".$yearlyText."\n".$topProductsText;
         }
 
-        // --- Gemini API call ---
-        $endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={$GEMINI_API_KEY}";
+        // --- GROQ API CALL ---
+        $endpoint = "https://api.groq.com/openai/v1/chat/completions";
 
         $payload = [
-            "contents" => [
+            "model" => "llama-3.3-70b-versatile",
+            "messages" => [
                 [
-                    "parts" => [
-                        ["text" => $prompt]
-                    ]
+                    "role" => "user",
+                    "content" => $prompt
                 ]
-            ]
+            ],
+            "temperature" => 0.7,
+            "max_tokens" => 4096
         ];
 
         $ch = curl_init($endpoint);
+
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/json'
+            "Content-Type: application/json",
+            "Authorization: Bearer {$GROQ_API_KEY}"
         ]);
+
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
 
-        // WAMP SSL bypass
+        // For local WAMP/XAMPP
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 
@@ -494,8 +499,11 @@
         if (curl_errno($ch)) {
             $error = curl_error($ch);
             curl_close($ch);
+
             header('Content-Type: application/json');
-            echo json_encode(["answer" => "cURL error: $error"]);
+            echo json_encode([
+                "answer" => "cURL Error: $error"
+            ]);
             exit;
         }
 
@@ -505,17 +513,20 @@
 
         if (isset($decoded['error'])) {
             header('Content-Type: application/json');
-            echo json_encode(["answer" => "Gemini error: ".$decoded['error']['message']]);
+            echo json_encode([
+                "answer" => "Groq Error: " . $decoded['error']['message']
+            ]);
             exit;
         }
 
-        $answer = $decoded['candidates'][0]['content']['parts'][0]['text'] ?? 'Error retrieving Gemini response.';
+        $answer = $decoded['choices'][0]['message']['content'] ?? 'No response from Groq.';
 
         header('Content-Type: application/json');
-        echo json_encode(["answer" => $answer]);
+        echo json_encode([
+            "answer" => $answer
+        ]);
         exit;
     }
-
     // Get saved reports from database
     $savedReports = getSavedReports($pdo);
 ?>

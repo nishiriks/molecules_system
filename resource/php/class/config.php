@@ -5,7 +5,7 @@ class config {
     private $user = "root";
     private $pass = "aki123";
     protected $pdo; 
-    private $GEMINI_API_KEY = 'AIzaSyB8JO8mY6M0osBW62Q8XR1eaiYY7psL1VM';
+    private $GROQ_API_KEY = '';
 
     public function __construct() {
         $dsn = "mysql:host={$this->host};dbname={$this->dbname};charset=utf8mb4";
@@ -21,8 +21,8 @@ class config {
     public function con() {
         return $this->pdo;
     }
-    public function getGeminiKey() {
-        return $this->GEMINI_API_KEY;
+    public function getGroqKey() {
+        return $this->GROQ_API_KEY;
     }
 }
 ?>
